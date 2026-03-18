@@ -51,86 +51,89 @@ class LoginScreen extends StatelessWidget {
           ),
           
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Spacer(),
-                  Icon(Icons.water_drop_rounded, size: 80, color: theme.colorScheme.primary)
-                      .animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Her-Flowmate',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.outfit(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w900,
-                      height: 1.1,
-                      letterSpacing: -1,
-                    ),
-                  ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Your living cycle companion.',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.outfit(
-                      fontSize: 20,
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
-                  const Spacer(flex: 2),
-                  
-                  // Login Buttons
-                  Container(
-                    height: 64,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(32),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.pink.withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom - 48,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.water_drop_rounded, size: 80, color: theme.colorScheme.primary)
+                        .animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Her-Flowmate',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 48,
+                        fontWeight: FontWeight.w900,
+                        height: 1.1,
+                        letterSpacing: -1,
+                      ),
+                    ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Your living cycle companion.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 20,
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
+                    const SizedBox(height: 64),
+                    
+                    // Login Buttons
+                    Container(
+                      height: 64,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.pink.withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          // Mock login
+                          await context.read<StorageService>().completeLogin(true, 'Emma');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.pink.shade500,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+                          elevation: 0,
                         ),
-                      ],
-                    ),
-                    child: ElevatedButton(
+                        child: Text(
+                          'Login to Sync',
+                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
+                    const SizedBox(height: 16),
+                    
+                    TextButton(
                       onPressed: () async {
-                        // Mock login
-                        await context.read<StorageService>().completeLogin(true, 'Emma');
+                        // Guest flow
+                        await context.read<StorageService>().completeLogin(false);
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.pink.shade500,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-                        elevation: 0,
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        foregroundColor: Colors.grey.shade700,
                       ),
                       child: Text(
-                        'Login to Sync',
-                        style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
+                        'Continue as Guest',
+                        style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w600),
                       ),
-                    ),
-                  ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
-                  const SizedBox(height: 16),
-                  
-                  TextButton(
-                    onPressed: () async {
-                      // Guest flow
-                      await context.read<StorageService>().completeLogin(false);
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      foregroundColor: Colors.grey.shade700,
-                    ),
-                    child: Text(
-                      'Continue as Guest',
-                      style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                  ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
-                  
-                  const SizedBox(height: 48),
-                ],
+                    ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
+                  ],
+                ),
               ),
             ),
           ),

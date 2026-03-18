@@ -1,7 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'calendar_screen.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'home_screen.dart';           
+import 'insights_screen.dart';      
 import 'log_period_screen.dart';
+import 'history_screen.dart';
+import 'profile_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -11,91 +16,124 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 0;
-  final List<Widget> _screens = const [
+  int _selectedIndex = 0;
+
+  static const List<Widget> _screens = <Widget>[
     HomeScreen(),
-    CalendarScreen(),
+    InsightsScreen(),
+    HistoryScreen(), 
+    ProfileScreen(), 
   ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      extendBody: true, // Allows body to go behind bottom bar
-      body: _screens[_currentIndex],
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(top: 30),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: theme.colorScheme.primary.withOpacity(0.4),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
+      extendBody: true, // So gradient background shows through bottom nav
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1A0033), Color(0xFF2A0044)],
+          ),
         ),
+        child: _screens[_selectedIndex],
+      ),
+      floatingActionButton: Animate(
+        effects: const [
+          ScaleEffect(
+            begin: Offset(0.9, 0.9), // Fix syntax for v4
+            end: Offset(1.0, 1.0),
+            curve: Curves.easeOutBack,
+            duration: Duration(milliseconds: 800),
+          ),
+          ShimmerEffect(
+            duration: Duration(seconds: 3),
+            color: Colors.white24,
+          ),
+        ],
         child: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const LogPeriodScreen()),
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => const LogPeriodScreen(),
             );
           },
-          tooltip: 'Log Period',
+          backgroundColor: Colors.transparent,
           elevation: 0,
-          backgroundColor: theme.colorScheme.primary,
-          foregroundColor: Colors.white,
-          shape: const CircleBorder(),
-          child: const Icon(Icons.add, size: 32),
+          child: Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const SweepGradient(
+                colors: [Color(0xFF00FFFF), Color(0xFFFF00AA), Color(0xFFAA00FF)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.cyan.withOpacity(0.5),
+                  blurRadius: 16,
+                  spreadRadius: 4,
+                ),
+              ],
+            ),
+            child: const Icon(Icons.add_rounded, size: 32, color: Colors.white),
+          ),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-        height: 70,
+        height: 80,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.85),
-          borderRadius: BorderRadius.circular(35),
+          borderRadius: BorderRadius.circular(32),
+          gradient: LinearGradient(
+            colors: [Colors.white.withOpacity(0.08), Colors.white.withOpacity(0.03)],
+          ),
+          border: Border.all(color: Colors.white.withOpacity(0.12), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacity(0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(35),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildNavItem(Icons.home_rounded, 0, theme),
-              const SizedBox(width: 48), // Space for FAB
-              _buildNavItem(Icons.calendar_month_rounded, 1, theme),
-            ],
+          borderRadius: BorderRadius.circular(32),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
+                BottomNavigationBarItem(icon: Icon(Icons.lightbulb_rounded), label: 'Insights'),
+                BottomNavigationBarItem(icon: Icon(Icons.history_rounded), label: 'History'),
+                BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Colors.cyanAccent,
+              unselectedItemColor: Colors.white54,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedLabelStyle: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: GoogleFonts.outfit(fontSize: 11),
+              onTap: _onItemTapped,
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, int index, ThemeData theme) {
-    final isSelected = _currentIndex == index;
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary.withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Icon(
-          icon,
-          size: 28,
-          color: isSelected ? theme.colorScheme.primary : Colors.grey.shade400,
         ),
       ),
     );

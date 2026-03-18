@@ -17,6 +17,12 @@ class StorageService extends ChangeNotifier {
   bool get hasCompletedLogin => _prefs.getBool('hasCompletedLogin') ?? false;
   bool get isLoggedIn => _prefs.getBool('isLoggedIn') ?? false;
   String get userName => _prefs.getString('userName') ?? 'Guest';
+  bool get isMinimalMode => _prefs.getBool('isMinimalMode') ?? false;
+
+  Future<void> toggleMinimalMode() async {
+    await _prefs.setBool('isMinimalMode', !isMinimalMode);
+    notifyListeners();
+  }
 
   Future<void> completeLogin(bool loggedIn, [String name = '']) async {
     await _prefs.setBool('hasCompletedLogin', true);
