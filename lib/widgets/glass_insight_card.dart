@@ -1,7 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/app_theme.dart';
 
 class GlassInsightCard extends StatelessWidget {
   final String title;
@@ -15,7 +15,7 @@ class GlassInsightCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.value,
-    this.subtitle = "",
+    this.subtitle = '',
     this.icon,
     this.accentColor = Colors.cyan,
     this.onTap,
@@ -24,9 +24,9 @@ class GlassInsightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Animate(
-      effects: [
-        const FadeEffect(duration: Duration(milliseconds: 600)),
-        const ScaleEffect(
+      effects: const [
+        FadeEffect(duration: Duration(milliseconds: 600)),
+        ScaleEffect(
           begin: Offset(0.95, 0.95),
           end: Offset(1.0, 1.0),
           curve: Curves.easeOutBack,
@@ -36,44 +36,19 @@ class GlassInsightCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: 160,
-          padding: const EdgeInsets.all(16),
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.08),
-                Colors.white.withOpacity(0.03),
-              ],
-            ),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.12),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: accentColor.withOpacity(0.15),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 8),
-              ),
-            ],
+          decoration: AppTheme.glassDecoration(
+            glowColor: accentColor,
+            glowOpacity: 0.15,
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: AppTheme.glassBlur(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (icon != null)
-                    Icon(
-                      icon,
-                      color: accentColor,
-                      size: 32,
-                    ),
+                    Icon(icon, color: accentColor, size: 32),
                   const SizedBox(height: 12),
                   Text(
                     title,
@@ -92,7 +67,10 @@ class GlassInsightCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: accentColor,
                       shadows: [
-                        Shadow(color: accentColor.withOpacity(0.5), blurRadius: 12),
+                        Shadow(
+                          color: accentColor.withValues(alpha: 0.5),
+                          blurRadius: 12,
+                        ),
                       ],
                     ),
                   ),
@@ -104,6 +82,7 @@ class GlassInsightCard extends StatelessWidget {
                         fontSize: 13,
                         color: Colors.white54,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ],

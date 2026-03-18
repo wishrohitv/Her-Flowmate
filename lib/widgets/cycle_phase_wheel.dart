@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/app_theme.dart';
 
 class CyclePhaseWheel extends StatelessWidget {
   final int currentCycleDay;
@@ -21,17 +22,8 @@ class CyclePhaseWheel extends StatelessWidget {
   Widget build(BuildContext context) {
     final double progress = cycleLength > 0 ? currentCycleDay / cycleLength.clamp(1, 999) : 0.0;
 
-    // Phase colors (match your neon palette)
-    final phaseColors = {
-      "Menstrual": const Color(0xFFFF00AA),
-      "Menstruation": const Color(0xFFFF00AA),
-      "Follicular": const Color(0xFFAA00FF),
-      "Ovulation": const Color(0xFF00FFFF),
-      "Luteal": const Color(0xFF00FFAA),
-      "Unknown": Colors.grey,
-    };
-
-    final accentColor = phaseColors[currentPhase] ?? Colors.purpleAccent;
+    // Phase colour — delegated to AppTheme to keep DRY
+    final accentColor = AppTheme.phaseColor(currentPhase);
 
     return Animate(
       onPlay: (controller) => controller.repeat(reverse: true),
@@ -195,5 +187,6 @@ class _ArcPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _ArcPainter old) =>
+      old.progress != progress || old.color != color;
 }

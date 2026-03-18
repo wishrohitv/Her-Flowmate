@@ -2,10 +2,26 @@ import 'storage_service.dart';
 
 enum CyclePhase { menstrual, follicular, ovulation, luteal, unknown }
 
+/// Extension so any widget can call `.displayName` directly on the enum.
+extension CyclePhaseX on CyclePhase {
+  String get displayName {
+    switch (this) {
+      case CyclePhase.menstrual:  return 'Menstruation';
+      case CyclePhase.follicular: return 'Follicular';
+      case CyclePhase.ovulation:  return 'Ovulation';
+      case CyclePhase.luteal:     return 'Luteal';
+      case CyclePhase.unknown:    return 'Unknown';
+    }
+  }
+}
+
 class PredictionService {
   final StorageService storageService;
 
   PredictionService(this.storageService);
+
+  /// Convenience shorthand: the human-readable name of the current phase.
+  String get phaseDisplayName => currentPhase.displayName;
 
   int get averageCycleLength {
     final logs = storageService.getLogs();
