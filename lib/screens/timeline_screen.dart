@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../services/prediction_service.dart';
 import '../utils/app_theme.dart';
+import '../widgets/neu_card.dart';
 
 class TimelineScreen extends StatelessWidget {
   const TimelineScreen({super.key});
@@ -11,27 +12,27 @@ class TimelineScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pred = context.watch<PredictionService>();
-    final cycleLen = pred.averageCycleLength;
+    final cycleLen = pred.averageCycleLength > 0 ? pred.averageCycleLength : 28;
     final currentDay = pred.currentCycleDay;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      backgroundColor: AppTheme.frameColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.frameColor,
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              decoration: AppTheme.neuDecoration(radius: 12, color: AppTheme.frameColor),
+              decoration: AppTheme.neuDecoration(radius: 12),
               child: const Icon(Icons.arrow_back_rounded, color: AppTheme.textDark),
             ),
           ),
         ),
         title: Text(
           'Cycle Timeline',
-          style: GoogleFonts.poppins(color: AppTheme.textDark, fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(color: AppTheme.textDark, fontWeight: FontWeight.w800, fontSize: 20),
         ),
         centerTitle: true,
       ),
@@ -46,7 +47,7 @@ class TimelineScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildLegendItem('Period', AppTheme.accentPink),
+                    _buildLegendItem('Period', AppTheme.phaseColors['Menstrual']!),
                     _buildLegendItem('Follicular', AppTheme.phaseColors['Follicular']!),
                     _buildLegendItem('Ovulation', AppTheme.phaseColors['Ovulation']!),
                     _buildLegendItem('Luteal', AppTheme.phaseColors['Luteal']!),
@@ -70,7 +71,7 @@ class TimelineScreen extends StatelessWidget {
                       isToday: isToday,
                       phaseName: phase,
                       phaseColor: phaseColor,
-                    ).animate().fadeIn(delay: Duration(milliseconds: 50 * index)).slideX(begin: 0.05);
+                    ).animate().fadeIn(delay: Duration(milliseconds: 30 * index)).slideX(begin: 0.05);
                   },
                 ),
               ),
@@ -84,15 +85,17 @@ class TimelineScreen extends StatelessWidget {
   Widget _buildLegendItem(String label, Color color) {
     return Column(
       children: [
-        Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-        const SizedBox(height: 4),
-        Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textDark.withOpacity(0.6), fontWeight: FontWeight.w600)),
+        Container(
+          width: 14, height: 14,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(height: 6),
+        Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary, fontWeight: FontWeight.w700)),
       ],
     );
   }
 
   String _getPhaseForDay(int day, int cycleLen) {
-    // Simple mock logic for timeline phases
     if (day <= 5) return 'Menstrual';
     final lutealPhaseLength = 14;
     final ovulationDay = cycleLen - lutealPhaseLength;
@@ -115,79 +118,88 @@ class _TimelineRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            // Day column
-            SizedBox(
-              width: 30,
-              child: Text(
-                '$day',
-                style: GoogleFonts.poppins(
-                  fontSize: 14, 
-                  fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
-                  color: isToday ? AppTheme.accentPink : AppTheme.textDark.withOpacity(0.3),
-                ),
+    return IntrinsicHeight(
+      child: Row(
+        children: [
+          // Day column
+          SizedBox(
+            width: 32,
+            child: Text(
+              '$day',
+              style: GoogleFonts.poppins(
+                fontSize: 14, 
+                fontWeight: isToday ? FontWeight.w900 : FontWeight.w700,
+                color: isToday ? AppTheme.accentPink : AppTheme.textSecondary,
               ),
             ),
-            
-            // Marker
-            Column(
-              children: [
-                Container(
-                  width: 16, height: 16,
-                  decoration: BoxDecoration(
-                    color: isToday ? phaseColor : Colors.transparent,
-                    border: Border.all(color: phaseColor, width: 2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: isToday ? const Icon(Icons.person_rounded, size: 8, color: Colors.white) : null,
+          ),
+          
+          // Marker
+          Column(
+            children: [
+              Container(
+                width: 18, height: 18,
+                decoration: BoxDecoration(
+                  color: isToday ? phaseColor : AppTheme.frameColor,
+                  border: Border.all(color: phaseColor, width: 2),
+                  shape: BoxShape.circle,
+                  boxShadow: isToday ? [
+                    BoxShadow(color: phaseColor.withOpacity(0.4), blurRadius: 8)
+                  ] : null,
                 ),
-                Expanded(
-                  child: Container(width: 2, color: phaseColor.withOpacity(0.2)),
-                ),
-              ],
-            ),
-            
-            const SizedBox(width: 20),
-            
-            // Content
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: isToday 
-                    ? AppTheme.neuDecoration(radius: 16, color: AppTheme.frameColor)
-                    : BoxDecoration(
-                        color: phaseColor.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                  child: Row(
-                    children: [
-                      Text(
-                        isToday ? 'Today' : 'Cycle Day $day',
-                        style: GoogleFonts.inter(
-                          fontSize: 14, 
-                          fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
-                          color: isToday ? AppTheme.textDark : AppTheme.textDark.withOpacity(0.5)
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        phaseName,
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: phaseColor),
-                      ),
-                    ],
-                  ),
-                ),
+                child: isToday ? const Icon(Icons.star_rounded, size: 10, color: Colors.white) : null,
               ),
+              Expanded(
+                child: Container(width: 2, color: phaseColor.withOpacity(0.2)),
+              ),
+            ],
+          ),
+          
+          const SizedBox(width: 20),
+          
+          // Content
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: isToday 
+                ? NeuCard(
+                    radius: 20,
+                    onTap: () {},
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    child: _rowContent(),
+                  )
+                : Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: phaseColor.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: _rowContent(),
+                  ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _rowContent() {
+    return Row(
+      children: [
+        Text(
+          isToday ? 'Today' : 'Cycle Day $day',
+          style: GoogleFonts.inter(
+            fontSize: 14, 
+            fontWeight: isToday ? FontWeight.w800 : FontWeight.w700,
+            color: AppTheme.textDark
+          ),
+        ),
+        const Spacer(),
+        Text(
+          phaseName,
+          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w800, color: phaseColor),
+        ),
+      ],
     );
   }
 }

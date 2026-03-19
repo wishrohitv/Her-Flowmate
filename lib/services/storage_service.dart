@@ -40,7 +40,35 @@ class StorageService extends ChangeNotifier {
   // Pregnancy data
   DateTime? get dueDate {
     final ms = _prefs.getInt('dueDate');
+    if (ms != null) return DateTime.fromMillisecondsSinceEpoch(ms);
+    // Auto-calculate from conceptionDate if available
+    final cDate = conceptionDate;
+    if (cDate != null) return cDate.add(const Duration(days: 280));
+    final pWeeks = pregnancyWeeks;
+    if (pWeeks != null) {
+      // 40 weeks total - current weeks = remaining
+      return DateTime.now().add(Duration(days: (40 - pWeeks) * 7));
+    }
+    return null;
+  }
+
+  DateTime? get conceptionDate {
+    final ms = _prefs.getInt('conceptionDate');
     return ms != null ? DateTime.fromMillisecondsSinceEpoch(ms) : null;
+  }
+
+  int? get pregnancyWeeks {
+    return _prefs.getInt('pregnancyWeeks');
+  }
+
+  Future<void> savePregnancyData({DateTime? conceptionDate, int? weeks}) async {
+    if (conceptionDate != null) {
+      await _prefs.setInt('conceptionDate', conceptionDate.millisecondsSinceEpoch);
+    }
+    if (weeks != null) {
+      await _prefs.setInt('pregnancyWeeks', weeks);
+    }
+    notifyListeners();
   }
 
   Future<void> toggleMinimalMode() async {
@@ -82,6 +110,12 @@ class StorageService extends ChangeNotifier {
     await _prefs.setBool('hasCompletedOnboarding', false);
     await _prefs.setBool('isLoggedIn', false);
     await _prefs.remove('userName');
+    notifyListeners();
+  }
+
+  Future<void> stopAndReset() async {
+    await _prefs.clear();
+    await _box.clear();
     notifyListeners();
   }
 
@@ -139,6 +173,13 @@ class StorageService extends ChangeNotifier {
   Future<void> exportLogsToPdf() async {
     // Placeholder for PDF generation logic (e.g. using 'pdf' package)
     debugPrint('Exporting logs to PDF...');
+  }
+
+  bool get hasSeenInfoPopup => _prefs.getBool('hasSeenInfoPopup') ?? false;
+
+  Future<void> markInfoPopupAsSeen() async {
+    await _prefs.setBool('hasSeenInfoPopup', true);
+    notifyListeners();
   }
 
   List<PeriodLog> getLogs() {

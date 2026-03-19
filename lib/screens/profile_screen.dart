@@ -1,10 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
+import '../widgets/neu_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -16,126 +16,120 @@ class ProfileScreen extends StatelessWidget {
         ? storage.userName[0].toUpperCase()
         : 'U';
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        child: Column(
-          children: [
-            // ── Avatar ───────────────────────────────────────────────────
-            ClipRRect(
-              borderRadius: BorderRadius.circular(55),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  width: 110, height: 110,
-                  decoration: AppTheme.glassDecoration(
-                      radius: 55, color: Colors.white.withOpacity(0.08)),
-                  alignment: Alignment.center,
-                  child: Text(
-                    initial,
-                    style: GoogleFonts.poppins(
-                        fontSize: 48, fontWeight: FontWeight.bold,
-                        color: AppTheme.accentPink),
+    return Scaffold(
+      backgroundColor: AppTheme.frameColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            children: [
+              // ── Avatar ───────────────────────────────────────────────────
+              Container(
+                width: 120, height: 120,
+                decoration: AppTheme.neuDecoration(radius: 60),
+                alignment: Alignment.center,
+                child: Text(
+                  initial,
+                  style: GoogleFonts.poppins(
+                      fontSize: 48, fontWeight: FontWeight.w800,
+                      color: AppTheme.accentPink),
+                ),
+              ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+
+              const SizedBox(height: 24),
+              Text(
+                storage.userName.isNotEmpty ? storage.userName : 'Guest',
+                style: GoogleFonts.poppins(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.textDark),
+              ).animate().fadeIn(delay: 200.ms),
+
+              const SizedBox(height: 48),
+
+              // ── Settings Tiles ────────────────────────────────────────────
+              _tile(
+                context,
+                icon: Icons.picture_as_pdf_rounded,
+                iconColor: AppTheme.accentPink,
+                title: 'Export My Data',
+                subtitle: 'Download history as PDF',
+                onTap: () async {
+                  await storage.exportLogsToPdf();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('PDF Export started...'), backgroundColor: AppTheme.accentPink));
+                  }
+                },
+              ).animate().fadeIn(delay: 400.ms),
+
+              _tile(
+                context,
+                icon: storage.isMinimalMode
+                    ? Icons.motion_photos_paused_rounded
+                    : Icons.auto_awesome_rounded,
+                iconColor: AppTheme.accentPink,
+                title: 'Minimalist Mode',
+                subtitle: storage.isMinimalMode ? 'Enabled' : 'Disabled',
+                trailing: Transform.scale(
+                  scale: 0.8,
+                  child: Switch(
+                    value: storage.isMinimalMode,
+                    onChanged: (_) => storage.toggleMinimalMode(),
+                    activeColor: AppTheme.accentPink,
+                    inactiveThumbColor: AppTheme.textSecondary,
                   ),
                 ),
-              ),
-            ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+                onTap: () => storage.toggleMinimalMode(),
+              ).animate().fadeIn(delay: 500.ms),
 
-            const SizedBox(height: 20),
-            Text(
-              storage.userName.isNotEmpty ? storage.userName : 'Guest',
-              style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textDark),
-            ).animate().fadeIn(delay: 200.ms),
+              _tile(
+                context,
+                icon: Icons.privacy_tip_rounded,
+                iconColor: AppTheme.phaseColors['Ovulation']!,
+                title: 'Privacy Policy',
+                subtitle: 'Local and encrypted data',
+                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Your data stays on your device.'), backgroundColor: AppTheme.accentPink)),
+              ).animate().fadeIn(delay: 600.ms),
 
-            const SizedBox(height: 32),
+              _tile(
+                context,
+                icon: Icons.delete_sweep_rounded,
+                iconColor: Colors.redAccent,
+                title: 'Clear All Data',
+                subtitle: 'Permanently erase all logs',
+                onTap: () => _confirmDelete(context, storage),
+              ).animate().fadeIn(delay: 650.ms),
 
-            // ── Settings Tiles ────────────────────────────────────────────
-            _tile(
-              context,
-              icon: Icons.picture_as_pdf_rounded,
-              iconColor: AppTheme.accentPink,
-              title: 'Export My Data',
-              subtitle: 'Download cycle history as PDF',
-              onTap: () async {
-                await storage.exportLogsToPdf();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('PDF Export started... check your downloads folder.')));
-                }
-              },
-            ).animate().fadeIn(delay: 400.ms),
+              const SizedBox(height: 64),
 
-            _tile(
-              context,
-              icon: storage.isMinimalMode
-                  ? Icons.motion_photos_paused_rounded
-                  : Icons.auto_awesome_rounded,
-              iconColor: AppTheme.accentPink,
-              title: 'Minimalist Mode',
-              subtitle: storage.isMinimalMode ? 'Enabled' : 'Disabled',
-              trailing: Switch(
-                value: storage.isMinimalMode,
-                onChanged: (_) => storage.toggleMinimalMode(),
-                activeColor: AppTheme.accentPink,
-              ),
-              onTap: () => storage.toggleMinimalMode(),
-            ).animate().fadeIn(delay: 500.ms),
-
-            _tile(
-              context,
-              icon: Icons.privacy_tip_rounded,
-              iconColor: AppTheme.phaseColors['Ovulation']!,
-              title: 'Privacy Policy',
-              subtitle: 'Learn how your data is protected',
-              onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Your data is local and encrypted.'))),
-            ).animate().fadeIn(delay: 600.ms),
-
-            _tile(
-              context,
-              icon: Icons.delete_sweep_rounded,
-              iconColor: Colors.redAccent,
-              title: 'Clear All Data',
-              subtitle: 'Permanently erase all logs',
-              onTap: () => _confirmDelete(context, storage),
-            ).animate().fadeIn(delay: 650.ms),
-
-            const SizedBox(height: 40),
-
-            // ── Logout ────────────────────────────────────────────────────
-            if (storage.hasCompletedLogin)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                  child: Container(
-                    decoration: AppTheme.glassDecoration(
-                        radius: 20, color: Colors.white.withOpacity(0.05)),
-                    child: ElevatedButton.icon(
-                      onPressed: () => storage.logout(),
-                      icon: const Icon(Icons.logout_rounded, color: AppTheme.accentPink),
-                      label: Text('Log Out',
-                          style: GoogleFonts.inter(
-                              fontSize: 16, fontWeight: FontWeight.w700,
-                              color: AppTheme.accentPink)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        minimumSize: const Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                      ),
+              // ── Logout ────────────────────────────────────────────────────
+              if (storage.hasCompletedLogin)
+                NeuCard(
+                  radius: 20,
+                  padding: EdgeInsets.zero,
+                  onTap: () => storage.logout(),
+                  child: SizedBox(
+                    height: 64,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.logout_rounded, color: AppTheme.accentPink),
+                        const SizedBox(width: 12),
+                        Text('Log Out',
+                            style: GoogleFonts.inter(
+                                fontSize: 16, fontWeight: FontWeight.w800,
+                                color: AppTheme.accentPink)),
+                      ],
                     ),
                   ),
-                ),
-              ).animate().fadeIn(delay: 700.ms),
+                ).animate().fadeIn(delay: 700.ms),
 
-            const SizedBox(height: 100),
-          ],
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );
@@ -145,17 +139,20 @@ class ProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete All Data?'),
-        content: const Text('This action cannot be undone. All your period logs and predictions will be cleared.'),
+        backgroundColor: AppTheme.frameColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        title: Text('Delete All Data?', style: GoogleFonts.poppins(fontWeight: FontWeight.w800, color: AppTheme.textDark)),
+        content: Text('This action cannot be undone. All logs will be cleared.', 
+          style: GoogleFonts.inter(color: AppTheme.textSecondary, fontWeight: FontWeight.w600)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel', style: TextStyle(color: AppTheme.textSecondary))),
           TextButton(
             onPressed: () {
               storage.deleteAllLogs();
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('All data cleared.')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Data cleared.'), backgroundColor: Colors.redAccent));
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
+            child: const Text('Delete', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -171,53 +168,45 @@ class ProfileScreen extends StatelessWidget {
     Widget? trailing,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: AppTheme.glassDecoration(
-                  radius: 24, color: Colors.white.withOpacity(0.05)),
-              child: Row(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      child: NeuCard(
+        radius: 28,
+        onTap: onTap,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: iconColor, size: 24),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Icon(icon, color: iconColor, size: 24),
-                  ),
-                  const SizedBox(width: 18),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title,
-                            style: GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.textDark)),
-                        if (subtitle != null)
-                          Text(subtitle,
-                              style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: AppTheme.textDark.withOpacity(0.6))),
-                      ],
-                    ),
-                  ),
-                  trailing ??
-                      const Icon(Icons.chevron_right_rounded,
-                          color: AppTheme.textDark, size: 22),
+                  Text(title,
+                      style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.textDark)),
+                  if (subtitle != null)
+                    Text(subtitle,
+                        style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textSecondary)),
                 ],
               ),
             ),
-          ),
+            trailing ??
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppTheme.textSecondary, size: 24),
+          ],
         ),
       ),
     );

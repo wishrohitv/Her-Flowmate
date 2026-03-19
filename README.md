@@ -1,6 +1,10 @@
-# HerFlowmate 🍑✨
+# HerFlowmate 🌸
+Your gentle, premium cycle companion built with Flutter.
 
 A premium, minimalist, and privacy-first period tracker designed to empower women with deep biological insights and calm aesthetics.
+
+## 🚀 Build & Optimization
+To achieve the smallest app size and best performance in production, use the following commands:
 
 ![Flutter](https://img.shields.io/badge/Flutter-v3.11+-02569B?logo=flutter)
 ![Hive](https://img.shields.io/badge/Database-Hive-yellow)

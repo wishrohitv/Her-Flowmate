@@ -1,130 +1,124 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 abstract final class AppTheme {
-  // Refined Peach Palette
-  static const Color frameColor = Color(0xFFFFF7F3); // Very soft peach
-  static const Color accentPink = Color(0xFFFF8571); // Soft Coral
-  static const Color shadowDark = Color(0xFFE8D6CB); 
-  static const Color shadowLight = Color(0xFFFFFFFF);
-  static const Color textDark = Color(0xFF6B5E5E);
+  // ── Color Palette (Exact Specification) ───────────────────────────────────
+  static const Color bgColor      = Color(0xFFF8E9EE);
+  static const Color surfaceColor  = Color(0xFFF3DDE5);
+  static const Color accentPink    = Color(0xFFE88BA3);
+  static const Color textDark      = Color(0xFF4A2F3A);
+  static const Color textSecondary = Color(0xFFA97C8B);
+  
+  // Aliases for legacy compatibility
+  static const Color frameColor    = bgColor;
+  static const Color neuSurface    = surfaceColor;
+  static const Color textMain       = textDark;
+  static const Color textMuted      = textSecondary;
+  static const Color shadowLight   = Colors.white;
+  static const Color shadowDark    = Color(0xFFD9B9C4);
 
-  static BoxDecoration glassDecoration({double radius = 24.0, Color? color}) {
-    return BoxDecoration(
-      color: (color ?? Colors.white).withOpacity(0.4),
-      borderRadius: BorderRadius.circular(radius),
-      border: Border.all(color: Colors.white.withOpacity(0.35), width: 1.5),
-    );
-  }
+  // Visualization Colors
+  static const Color accentPurple  = Color(0xFFBA68C8);
+  static const Color accentCyan    = Color(0xFF4DD0E1);
+  static const Color neonGreen     = Color(0xFF81C784);
 
-  // Gradient background
   static const LinearGradient bgGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFFFFFBF9),
-      Color(0xFFFFF7F3),
-    ],
+    colors: [bgColor, Color(0xFFFAEBEF)],
   );
 
-  // Phase colors (refined)
   static const Map<String, Color> phaseColors = {
-    'Menstrual': Color(0xFFF06292),
-    'Follicular': Color(0xFFF8BBD0),
+    'Menstrual': Color(0xFFE88BA3),
+    'Follicular': Color(0xFFF06292),
     'Ovulation': Color(0xFFBA68C8),
-    'Fertile': Color(0xFFF48FB1),
-    'Luteal': Color(0xFFE1BEE7),
+    'Fertile': Color(0xFFFFCCBC),
+    'Luteal': Color(0xFFA97C8B),
   };
-
-  static const Color neuSurface = frameColor;
-  static const Color neuBackground = frameColor;
-  static const Color neuShadowDark = shadowDark;
-  static const Color neuShadowLight = shadowLight;
-  static const Color textMain = textDark;
-  static Color get textMuted => textDark.withOpacity(0.6);
-
-  static const Color accentPurple = Color(0xFFBA68C8);
-  static const Color accentCyan = Color(0xFF4DD0E1);
-  static const Color neonGreen = Color(0xFF81C784);
-
-  // Phase tip helper
-  static ({String headline, String body}) phaseTip(String phase) {
-    switch (phase) {
-      case 'Menstrual':
-        return (headline: 'Focus on Rest', body: 'Your energy might be lower. Be gentle with yourself.');
-      case 'Follicular':
-        return (headline: 'Higher Energy', body: 'A great time for new projects and exercise.');
-      case 'Ovulation':
-        return (headline: 'Peak Fertility', body: 'You may feel more social and vibrant today.');
-      case 'Luteal':
-        return (headline: 'PMS Support', body: 'Prioritize self-care and balanced nutrition.');
-      default:
-        return (headline: 'Keep Logged', body: 'Continue tracking for better predictions!');
-    }
-  }
 
   static Color phaseColor(String phase) => phaseColors[phase] ?? accentPink;
 
-  // Neumorphic decoration helper
+  // ── Neumorphic Decorations ────────────────────────────────────────────────
   static BoxDecoration neuDecoration({
-    double radius = 28.0,
-    Color color = frameColor,
+    double radius = 32.0,
+    Color color = bgColor,
     bool isPressed = false,
+    bool showGlow = false,
   }) {
+    if (isPressed) return neuInnerDecoration(radius: radius, color: color);
+
     return BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(radius),
-      boxShadow: isPressed
-          ? [
-              BoxShadow(
-                color: shadowDark,
-                offset: const Offset(2, 2),
-                blurRadius: 5,
-                blurStyle: BlurStyle.inner,
-              ),
-              BoxShadow(
-                color: shadowLight,
-                offset: const Offset(-2, -2),
-                blurRadius: 5,
-                blurStyle: BlurStyle.inner,
-              ),
-            ]
-          : [
-              BoxShadow(
-                color: shadowDark,
-                offset: const Offset(6, 6),
-                blurRadius: 15,
-              ),
-              BoxShadow(
-                color: shadowLight,
-                offset: const Offset(-6, -6),
-                blurRadius: 15,
-              ),
-            ],
+      boxShadow: [
+        if (showGlow)
+          BoxShadow(
+            color: accentPink.withOpacity(0.4),
+            blurRadius: 15,
+            spreadRadius: 2,
+          ),
+        const BoxShadow(
+          color: shadowLight,
+          offset: Offset(-6, -6),
+          blurRadius: 12,
+        ),
+        BoxShadow(
+          color: shadowDark.withOpacity(0.4),
+          offset: const Offset(6, 6),
+          blurRadius: 12,
+        ),
+      ],
     );
   }
 
-  // Inner inset decoration helper
   static BoxDecoration neuInnerDecoration({
-    double radius = 28.0,
-    Color color = frameColor,
+    double radius = 32.0,
+    Color color = bgColor,
   }) {
+    // Standard Flutter version without inset package
     return BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(radius),
-      boxShadow: const [
+      boxShadow: [
         BoxShadow(
-          color: shadowLight,
-          offset: Offset(2, 2),
-          blurRadius: 5,
-          blurStyle: BlurStyle.inner,
+          color: shadowDark.withOpacity(0.5),
+          offset: const Offset(4, 4),
+          blurRadius: 10,
         ),
         BoxShadow(
-          color: shadowDark,
-          offset: Offset(-2, -2),
-          blurRadius: 5,
-          blurStyle: BlurStyle.inner,
+          color: shadowLight.withOpacity(0.9),
+          offset: const Offset(-4, -4),
+          blurRadius: 10,
         ),
       ],
+    );
+  }
+
+  // ── Phase tip helper ──────────────────────────────────────────────────────
+  static ({String headline, String body}) phaseTip(String phase) {
+    switch (phase) {
+      case 'Menstrual': return (headline: 'Focus on Rest', body: 'Energy is lower. Gentle movements only.');
+      case 'Follicular': return (headline: 'Energy Rising', body: 'Perfect for starting new projects.');
+      case 'Ovulation': return (headline: 'Peak Vitality', body: 'You are at your most vibrant.');
+      case 'Luteal': return (headline: 'Nurture Yourself', body: 'Prioritize comfort and slow pace.');
+      default: return (headline: 'Stay Mindful', body: 'Listen to your body\'s needs.');
+    }
+  }
+
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      scaffoldBackgroundColor: bgColor,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: accentPink,
+        primary: accentPink,
+        surface: surfaceColor,
+        onSurface: textDark,
+      ),
+      textTheme: GoogleFonts.outfitTextTheme().apply(
+        bodyColor: textDark,
+        displayColor: textDark,
+      ),
     );
   }
 }

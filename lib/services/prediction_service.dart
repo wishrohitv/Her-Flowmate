@@ -156,4 +156,39 @@ class PredictionService {
     final normNext = DateTime(nextPeriod.year, nextPeriod.month, nextPeriod.day);
     return normNext.difference(normToday).inDays;
   }
+
+  int getConceptionChance(DateTime date) {
+    final logs = storageService.getLogs();
+    if (logs.isEmpty) return 1;
+
+    final latestPeriod = logs.first;
+    final cycleLen = averageCycleLength;
+    final ovulationDay = cycleLen - 14;
+    
+    final normSearch = DateTime(date.year, date.month, date.day);
+    final normStart = DateTime(latestPeriod.startDate.year, latestPeriod.startDate.month, latestPeriod.startDate.day);
+    
+    final daysSinceStart = normSearch.difference(normStart).inDays;
+    final diff = daysSinceStart - ovulationDay;
+    
+    switch (diff) {
+      case 0: return 33;
+      case -1: return 31;
+      case -2: return 27;
+      case -3: return 14;
+      case -4: return 16;
+      case -5: return 10;
+      case 1: return 5;
+      default: return 1;
+    }
+  }
+
+  int get currentConceptionChance => getConceptionChance(DateTime.now());
+
+  String get fertilityLevel {
+    final chance = currentConceptionChance;
+    if (chance >= 25) return 'High';
+    if (chance >= 10) return 'Moderate';
+    return 'Low';
+  }
 }

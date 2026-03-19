@@ -1,10 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
+import 'login_screen.dart';
 import 'home_screen.dart';
 import 'insights_screen.dart';
 import 'log_period_screen.dart';
@@ -13,6 +13,7 @@ import 'feedback_screen.dart';
 import 'history_screen.dart';
 import 'profile_screen.dart';
 import 'mode_settings_screen.dart';
+import '../widgets/notification_widgets.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -35,249 +36,166 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('BUILDING MainNavigationScreen...');
     final storage = context.watch<StorageService>();
 
     return Scaffold(
-      extendBody: true,
+      backgroundColor: AppTheme.frameColor,
       drawer: _buildDrawer(context, storage),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppTheme.textDark, size: 28),
-        centerTitle: true,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: AppTheme.neuDecoration(radius: 12),
+              child: const Icon(Icons.menu_rounded, color: AppTheme.textDark),
+            ),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Text(
           'HerFlowmate',
           style: GoogleFonts.poppins(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
             color: AppTheme.textDark,
             letterSpacing: -0.5,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () => _onItemTapped(3), // Navigate to Profile
-            icon: CircleAvatar(
-              radius: 14,
-              backgroundColor: AppTheme.accentPink.withOpacity(0.1),
-              child: Text(
-                storage.userName.isNotEmpty ? storage.userName[0].toUpperCase() : 'U',
-                style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.accentPink),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
+        actions: const [
+          NotificationBell(),
+          SizedBox(width: 12),
         ],
       ),
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
         child: _screens[_selectedIndex],
       ),
-      floatingActionButton: _selectedIndex == 0
-          ? Animate(
-              effects: const [
-                ScaleEffect(
-                  begin: Offset(0.9, 0.9),
-                  end: Offset(1.0, 1.0),
-                  curve: Curves.easeOutBack,
-                  duration: Duration(milliseconds: 800),
-                ),
-              ],
-              child: FloatingActionButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => LogPeriodScreen(),
-                  );
-                },
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: AppTheme.neuDecoration(
-                      radius: 30, color: AppTheme.frameColor),
-                  child: const Icon(Icons.water_drop_rounded,
-                      size: 28, color: AppTheme.accentPink),
-                ),
+      floatingActionButton: (_selectedIndex == 0 && storage.userGoal != 'pregnant')
+          ? FloatingActionButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const LogPeriodScreen(),
+                );
+              },
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              highlightElevation: 0,
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: AppTheme.neuDecoration(radius: 32),
+                child: const Icon(Icons.add_rounded, size: 32, color: AppTheme.accentPink),
               ),
-            )
+            ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack)
           : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
   Widget _buildDrawer(BuildContext context, StorageService storage) {
-    final initial =
-        storage.userName.isNotEmpty ? storage.userName[0].toUpperCase() : 'U';
+    final initial = storage.userName.isNotEmpty ? storage.userName[0].toUpperCase() : 'U';
 
     return Drawer(
       backgroundColor: AppTheme.frameColor,
-      elevation: 16,
+      elevation: 0,
+      width: MediaQuery.of(context).size.width * 0.8,
       child: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
+            const SizedBox(height: 32),
+            Container(
+              width: 80, height: 80,
+              decoration: AppTheme.neuDecoration(radius: 40),
+              child: Center(
+                child: Text(
+                  initial,
+                  style: GoogleFonts.poppins(color: AppTheme.accentPink, fontWeight: FontWeight.bold, fontSize: 32),
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              storage.userName.isNotEmpty ? storage.userName : 'Guest',
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textDark),
+            ),
+            const SizedBox(height: 48),
+            
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: AppTheme.neuDecoration(
-                        radius: 28, color: AppTheme.frameColor),
-                    child: Center(
-                      child: Text(
-                        initial,
-                        style: GoogleFonts.poppins(
-                          color: AppTheme.accentPink,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
+                  _drawerItem(icon: Icons.home_rounded, title: 'Home', index: 0),
+                  const SizedBox(height: 12),
+                  _actionDrawerItem(
+                    icon: Icons.calendar_month_rounded, 
+                    title: 'Calendar', 
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CalendarScreen()))
+                  ),
+                  const SizedBox(height: 12),
+                  _drawerItem(icon: Icons.lightbulb_rounded, title: 'Insights', index: 1),
+                  const SizedBox(height: 12),
+                  _drawerItem(icon: Icons.history_rounded, title: 'History', index: 2),
+                  
+                  const SizedBox(height: 24),
+                  Divider(color: AppTheme.shadowDark.withOpacity(0.3)),
+                  const SizedBox(height: 24),
+
+                  _actionDrawerItem(
+                    icon: Icons.settings_rounded, 
+                    title: 'Settings', 
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ModeSettingsScreen()))
+                  ),
+                  const SizedBox(height: 12),
+                  _actionDrawerItem(
+                    icon: Icons.help_outline_rounded, 
+                    title: 'Help', 
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: AppTheme.bgColor,
+                        title: const Text('Help'),
+                        content: const Text('HerFlowmate is your gentle cycle companion. Tap the ⓘ icons to learn more about each section.'),
+                        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Got it'))],
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    'HerFlowmate',
-                    style: GoogleFonts.poppins(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textDark,
-                    ),
+                  _actionDrawerItem(
+                    icon: Icons.contact_support_rounded, 
+                    title: 'Contact Support', 
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedbackScreen()))
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            // Primary Dash
-            _drawerItem(icon: Icons.home_rounded, title: 'Dashboard', index: 0),
-
+            
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-              child: Container(
-                  height: 2, decoration: AppTheme.neuInnerDecoration(radius: 1)),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+              child: _actionDrawerItem(
+                icon: Icons.logout_rounded, 
+                title: 'Logout', 
+                onTap: () async {
+                  await storage.logout();
+                  if (context.mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context, 
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  }
+                }
+              ),
             ),
-
-            // Spec 1 Sidebar Items
-            _actionDrawerItem(
-                icon: Icons.calendar_month_rounded,
-                title: 'Calendar',
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CalendarScreen()));
-                }),
-            _drawerItem(
-                icon: Icons.lightbulb_rounded, title: 'Cycle Insights', index: 1),
-            _actionDrawerItem(
-                icon: Icons.tune_rounded,
-                title: 'Mode Settings',
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ModeSettingsScreen()));
-                }),
-
+            
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-              child: Container(
-                  height: 2, decoration: AppTheme.neuInnerDecoration(radius: 1)),
-            ),
-
-            _actionDrawerItem(
-                icon: Icons.feedback_rounded,
-                title: 'Feedback',
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const FeedbackScreen()));
-                }),
-            _actionDrawerItem(
-                icon: Icons.settings_rounded, title: 'Settings', onTap: () {}),
-            _actionDrawerItem(
-                icon: Icons.info_outline_rounded,
-                title: 'Help / About',
-                onTap: () {}),
-            _actionDrawerItem(
-                icon: Icons.contact_support_rounded,
-                title: 'Contact Support',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Contact us at: herflowmate.app@gmail.com')));
-                }),
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(36),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-          height: 72,
-          decoration: AppTheme.glassDecoration(radius: 36, color: Colors.white.withOpacity(0.1)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _navItem(0, Icons.grid_view_rounded, 'Home'),
-              _navItem(1, Icons.analytics_rounded, 'Insights'),
-              const SizedBox(width: 48), // Space for FAB
-              _navItem(2, Icons.history_rounded, 'History'),
-              _navItem(3, Icons.person_rounded, 'Profile'),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _navItem(int index, IconData icon, String label) {
-    final isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: AnimatedContainer(
-        duration: 300.ms,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: isSelected
-            ? AppTheme.neuInnerDecoration(radius: 20)
-            : const BoxDecoration(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? AppTheme.accentPink : AppTheme.textDark.withOpacity(0.5),
-              size: 22,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppTheme.accentPink : AppTheme.textDark.withOpacity(0.5),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+              child: Text(
+                'HerFlowmate v1.0',
+                style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -286,56 +204,40 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  Widget _actionDrawerItem(
-      {required IconData icon,
-      required String title,
-      required VoidCallback onTap}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-      child: Container(
-        decoration:
-            AppTheme.neuDecoration(radius: 12, color: AppTheme.frameColor),
-        child: ListTile(
-          leading: Icon(icon, color: AppTheme.accentPink, size: 22),
-          title: Text(title,
-              style: GoogleFonts.inter(
-                  color: AppTheme.textDark,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600)),
-          onTap: () {
-            Navigator.pop(context); // Close drawer
-            onTap();
-          },
-        ),
+  Widget _actionDrawerItem({required IconData icon, required String title, required VoidCallback onTap}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: AppTheme.neuDecoration(radius: 20),
+      child: ListTile(
+        leading: Icon(icon, color: AppTheme.accentPink, size: 24),
+        title: Text(title, style: GoogleFonts.inter(color: AppTheme.textDark, fontSize: 16, fontWeight: FontWeight.w700)),
+        onTap: () {
+          Navigator.pop(context);
+          onTap();
+        },
       ),
     );
   }
 
-  Widget _drawerItem(
-      {required IconData icon, required String title, required int index}) {
+  Widget _drawerItem({required IconData icon, required String title, required int index}) {
     final isSelected = _selectedIndex == index;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-      child: Container(
-        decoration: isSelected
-            ? AppTheme.neuInnerDecoration(radius: 12)
-            : AppTheme.neuDecoration(radius: 12, color: AppTheme.frameColor),
-        child: ListTile(
-          leading: Icon(icon,
-              color: isSelected ? AppTheme.accentPink : AppTheme.textDark.withOpacity(0.5)),
-          title: Text(
-            title,
-            style: GoogleFonts.inter(
-              color: isSelected ? AppTheme.accentPink : AppTheme.textDark,
-              fontSize: 15,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-            ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: isSelected ? AppTheme.neuInnerDecoration(radius: 20) : AppTheme.neuDecoration(radius: 20),
+      child: ListTile(
+        leading: Icon(icon, color: isSelected ? AppTheme.accentPink : AppTheme.textSecondary),
+        title: Text(
+          title,
+          style: GoogleFonts.inter(
+            color: isSelected ? AppTheme.accentPink : AppTheme.textDark,
+            fontSize: 16,
+            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
           ),
-          onTap: () {
-            _onItemTapped(index);
-            Navigator.pop(context); // Close the drawer
-          },
         ),
+        onTap: () {
+          _onItemTapped(index);
+          Navigator.pop(context);
+        },
       ),
     );
   }

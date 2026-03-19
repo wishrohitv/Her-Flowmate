@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'main_navigation_screen.dart';
+import '../models/period_log.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
-import 'main_navigation_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final bool isEmailUser;
@@ -25,14 +26,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   late final TextEditingController _nameController;
   final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _weeksController = TextEditingController();
+  final TextEditingController _durationController = TextEditingController(text: '5');
+  DateTime? _conceptionDate;
 
   int _currentPage = 0;
-  static const int _totalPages = 2; // Info → Privacy
+  static const int _totalPages = 3;
+  late String _selectedGoal;
+  DateTime? _lastPeriodStart;
+  bool _isAM = true;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.prefillName);
+    _selectedGoal = ''; 
   }
 
   @override
@@ -40,16 +48,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _pageController.dispose();
     _nameController.dispose();
     _ageController.dispose();
+    _weeksController.dispose();
+    _durationController.dispose();
     super.dispose();
   }
 
   void _next() {
-    if (_currentPage == 0 && _nameController.text.trim().isEmpty) {
+    if (_currentPage == 0 && _selectedGoal.isEmpty) return;
+    if (_currentPage == 1 && _nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter your name to continue.')),
       );
       return;
     }
+    if (_currentPage == 2 && _lastPeriodStart == null && _selectedGoal != 'pregnant') {
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select your last period start date.')),
+      );
+      return;
+    }
+
     if (_currentPage < _totalPages - 1) {
       _pageController.nextPage(duration: 350.ms, curve: Curves.easeInOut);
     } else {
@@ -65,15 +83,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _finish() async {
     final age = int.tryParse(_ageController.text.trim());
-    await context.read<StorageService>().completeOnboarding(
-      context.read<StorageService>().userGoal,
+    final storage = context.read<StorageService>();
+    
+    await storage.completeOnboarding(
+      _selectedGoal,
       _nameController.text.trim(),
       age: age,
     );
+
+    if (_selectedGoal == 'pregnant') {
+      final weeks = int.tryParse(_weeksController.text.trim());
+      await storage.savePregnancyData(
+        conceptionDate: _conceptionDate,
+        weeks: weeks,
+      );
+    } else if (_lastPeriodStart != null) {
+      // Create the first log
+      final logDate = DateTime(
+        _lastPeriodStart!.year,
+        _lastPeriodStart!.month,
+        _lastPeriodStart!.day,
+        _isAM ? 9 : 21,
+      );
+      final duration = int.tryParse(_durationController.text.trim()) ?? 5;
+      await storage.saveLog(PeriodLog(startDate: logDate, duration: duration));
+    }
+
     if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
-        (_) => false, // clear the entire back stack
+        (route) => false,
       );
     }
   }
@@ -129,8 +168,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     physics: const NeverScrollableScrollPhysics(),
                     onPageChanged: (i) => setState(() => _currentPage = i),
                     children: [
+                      _goalPage(),
                       _infoPage(),
-                      _privacyPage(),
+                      _periodPage(),
                     ],
                   ),
                 ),
@@ -140,7 +180,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                   child: Container(
                     decoration: AppTheme.neuDecoration(
-                        radius: 18, color: AppTheme.frameColor),
+                        radius: 18, color: AppTheme.frameColor,
+                        showGlow: _currentPage == 0 && _selectedGoal.isNotEmpty),
                     child: ElevatedButton.icon(
                       icon: Icon(
                         _currentPage == _totalPages - 1
@@ -149,7 +190,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         color: AppTheme.accentPink,
                       ),
                       label: Text(
-                        _currentPage == _totalPages - 1 ? 'Get Started' : 'Continue →',
+                        _currentPage == _totalPages - 1 ? 'Done' : 'Continue →',
                         style: GoogleFonts.inter(
                             fontSize: 17, fontWeight: FontWeight.w700,
                             color: AppTheme.accentPink),
@@ -165,7 +206,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
-                ),
+                ).animate(target: (_currentPage == 0 && _selectedGoal.isEmpty) ? 0 : 1)
+                 .fadeIn()
+                 .slideY(begin: 0.2, end: 0),
               ],
           ),
         ),
@@ -175,6 +218,84 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 
 
+  // ── Page 1: Goal Selection ──────────────────────────────────────────────
+  Widget _goalPage() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: 20),
+          Text(
+            "How would you like to use HerFlowmate?",
+            style: GoogleFonts.poppins(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: AppTheme.textDark,
+                height: 1.2),
+          ).animate().fadeIn().slideY(begin: 0.1),
+          const SizedBox(height: 32),
+          _modePanel(
+            'Track my cycle',
+            'Period tracking & phase predictions',
+            Icons.refresh_rounded,
+            'track_cycle',
+          ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1),
+          const SizedBox(height: 16),
+          _modePanel(
+            'Trying to conceive',
+            'Fertile window & ovulation tracking',
+            Icons.favorite_rounded,
+            'conceive',
+          ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
+          const SizedBox(height: 16),
+          _modePanel(
+            'Already pregnant',
+            'Pregnancy week & baby development',
+            Icons.child_care_rounded,
+            'pregnant',
+          ).animate().fadeIn(delay: 600.ms).slideX(begin: 0.1),
+        ],
+      ),
+    );
+  }
+
+  Widget _modePanel(String title, String subtitle, IconData icon, String goal) {
+    final isSelected = _selectedGoal == goal;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedGoal = goal),
+      child: AnimatedContainer(
+        duration: 300.ms,
+        padding: const EdgeInsets.all(24),
+        decoration: isSelected 
+          ? AppTheme.neuDecoration(radius: 28, color: AppTheme.frameColor, showGlow: true)
+          : AppTheme.neuDecoration(radius: 28, color: AppTheme.frameColor),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isSelected ? AppTheme.accentPink.withOpacity(0.1) : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: isSelected ? AppTheme.accentPink : AppTheme.textSecondary, size: 32),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textDark)),
+                  Text(subtitle, style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // ── Page 2: Basic Info ──────────────────────────────────────────────────
   Widget _infoPage() {
     return SingleChildScrollView(
@@ -182,161 +303,152 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 20),
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: AppTheme.neuDecoration(
-                radius: 24, color: AppTheme.frameColor),
-            child: const Icon(Icons.person_outline_rounded,
-                color: AppTheme.accentPink, size: 44),
+            padding: const EdgeInsets.all(20),
+            decoration: AppTheme.neuDecoration(radius: 28, color: AppTheme.frameColor),
+            child: const Icon(Icons.person_rounded, color: AppTheme.accentPink, size: 48),
           ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
-          const SizedBox(height: 28),
-          Text(
-            "Tell us about yourself",
-            style: GoogleFonts.poppins(
-                fontSize: 30,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.textDark),
-          ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
-          const SizedBox(height: 10),
-          Text(
-            "This helps us personalize your cycle context.",
-            style: GoogleFonts.inter(
-                fontSize: 16,
-                color: AppTheme.textDark.withOpacity(0.6),
-                height: 1.4),
-          ).animate().fadeIn(delay: 350.ms),
-          
           const SizedBox(height: 32),
-          
-          // Name Input
-          Text("WHAT SHOULD WE CALL YOU?",
-              style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: AppTheme.textDark.withOpacity(0.5),
-                  letterSpacing: 1)),
+          Text(
+            "Let's get to know you",
+            style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w800, color: AppTheme.textDark, height: 1.1),
+          ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
           const SizedBox(height: 12),
-          Container(
-            decoration: AppTheme.neuInnerDecoration(radius: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-            child: TextField(
-              controller: _nameController,
-              textCapitalization: TextCapitalization.words,
-              style: GoogleFonts.inter(
-                  fontSize: 18,
-                  color: AppTheme.textDark,
-                  fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Your name',
-                hintStyle: GoogleFonts.inter(
-                    color: AppTheme.textDark.withOpacity(0.35)),
-              ),
-            ),
-          ).animate().fadeIn(delay: 480.ms),
-
-          const SizedBox(height: 24),
-
-          // Age Input
-          Text("HOW OLD ARE YOU?",
-              style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: AppTheme.textDark.withOpacity(0.5),
-                  letterSpacing: 1)),
-          const SizedBox(height: 12),
-          Container(
-            decoration: AppTheme.neuInnerDecoration(radius: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-            child: TextField(
-              controller: _ageController,
-              keyboardType: TextInputType.number,
-              style: GoogleFonts.inter(
-                  fontSize: 18,
-                  color: AppTheme.textDark,
-                  fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Age (e.g. 26) - optional',
-                hintStyle: GoogleFonts.inter(
-                    color: AppTheme.textDark.withOpacity(0.35)),
-              ),
-            ),
-          ).animate().fadeIn(delay: 600.ms),
+          Text(
+            "This helps HerFlowmate tailor your experience perfectly.",
+            style: GoogleFonts.inter(fontSize: 16, color: AppTheme.textSecondary, height: 1.5, fontWeight: FontWeight.w500),
+          ).animate().fadeIn(delay: 400.ms),
+          const SizedBox(height: 48),
+          _setupInput("WHAT'S YOUR NAME?", _nameController, 'Enter name...', isRequired: true),
+          const SizedBox(height: 32),
+          _setupInput("AND YOUR AGE?", _ageController, 'Age (optional)', isNumeric: true),
         ],
+      ),
+    );
+  }
+
+  Widget _setupInput(String label, TextEditingController controller, String hint, {bool isNumeric = false, bool isRequired = false}) {
+     return Column(
+       crossAxisAlignment: CrossAxisAlignment.start,
+       children: [
+          Row(
+            children: [
+              Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, color: AppTheme.textSecondary, letterSpacing: 1.2)),
+              if (isRequired) Text(' *', style: TextStyle(color: AppTheme.accentPink, fontWeight: FontWeight.bold)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: AppTheme.neuInnerDecoration(radius: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: TextField(
+              controller: controller,
+              keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+              style: GoogleFonts.poppins(fontSize: 20, color: AppTheme.textDark, fontWeight: FontWeight.w700),
+              decoration: InputDecoration(
+                border: InputBorder.none, 
+                hintText: hint, 
+                hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary.withOpacity(0.3), fontWeight: FontWeight.w500)
+              ),
+            ),
+          ),
+       ],
+     );
+  }
+
+  // ── Page 3: First Period ────────────────────────────────────────────────
+  Widget _periodPage() {
+    if (_selectedGoal == 'pregnant') {
+      return SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Congratulations! 🎉",
+              style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w800, color: AppTheme.textDark),
+            ).animate().fadeIn(),
+            const SizedBox(height: 12),
+            Text(
+              "How far along are you?",
+              style: GoogleFonts.inter(fontSize: 16, color: AppTheme.textSecondary),
+            ).animate().fadeIn(delay: 200.ms),
+            const SizedBox(height: 32),
+            _setupInput("WEEKS PREGNANT", _weeksController, "e.g. 8", isNumeric: true),
+            const SizedBox(height: 32),
+            Text("OR SELECT CONCEPTION DATE", style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w800, color: AppTheme.textSecondary, letterSpacing: 1)),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: AppTheme.neuDecoration(radius: 24, color: AppTheme.frameColor),
+              child: CalendarDatePicker(
+                initialDate: DateTime.now(),
+                firstDate: DateTime.now().subtract(const Duration(days: 300)),
+                lastDate: DateTime.now(),
+                onDateChanged: (date) => setState(() => _conceptionDate = date),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "When did your last period start?",
+            style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.w800, color: AppTheme.textDark),
+          ).animate().fadeIn(),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: AppTheme.neuDecoration(radius: 24, color: AppTheme.frameColor),
+            child: CalendarDatePicker(
+              initialDate: DateTime.now(),
+              firstDate: DateTime.now().subtract(const Duration(days: 90)),
+              lastDate: DateTime.now(),
+              onDateChanged: (date) => setState(() => _lastPeriodStart = date),
+            ),
+          ),
+          const SizedBox(height: 32),
+          _setupInput("HOW MANY DAYS DID IT LAST?", _durationController, "e.g. 5", isNumeric: true),
+          const SizedBox(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("AM / PM Toggle", style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppTheme.textDark)),
+              Row(
+                children: [
+                  _timeToggle('AM', _isAM, () => setState(() => _isAM = true)),
+                  const SizedBox(width: 12),
+                  _timeToggle('PM', !_isAM, () => setState(() => _isAM = false)),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _timeToggle(String label, bool isSelected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: isSelected 
+          ? AppTheme.neuInnerDecoration(radius: 12)
+          : AppTheme.neuDecoration(radius: 12, color: AppTheme.frameColor),
+        child: Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.w800, color: isSelected ? AppTheme.accentPink : AppTheme.textSecondary)),
       ),
     );
   }
 
   // ── Page 4: Privacy ─────────────────────────────────────────────────────
-  Widget _privacyPage() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: AppTheme.neuDecoration(
-                radius: 50, color: AppTheme.frameColor),
-            child: Icon(
-              widget.isEmailUser
-                  ? Icons.cloud_done_rounded
-                  : Icons.shield_rounded,
-              color: AppTheme.accentPink,
-              size: 64,
-            ),
-          ).animate().scale(curve: Curves.easeOutBack, duration: 700.ms),
-          const SizedBox(height: 32),
-          Text(
-            widget.isEmailUser
-                ? "Data Backed Up"
-                : "Privacy Protected",
-            style: GoogleFonts.poppins(
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.textDark),
-            textAlign: TextAlign.center,
-          ).animate().fadeIn(delay: 200.ms),
-          const SizedBox(height: 18),
-          Container(
-            padding: const EdgeInsets.all(22),
-            decoration: AppTheme.neuInnerDecoration(radius: 22),
-            child: Text(
-              widget.isEmailUser
-                  ? "Your cycle data is securely linked to your Google account. Log in again on any device to restore all your history."
-                  : "All data stays on this device only. Uninstalling or switching phones will erase your history.",
-              style: GoogleFonts.inter(
-                  fontSize: 15,
-                  color: AppTheme.textDark.withOpacity(0.6),
-                  height: 1.6),
-              textAlign: TextAlign.center,
-            ),
-          ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.1),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: AppTheme.neuInnerDecoration(radius: 14),
-            child: Row(
-              children: [
-                const Icon(Icons.info_outline_rounded,
-                    color: AppTheme.textDark, size: 16),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    "Predictions are for information only and are not medical advice.",
-                    style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: AppTheme.textDark.withOpacity(0.6),
-                        height: 1.4),
-                  ),
-                ),
-              ],
-            ),
-          ).animate().fadeIn(delay: 550.ms),
-        ],
-      ),
-    );
-  }
 }
 
 

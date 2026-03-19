@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../utils/app_theme.dart';
+import '../widgets/delight_widgets.dart';
 
 class PhaseDetailsScreen extends StatelessWidget {
   final String phaseName;
@@ -54,7 +55,10 @@ class PhaseDetailsScreen extends StatelessWidget {
                           color: color.withOpacity(0.15),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.auto_awesome_rounded, color: color, size: 48),
+                        child: const SparkleEffect(
+                          trigger: true,
+                          child: Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 48),
+                        ),
                       ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
                       const SizedBox(height: 24),
                       Text(

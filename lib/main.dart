@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'services/storage_service.dart';
 import 'services/prediction_service.dart';
 import 'screens/main_navigation_screen.dart';
-import 'screens/login_screen.dart';
 import 'services/notification_service.dart';
 import 'utils/app_theme.dart';
+import 'screens/onboarding_screen.dart';
+import 'screens/welcome_screen.dart';
 
 void main() async {
   try {
@@ -43,20 +43,12 @@ class HerFlowmateApp extends StatelessWidget {
         return MaterialApp(
           title: 'HerFlowmate',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: AppTheme.accentPink,
-              primary: AppTheme.accentPink,
-              secondary: AppTheme.accentPink,
-              surface: AppTheme.frameColor,
-            ),
-            useMaterial3: true,
-            textTheme: GoogleFonts.outfitTextTheme(),
-            scaffoldBackgroundColor: AppTheme.frameColor,
-          ),
-          home: storage.hasCompletedOnboarding || storage.hasCompletedLogin
-              ? const MainNavigationScreen()
-              : const LoginScreen(),
+          theme: AppTheme.lightTheme,
+          home: storage.hasCompletedLogin
+              ? (storage.hasCompletedOnboarding
+                  ? const MainNavigationScreen()
+                  : const OnboardingScreen())
+              : const WelcomeScreen(),
         );
       },
     );

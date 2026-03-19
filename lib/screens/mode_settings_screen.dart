@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
+import 'login_screen.dart';
 
 /// Allows the user to change their tracking mode at any time.
 class ModeSettingsScreen extends StatefulWidget {
@@ -127,6 +128,23 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                     ),
                   ),
                 ).animate().fadeIn(delay: 650.ms),
+                
+                const SizedBox(height: 16),
+                
+                TextButton(
+                  onPressed: () async {
+                    await context.read<StorageService>().logout();
+                    if (mounted) {
+                      Navigator.pushAndRemoveUntil(
+                      context, 
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                    }
+                  },
+                  child: Text('Logout from Account', 
+                    style: GoogleFonts.inter(color: AppTheme.textSecondary, fontWeight: FontWeight.w600, fontSize: 14)),
+                ).animate().fadeIn(delay: 800.ms),
               ],
             ),
           ),
@@ -195,7 +213,7 @@ class _ModeCard extends StatelessWidget {
             if (isSelected) 
               Icon(Icons.check_circle_rounded, color: iconColor, size: 24)
             else
-              const Icon(Icons.circle_outlined, color: Colors.black12, size: 24),
+              const Icon(Icons.circle_outlined, color: AppTheme.textSecondary, size: 24),
           ],
         ),
       ),
