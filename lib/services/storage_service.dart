@@ -2,22 +2,46 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/period_log.dart';
+import 'notification_service.dart';
 
 class StorageService extends ChangeNotifier {
   static const String boxName = 'period_logs';
   late SharedPreferences _prefs;
 
   Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance();
-    await Hive.initFlutter();
-    Hive.registerAdapter(PeriodLogAdapter());
-    await Hive.openBox<PeriodLog>(boxName);
+    try {
+      debugPrint('StorageService: Fetching SharedPreferences...');
+      _prefs = await SharedPreferences.getInstance();
+      debugPrint('StorageService: Initializing Hive...');
+      await Hive.initFlutter();
+      
+      if (!Hive.isAdapterRegistered(0)) {
+        debugPrint('StorageService: Registering PeriodLogAdapter...');
+        Hive.registerAdapter(PeriodLogAdapter());
+      }
+      
+      debugPrint('StorageService: Opening box "$boxName"...');
+      await Hive.openBox<PeriodLog>(boxName);
+      debugPrint('StorageService: Initialization successful.');
+    } catch (e) {
+      debugPrint('ERROR IN StorageService.init: $e');
+      rethrow;
+    }
   }
 
   bool get hasCompletedLogin => _prefs.getBool('hasCompletedLogin') ?? false;
+  bool get hasCompletedOnboarding => _prefs.getBool('hasCompletedOnboarding') ?? false;
   bool get isLoggedIn => _prefs.getBool('isLoggedIn') ?? false;
+  bool get isEmailUser => _prefs.getBool('isEmailUser') ?? false;
   String get userName => _prefs.getString('userName') ?? 'Guest';
+  String get userGoal => _prefs.getString('userGoal') ?? 'track_cycle';
+  int? get userAge => _prefs.containsKey('userAge') ? _prefs.getInt('userAge') : null;
   bool get isMinimalMode => _prefs.getBool('isMinimalMode') ?? false;
+  // Pregnancy data
+  DateTime? get dueDate {
+    final ms = _prefs.getInt('dueDate');
+    return ms != null ? DateTime.fromMillisecondsSinceEpoch(ms) : null;
+  }
 
   Future<void> toggleMinimalMode() async {
     await _prefs.setBool('isMinimalMode', !isMinimalMode);
@@ -27,17 +51,37 @@ class StorageService extends ChangeNotifier {
   Future<void> completeLogin(bool loggedIn, [String name = '']) async {
     await _prefs.setBool('hasCompletedLogin', true);
     await _prefs.setBool('isLoggedIn', loggedIn);
+    await _prefs.setBool('isEmailUser', loggedIn);
     if (loggedIn && name.isNotEmpty) {
       await _prefs.setString('userName', name);
     }
     notifyListeners();
   }
 
+  Future<void> completeOnboarding(String goal, String name, {int? age}) async {
+    await _prefs.setString('userGoal', goal);
+    await _prefs.setBool('hasCompletedOnboarding', true);
+    await _prefs.setBool('hasCompletedLogin', true); // Legacy fallback
+    if (name.isNotEmpty) await _prefs.setString('userName', name);
+    if (age != null) await _prefs.setInt('userAge', age);
+    notifyListeners();
+  }
+
+  Future<void> updateUserGoal(String goal) async {
+    await _prefs.setString('userGoal', goal);
+    notifyListeners();
+  }
+
+  Future<void> saveDueDate(DateTime date) async {
+    await _prefs.setInt('dueDate', date.millisecondsSinceEpoch);
+    notifyListeners();
+  }
+
   Future<void> logout() async {
     await _prefs.setBool('hasCompletedLogin', false);
+    await _prefs.setBool('hasCompletedOnboarding', false);
     await _prefs.setBool('isLoggedIn', false);
     await _prefs.remove('userName');
-    await clearLogs(); // optionally clear data on logout
     notifyListeners();
   }
 
@@ -46,16 +90,45 @@ class StorageService extends ChangeNotifier {
   Future<void> saveLog(PeriodLog log) async {
     await _box.add(log);
     notifyListeners();
+    _updateReminders();
+  }
+
+  Future<void> _updateReminders() async {
+    final logs = getLogs();
+    if (logs.isEmpty) {
+      await NotificationService().cancelAll();
+      return;
+    }
+
+    // Use simple logic to calculate next prediction for notification
+    int averageCycleLength = 28;
+    if (logs.length >= 2) {
+      int totalDays = 0;
+      int count = 0;
+      for (int i = 0; i < logs.length - 1; i++) {
+        final diff = logs[i].startDate.difference(logs[i + 1].startDate).inDays;
+        if (diff > 15 && diff < 90) {
+          totalDays += diff;
+          count++;
+        }
+      }
+      if (count > 0) averageCycleLength = (totalDays / count).round();
+    }
+
+    final nextDate = logs.first.startDate.add(Duration(days: averageCycleLength));
+    await NotificationService().schedulePeriodReminder(nextDate);
   }
 
   Future<void> deleteLog(int index) async {
     await _box.deleteAt(index);
     notifyListeners();
+    _updateReminders();
   }
 
   Future<void> clearLogs() async {
     await _box.clear();
     notifyListeners();
+    await NotificationService().cancelAll();
   }
 
   List<PeriodLog> getLogs() {

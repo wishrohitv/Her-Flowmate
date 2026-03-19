@@ -44,11 +44,11 @@ void main() {
     );
 
     // Verify initial render state texts
-    expect(find.text('Her-Flowmate'), findsWidgets);
-    expect(find.text('Your living cycle companion.'), findsOneWidget);
+    expect(find.text('HerFlowmate'), findsWidgets);
+    expect(find.text('Your privacy matters 💕'), findsOneWidget);
     
     // Check for the login and guest buttons
-    expect(find.text('Login to Sync'), findsOneWidget);
+    expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('Continue as Guest'), findsOneWidget);
 
     // Fast-forward time to clear flutter_animate delay timers

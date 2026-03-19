@@ -1,13 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_theme.dart';
 
 class CyclePhaseWheel extends StatelessWidget {
   final int currentCycleDay;
-  final int cycleLength; // e.g. 28 or your predicted average
-  final String currentPhase; // "Menstruation", "Follicular", etc.
+  final int cycleLength;
+  final String currentPhase;
   final int daysUntilNextPeriod;
 
   const CyclePhaseWheel({
@@ -21,128 +20,93 @@ class CyclePhaseWheel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double progress = cycleLength > 0 ? currentCycleDay / cycleLength.clamp(1, 999) : 0.0;
-
-    // Phase colour — delegated to AppTheme to keep DRY
     final accentColor = AppTheme.phaseColor(currentPhase);
 
-    return Animate(
-      onPlay: (controller) => controller.repeat(reverse: true),
-      effects: [
-        // Breathing neon glow
-        const ShimmerEffect(
-          duration: Duration(seconds: 4),
-          color: Colors.white24,
-          blendMode: BlendMode.softLight,
-        ),
-        const ScaleEffect(
-          begin: Offset(0.98, 0.98),
-          end: Offset(1.02, 1.02),
-          curve: Curves.easeInOut,
-          duration: Duration(seconds: 5),
-        ),
-      ],
-      child: SizedBox(
-        width: 280,
-        height: 280,
+    return SizedBox(
+      width: 280,
+      height: 280,
+      child: Container(
+        decoration: AppTheme.neuDecoration(radius: 140),
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Background gradient ring
+            // Outer track (debossed groove)
             Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: SweepGradient(
-                  colors: [
-                    Colors.transparent,
-                    accentColor.withOpacity(0.6),
-                    accentColor.withOpacity(0.9),
-                    accentColor,
-                    accentColor.withOpacity(0.6),
-                    Colors.transparent,
-                  ],
-                  stops: const [0.0, 0.15, 0.35, 0.65, 0.85, 1.0],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: accentColor.withOpacity(0.4),
-                    blurRadius: 24,
-                    spreadRadius: 8,
-                  ),
-                ],
-              ),
+              width: 250,
+              height: 250,
+              decoration: AppTheme.neuInnerDecoration(radius: 125),
             ),
 
-            // Inner dark circle
+            // Inner surface (extruded again to create the ring effect)
             Container(
-              width: 220,
-              height: 220,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFF0F001A),
-              ),
+              width: 210,
+              height: 210,
+              decoration: AppTheme.neuDecoration(radius: 105),
             ),
 
-            // Progress arc (semi-circle top half)
+            // Progress arc inside the debossed groove
             CustomPaint(
-              size: const Size(260, 260),
+              size: const Size(250, 250),
               painter: _ArcPainter(
                 progress: progress,
                 color: accentColor,
               ),
             ),
 
-            // Sweeping pointer (needle)
+            // Sweeping pointer (needle dot)
             Transform.rotate(
-              angle: (progress * pi) - (pi / 2), // starts at top, sweeps clockwise
+              angle: (progress * pi) - (pi / 2),
               child: Align(
                 alignment: Alignment.topCenter,
-                child: Container(
-                  width: 4,
-                  height: 110,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [accentColor, Colors.white.withOpacity(0.9)],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 15),
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: accentColor,
+                      boxShadow: [
+                        BoxShadow(color: accentColor.withOpacity(0.5), blurRadius: 8),
+                      ],
                     ),
-                    borderRadius: BorderRadius.circular(4),
-                    boxShadow: [
-                      BoxShadow(color: accentColor, blurRadius: 12, spreadRadius: 2),
-                    ],
                   ),
                 ),
               ),
             ),
 
-            // Center content
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   currentPhase,
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.poppins(
                     fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(color: accentColor, blurRadius: 12),
-                    ],
+                    fontWeight: FontWeight.w700,
+                    color: accentColor,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  "Cycle Day $currentCycleDay/$cycleLength",
-                  style: GoogleFonts.outfit(
-                    fontSize: 16,
-                    color: Colors.white70,
+                GestureDetector(
+                  onTap: () =>
+                      _showSnack(context, 'Your average cycle is $cycleLength days.'),
+                  child: Text(
+                    "Day $currentCycleDay / $cycleLength",
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      color: AppTheme.textDark,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  daysUntilNextPeriod >= 0 ? "Next in $daysUntilNextPeriod days" : "Late by ${daysUntilNextPeriod.abs()} days",
-                  style: GoogleFonts.outfit(
+                  daysUntilNextPeriod >= 0
+                      ? "Next in $daysUntilNextPeriod d"
+                      : "Late by ${daysUntilNextPeriod.abs()} d",
+                  style: GoogleFonts.inter(
                     fontSize: 14,
-                    color: accentColor,
+                    color: AppTheme.textDark.withOpacity(0.6),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -152,6 +116,14 @@ class CyclePhaseWheel extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showSnack(BuildContext ctx, String msg) {
+    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+      content: Text(msg),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: AppTheme.accentPink,
+    ));
   }
 }
 
@@ -164,23 +136,20 @@ class _ArcPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 10;
+    final radius = size.width / 2 - 17.5; // Centers arc in the 250-210 gap
 
     final rect = Rect.fromCircle(center: center, radius: radius);
 
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 18
+      ..strokeWidth = 10
       ..strokeCap = StrokeCap.round
-      ..shader = SweepGradient(
-        colors: [color.withOpacity(0.3), color, color.withOpacity(0.8), color],
-        stops: const [0.0, 0.4, 0.7, 1.0],
-      ).createShader(rect);
+      ..color = color;
 
     canvas.drawArc(
       rect,
       -pi / 2,           // start at top
-      pi * progress,     // sweep clockwise
+      2 * pi * progress, // sweep full circle
       false,
       paint,
     );

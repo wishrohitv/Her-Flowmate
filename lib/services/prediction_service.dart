@@ -37,13 +37,19 @@ class PredictionService {
       
       final cycleDays = currentStart.difference(previousStart).inDays;
       if (cycleDays > 15 && cycleDays < 90) { // Valid duration check
-        totalDays += cycleDays;
+        totalDays = totalDays + cycleDays;
         cycleCount++;
       }
     }
 
     if (cycleCount == 0) return 28;
     return (totalDays / cycleCount).round();
+  }
+
+  DateTime? get currentPeriodStart {
+    final logs = storageService.getLogs();
+    if (logs.isEmpty) return null;
+    return logs.first.startDate;
   }
 
   DateTime? get nextPeriodDate {

@@ -5,23 +5,32 @@ import 'services/storage_service.dart';
 import 'services/prediction_service.dart';
 import 'screens/main_navigation_screen.dart';
 import 'screens/login_screen.dart';
+import 'services/notification_service.dart';
+import 'utils/app_theme.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final storageService = StorageService();
-  await storageService.init();
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    final storageService = StorageService();
+    await storageService.init();
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: storageService),
-        ProxyProvider<StorageService, PredictionService>(
-          update: (_, storage, __) => PredictionService(storage),
-        ),
-      ],
-      child: const HerFlowmateApp(),
-    ),
-  );
+    final notificationService = NotificationService();
+    await notificationService.init();
+
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: storageService),
+          ProxyProvider<StorageService, PredictionService>(
+            update: (_, storage, __) => PredictionService(storage),
+          ),
+        ],
+        child: const HerFlowmateApp(),
+      ),
+    );
+  } catch (e) {
+    debugPrint('FATAL ERROR DURING STARTUP: $e');
+  }
 }
 
 class HerFlowmateApp extends StatelessWidget {
@@ -32,17 +41,22 @@ class HerFlowmateApp extends StatelessWidget {
     return Consumer<StorageService>(
       builder: (context, storage, child) {
         return MaterialApp(
-          title: 'Her-Flowmate',
+          title: 'HerFlowmate',
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.pink,
-              brightness: Brightness.light,
+              seedColor: AppTheme.accentPink,
+              primary: AppTheme.accentPink,
+              secondary: AppTheme.accentPink,
+              surface: AppTheme.frameColor,
             ),
             useMaterial3: true,
             textTheme: GoogleFonts.outfitTextTheme(),
-            scaffoldBackgroundColor: const Color(0xFFFAFAFA),
+            scaffoldBackgroundColor: AppTheme.frameColor,
           ),
-          home: storage.hasCompletedLogin ? const MainNavigationScreen() : const LoginScreen(),
+          home: storage.hasCompletedOnboarding || storage.hasCompletedLogin
+              ? const MainNavigationScreen()
+              : const LoginScreen(),
         );
       },
     );

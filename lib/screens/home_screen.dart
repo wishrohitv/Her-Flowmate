@@ -6,11 +6,14 @@ import '../services/prediction_service.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 
+import 'log_period_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('BUILDING HomeScreen...');
     final pred    = context.watch<PredictionService>();
     final storage = context.watch<StorageService>();
 
@@ -18,204 +21,325 @@ class HomeScreen extends StatelessWidget {
     final cycleDay    = pred.currentCycleDay.clamp(1, 999);
     final daysToNext  = pred.daysUntilNextPeriod;
 
-    final bg = storage.isMinimalMode
-        ? AppTheme.backgroundGradientMinimal
-        : AppTheme.backgroundGradient;
-
-    return Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(gradient: bg),
-        child: Stack(
-          children: [
-            // Ambient Orbs in the background (similar to Login, but subtler)
-            Positioned(
-              top: -50,
-              right: -50,
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [AppTheme.neonPurple.withValues(alpha: 0.15), Colors.transparent],
-                  ),
-                ),
-              ).animate(onPlay: (c) => c.repeat(reverse: true)).scaleXY(end: 1.2, duration: 8.seconds),
-            ),
-            Positioned(
-              bottom: 100,
-              left: -50,
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [AppTheme.neonPink.withValues(alpha: 0.1), Colors.transparent],
-                  ),
-                ),
-              ).animate(onPlay: (c) => c.repeat(reverse: true)).scaleXY(end: 1.2, duration: 10.seconds),
-            ),
-
-            // Heavy background blur layer to diffuse the orbs completely
-            Positioned.fill(
-              child: AppTheme.backgroundBlur(child: const SizedBox.expand()),
-            ),
-
-            // Crisp Foregound User Interface
-            SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-
-
-                // ── Character Guidance / Greeting ────────────────────
-                _CharacterGuidanceWidget(
-                  storage: storage,
-                  pred: pred,
-                  phaseName: phaseName,
-                  cycleDay: cycleDay,
-                  daysToNext: daysToNext,
-                ),
-
-
-
-                const SizedBox(height: 120), // clear FAB + nav bar
-              ],
-            ),
-          ),
+    if (storage.userGoal == 'pregnant') {
+      return Scaffold(
+        backgroundColor: AppTheme.frameColor,
+        body: Center(
+          child: Text('Pregnancy Tracking coming soon! 🤰', 
+            style: GoogleFonts.poppins(color: AppTheme.textDark, fontSize: 18, fontWeight: FontWeight.w600)),
         ),
-      ],
-    ),
-    );
-  }
-}
+      );
+    }
 
-
-class _CharacterGuidanceWidget extends StatelessWidget {
-  final StorageService storage;
-  final PredictionService pred;
-  final String phaseName;
-  final int cycleDay;
-  final int daysToNext;
-
-  const _CharacterGuidanceWidget({
-    required this.storage,
-    required this.pred,
-    required this.phaseName,
-    required this.cycleDay,
-    required this.daysToNext,
-  });
-
-  @override
-  Widget build(BuildContext context) {
     final hasLogs = storage.getLogs().isNotEmpty;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: AppTheme.glassDecoration(
-        borderRadius: 24,
-        glowColor: AppTheme.neonPink,
-        glowOpacity: 0.1,
+    return SafeArea(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 20),
+            
+            // ── Greeting Section ────────────────────────────────────
+            _GreetingSection(storage: storage),
+            const SizedBox(height: 24),
+
+            if (!hasLogs) ...[
+              _buildNewUserContent(context, storage),
+            ] else ...[
+              // ── Primary Cycle Status (Large Card) ──────────────────
+              _PhaseCard(
+                phaseName: phaseName,
+                subtitle: AppTheme.phaseTip(phaseName).headline,
+                color: AppTheme.phaseColor(phaseName),
+              ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1),
+
+              const SizedBox(height: 16),
+              
+              // ── Cycle Summary (Side-by-Side Cards) ────────────────
+              Row(
+                children: [
+                  Expanded(
+                    child: _SummaryCard(
+                      label: 'Cycle Day',
+                      value: 'Day $cycleDay',
+                      icon: Icons.calendar_today_rounded,
+                      onTap: () => _navigateToDetail(context, 'Cycle Timeline'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _SummaryCard(
+                      label: 'Next Period',
+                      value: daysToNext >= 0 ? 'In $daysToNext days' : '${daysToNext.abs()}d late',
+                      icon: Icons.water_drop_rounded,
+                      onTap: () => _navigateToDetail(context, 'Prediction Details'),
+                    ),
+                  ),
+                ],
+              ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
+
+              // ── Fertility Indicator (Optional) ────────────────────
+              if (phaseName == 'Ovulation' || phaseName == 'Follicular') ...[
+                const SizedBox(height: 16),
+                _PhaseCard(
+                  phaseName: 'Fertility Window',
+                  subtitle: 'Peak Window Open',
+                  color: AppTheme.phaseColors['Fertile']!,
+                  icon: Icons.favorite_rounded,
+                  isSecondary: true,
+                ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
+              ],
+            ],
+
+            const SizedBox(height: 120), // clear FAB + nav bar
+          ],
+        ),
       ),
-      child: Row(
+    );
+  }
+
+  void _navigateToDetail(BuildContext context, String title) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => _DetailScreenStub(title: title),
+      ),
+    );
+  }
+
+  Widget _buildNewUserContent(BuildContext context, StorageService storage) {
+    String title = 'Welcome, ${storage.userName}! 🌸';
+    String body = 'Add your last period date to start tracking your cycle.';
+    IconData icon = Icons.add_rounded;
+    String btnLabel = 'Add Period Date';
+
+    if (storage.userGoal == 'conceive') {
+      title = 'Hi ${storage.userName}! 💕';
+      body = 'Enter your last period date to estimate your fertile window and ovulation day.';
+      icon = Icons.water_drop_rounded;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration:
+          AppTheme.neuDecoration(radius: 28, color: AppTheme.frameColor),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // The Character
-          Column(
-            children: [
-              const Text(
-                '👧',
-                style: TextStyle(fontSize: 56),
-              ).animate(onPlay: (c) => c.repeat(reverse: true)).moveY(begin: -4, end: 4, duration: 2.seconds),
-              if (!hasLogs)
-               const Text('👋', style: TextStyle(fontSize: 24))
-                 .animate(onPlay: (c) => c.repeat(reverse: true))
-                 .rotate(begin: -0.1, end: 0.2, duration: 1.seconds),
-            ],
-          ),
-          const SizedBox(width: 20),
-          
-          // The Message / Bullet List
-          Expanded(
-            child: hasLogs ? _buildReturningUserContent() : _buildNewUserContent(),
-          ),
+          Text(title,
+              style: GoogleFonts.poppins(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textDark)),
+          const SizedBox(height: 10),
+          Text(body,
+              style: GoogleFonts.inter(
+                  fontSize: 15, color: AppTheme.textDark.withOpacity(0.6), height: 1.5)),
+          const SizedBox(height: 24),
+          _primaryButton(context,
+              icon: icon,
+              label: btnLabel,
+              onTap: () => _showLogSheet(context)),
         ],
       ),
     ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1);
   }
 
-  Widget _buildNewUserContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Welcome to Flowmate, ${storage.userName}!',
-          style: GoogleFonts.outfit(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.neonPink,
-          ),
+  Widget _primaryButton(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap}) {
+    return Container(
+      decoration:
+          AppTheme.neuDecoration(radius: 20, color: AppTheme.frameColor),
+      child: ElevatedButton.icon(
+        icon: Icon(icon, color: AppTheme.accentPink),
+        label: Text(label,
+            style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.accentPink)),
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          minimumSize: const Size(double.infinity, 56),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Click the + button below to log your last period. We\'ll track your cycle phases & predict your next dates!',
-          style: GoogleFonts.outfit(
-            fontSize: 15,
-            color: Colors.white70,
-            height: 1.4,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Widget _buildReturningUserContent() {
+  void _showLogSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context, isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => LogPeriodScreen(),
+    );
+  }
+}
+
+class _GreetingSection extends StatelessWidget {
+  final StorageService storage;
+  const _GreetingSection({required this.storage});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Hi ${storage.userName}! Here\'s your cycle status:',
-          style: GoogleFonts.outfit(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.neonCyan,
-          ),
-        ),
-        const SizedBox(height: 12),
-        _bulletPoint('Current Phase', phaseName),
-        _bulletPoint('Cycle Day', 'Day $cycleDay'),
-        _bulletPoint('Next Period', daysToNext >= 0 ? 'In $daysToNext days' : '${daysToNext.abs()} days late'),
+        Text('Hi, ${storage.userName} 👋',
+            style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textDark)),
+        const SizedBox(height: 4),
+        Text('Hope you\'re feeling great today.',
+            style: GoogleFonts.inter(
+                fontSize: 15, color: AppTheme.textDark.withOpacity(0.6))),
       ],
     );
   }
+}
 
-  Widget _bulletPoint(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('• ', style: TextStyle(color: AppTheme.neonPink, fontSize: 16, fontWeight: FontWeight.bold)),
-          Expanded(
-            child: RichText(
-              text: TextSpan(
-                style: GoogleFonts.outfit(fontSize: 15, color: Colors.white70),
+class _PhaseCard extends StatelessWidget {
+  final String phaseName, subtitle;
+  final Color color;
+  final IconData icon;
+  final bool isSecondary;
+
+  const _PhaseCard({
+    required this.phaseName, required this.subtitle, required this.color,
+    this.icon = Icons.auto_awesome_rounded,
+    this.isSecondary = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => _DetailScreenStub(title: phaseName))),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: AppTheme.neuDecoration(radius: 32, color: AppTheme.frameColor),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  shape: BoxShape.circle),
+              child: Icon(icon, color: color, size: 36),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextSpan(text: '$label: ', style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
-                  TextSpan(text: value, style: const TextStyle(color: AppTheme.neonPurple, fontWeight: FontWeight.bold)),
+                  Text(isSecondary ? 'Status' : 'Current Phase',
+                      style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textDark.withOpacity(0.5))),
+                  const SizedBox(height: 2),
+                  Text(phaseName,
+                      style: GoogleFonts.poppins(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.textDark)),
+                  Text(subtitle,
+                      style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: color,
+                          fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
-          ),
-        ],
+            const Icon(Icons.chevron_right_rounded, color: AppTheme.shadowDark, size: 28),
+          ],
+        ),
       ),
     );
   }
 }
 
+class _SummaryCard extends StatelessWidget {
+  final String label, value;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _SummaryCard({
+    required this.label, required this.value, required this.icon, required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: AppTheme.neuDecoration(radius: 28, color: AppTheme.frameColor),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: AppTheme.accentPink, size: 22),
+            const SizedBox(height: 16),
+            Text(label,
+                style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textDark.withOpacity(0.5))),
+            const SizedBox(height: 4),
+            Text(value,
+                style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textDark)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailScreenStub extends StatelessWidget {
+  final String title;
+  const _DetailScreenStub({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: AppTheme.textDark),
+        title: Text(title, style: GoogleFonts.poppins(color: AppTheme.textDark, fontWeight: FontWeight.bold)),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.construction_rounded, size: 64, color: AppTheme.accentPink),
+                const SizedBox(height: 24),
+                Text('$title Details\nComing Soon!', 
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+                const SizedBox(height: 16),
+                Text('We are fine-tuning this section to bring you deeper insights into your health.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textDark.withOpacity(0.6))),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
