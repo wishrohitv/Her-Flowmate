@@ -9,7 +9,7 @@ import '../utils/app_theme.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/info_widgets.dart';
 import '../widgets/cycle_widgets.dart';
-import '../widgets/educational_widgets.dart';
+
 
 import 'log_period_screen.dart';
 import 'education_hub_screen.dart';
@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 16),
-                  _buildTopModeToggle(storage),
+                  _buildCurrentModeBadge(storage),
                   const SizedBox(height: 24),
                   _GreetingSection(storage: storage),
                   const SizedBox(height: 32),
@@ -134,51 +134,40 @@ class _HomeScreenState extends State<HomeScreen> {
     ).animate().fadeIn(duration: 2.seconds);
   }
 
-  Widget _buildTopModeToggle(StorageService storage) {
+  Widget _buildCurrentModeBadge(StorageService storage) {
     final mode = storage.userGoal;
+    String modeLabel = 'Period Tracking';
+    if (mode == 'conceive') modeLabel = 'Conceive';
+    if (mode == 'pregnant') modeLabel = 'Pregnancy';
+
     return GlassContainer(
       radius: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _modeButton('Period Tracking', 'tracking', mode, storage),
-          _modeButton('Conceive', 'conceive', mode, storage),
-          _modeButton('Pregnancy', 'pregnant', mode, storage),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppTheme.accentPink.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.favorite_rounded, color: AppTheme.accentPink, size: 16),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            modeLabel,
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textDark,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _modeButton(String title, String value, String currentMode, StorageService storage) {
-    final isSelected = currentMode == value;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          storage.updateUserGoal(value);
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? AppTheme.accentPink : Colors.transparent,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: isSelected ? [BoxShadow(color: AppTheme.accentPink.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4))] : [],
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-              color: isSelected ? Colors.white : AppTheme.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildCycleDashboard(BuildContext context, StorageService storage, PredictionService pred) {
     final cycleDay = pred.currentCycleDay;

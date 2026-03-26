@@ -13,11 +13,15 @@ import '../widgets/brand_widgets.dart';
 class OnboardingScreen extends StatefulWidget {
   final bool isEmailUser;
   final String prefillName; // auto-filled from Google profile
+  final String? forceGoal;
+  final int initialPage;
 
   const OnboardingScreen({
     super.key,
     this.isEmailUser = false,
     this.prefillName = '',
+    this.forceGoal,
+    this.initialPage = 0,
   });
 
   @override
@@ -25,14 +29,14 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _pageController = PageController();
+  late final PageController _pageController;
   late final TextEditingController _nameController;
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _weeksController = TextEditingController();
   final TextEditingController _durationController = TextEditingController(text: '5');
   DateTime? _conceptionDate;
 
-  int _currentPage = 0;
+  late int _currentPage;
   static const int _totalPages = 3;
   late String _selectedGoal;
   DateTime? _lastPeriodStart;
@@ -41,8 +45,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
+    _currentPage = widget.initialPage;
+    _pageController = PageController(initialPage: widget.initialPage);
     _nameController = TextEditingController(text: widget.prefillName);
-    _selectedGoal = ''; 
+    _selectedGoal = widget.forceGoal ?? ''; 
   }
 
   @override
@@ -87,11 +93,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final age = int.tryParse(_ageController.text.trim());
     final storage = context.read<StorageService>();
     
-    await storage.completeOnboarding(
-      _selectedGoal,
-      _nameController.text.trim(),
-      age: age,
-    );
+    if (widget.initialPage == 0) {
+      await storage.completeOnboarding(
+        _selectedGoal,
+        _nameController.text.trim(),
+        age: age,
+      );
+    } else {
+      await storage.updateUserGoal(_selectedGoal);
+    }
 
     if (_selectedGoal == 'pregnant') {
       final weeks = int.tryParse(_weeksController.text.trim());
@@ -134,7 +144,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Row(
                     children: [
                         GestureDetector(
-                          onTap: _currentPage > 0 ? _back : () => Navigator.pop(context),
+                          onTap: _currentPage > widget.initialPage ? _back : () => Navigator.pop(context),
                           child: GlassContainer(
                             padding: const EdgeInsets.all(10),
                             radius: 14,

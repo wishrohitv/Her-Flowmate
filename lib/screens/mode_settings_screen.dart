@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 import 'login_screen.dart';
+import 'onboarding_screen.dart';
 import '../widgets/glass_container.dart';
 
 /// Allows the user to change their tracking mode at any time.
@@ -106,15 +107,23 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                   radius: 20,
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      await context.read<StorageService>().updateUserGoal(_selectedGoal);
-                      if (mounted) {
+                      final storage = context.read<StorageService>();
+                      if (_selectedGoal != storage.userGoal) {
+                        if (_selectedGoal == 'pregnant' && storage.dueDate == null && storage.pregnancyWeeks == null) {
+                          if (mounted) Navigator.push(context, MaterialPageRoute(builder: (_) => OnboardingScreen(forceGoal: 'pregnant', initialPage: 2)));
+                        } else if ((_selectedGoal == 'track_cycle' || _selectedGoal == 'conceive') && storage.getLogs().isEmpty) {
+                          if (mounted) Navigator.push(context, MaterialPageRoute(builder: (_) => OnboardingScreen(forceGoal: _selectedGoal, initialPage: 2)));
+                        } else {
+                          await storage.updateUserGoal(_selectedGoal);
+                          if (mounted) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Tracking mode updated! ✨'), behavior: SnackBarBehavior.floating),
+                            );
+                          }
+                        }
+                      } else {
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Tracking mode updated! ✨'),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
                       }
                     },
                     icon: const Icon(Icons.check_circle_rounded, color: AppTheme.accentPink),
