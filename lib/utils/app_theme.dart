@@ -25,8 +25,8 @@ abstract final class AppTheme {
   static const Color shadowDark = neuDarkShadow;
 
   // Glass Design System
-  static const double glassOpacity = 0.12;
-  static const double glassBlur = 16.0;
+  static const double glassOpacity = 0.1;
+  static const double glassBlur = 12.0;
 
   // Background Gradient (Sophisticated Trio)
   static const LinearGradient bgGradient = LinearGradient(

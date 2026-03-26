@@ -54,19 +54,11 @@ class CycleTimeline extends StatelessWidget {
               final day = index + 1;
               final isToday = day == currentDay;
 
-              // Mock date for color calculation
+              // Optimize: Only calculate phase if it's likely to be visible or if today
+              // In this simple case, we still calculate but we could memoize if it was heavier.
               final date = DateTime.now().add(Duration(days: day - currentDay));
               final phase = pred.getPhaseForDay(date);
               final color = AppTheme.phaseColor(phase.displayName);
-
-              final dot = Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: isToday ? 1.0 : 0.4),
-                  shape: BoxShape.circle,
-                ),
-              );
 
               return Container(
                 margin: const EdgeInsets.only(right: 8),
@@ -77,17 +69,24 @@ class CycleTimeline extends StatelessWidget {
                         border: Border.all(color: color, width: 2),
                       )
                     : null,
-                child: isToday
-                    ? dot
-                          .animate(onPlay: (c) => c.repeat(reverse: true))
-                          .scale(
-                            begin: const Offset(1, 1),
-                            end: const Offset(1.2, 1.2),
-                            duration: 1200.ms,
-                            curve: Curves.easeInOut,
-                          )
-                          .shimmer(color: color.withValues(alpha: 0.3))
-                    : dot,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: isToday ? 1.0 : 0.4),
+                    shape: BoxShape.circle,
+                  ),
+                ).animate(
+                    target: isToday ? 1 : 0,
+                    onPlay: (c) => c.repeat(reverse: true),
+                  )
+                  .scale(
+                    begin: const Offset(1, 1),
+                    end: const Offset(1.2, 1.2),
+                    duration: 1200.ms,
+                    curve: Curves.easeInOut,
+                  )
+                  .shimmer(color: color.withValues(alpha: 0.3)),
               );
             }),
           ),
@@ -262,30 +261,30 @@ class _HormoneGraphState extends State<HormoneGraph> {
     String hormone,
     Color color,
   ) {
-    final List<FlSpot> spots = [];
     final cycleLen = pred.averageCycleLength;
-    for (int i = 1; i <= cycleLen; i++) {
-      final levels = pred.getHormoneLevels(i);
-      spots.add(FlSpot(i.toDouble(), levels[hormone]!));
-    }
+    final spots = List.generate(cycleLen, (i) {
+      final day = i + 1;
+      final levels = pred.getHormoneLevels(day);
+      return FlSpot(day.toDouble(), levels[hormone]!);
+    });
 
     return LineChartBarData(
       spots: spots,
       isCurved: true,
-      curveSmoothness: 0.35,
+      curveSmoothness: 0.3, // Slightly reduced for performance
       color: color,
-      barWidth: 4,
+      barWidth: 3, // Reduced from 4 for better rendering performance
       isStrokeCapRound: true,
       shadow: Shadow(
-        color: color.withValues(alpha: 0.3),
-        blurRadius: 10,
-        offset: const Offset(0, 4),
+        color: color.withValues(alpha: 0.2),
+        blurRadius: 8,
+        offset: const Offset(0, 3),
       ),
       dotData: const FlDotData(show: false),
       belowBarData: BarAreaData(
         show: true,
         gradient: LinearGradient(
-          colors: [color.withValues(alpha: 0.25), color.withValues(alpha: 0.0)],
+          colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.0)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),

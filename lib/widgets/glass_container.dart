@@ -106,9 +106,11 @@ class GlassContainer extends StatelessWidget {
       margin: margin,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius),
-        child: Stack(
-          fit: StackFit.loose,
-          children: [glassBg, glassBorder, content],
+        child: RepaintBoundary(
+          child: Stack(
+            fit: StackFit.loose,
+            children: [glassBg, glassBorder, content],
+          ),
         ),
       ),
     );

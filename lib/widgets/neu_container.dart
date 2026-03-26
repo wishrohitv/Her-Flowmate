@@ -29,8 +29,8 @@ class NeuContainer extends StatefulWidget {
     this.height,
     this.onTap,
     this.style = NeuStyle.flat,
-    this.offset = 8.0,
-    this.blur = 16.0,
+    this.offset = 6.0,
+    this.blur = 12.0,
     this.borderColor,
   });
 
