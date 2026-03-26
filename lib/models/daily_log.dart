@@ -17,12 +17,20 @@ class DailyLog extends HiveObject {
   @HiveField(4)
   final String? notes;
 
+  @HiveField(5)
+  final String? flowIntensity;
+
+  @HiveField(6)
+  final List<String>? physicalActivity;
+
   DailyLog({
     required this.date,
     this.moods,
     this.symptoms,
     this.waterIntake,
     this.notes,
+    this.flowIntensity,
+    this.physicalActivity,
   });
 }
 
@@ -42,13 +50,15 @@ class DailyLogAdapter extends TypeAdapter<DailyLog> {
       symptoms: (fields[2] as List?)?.cast<String>(),
       waterIntake: fields[3] as int?,
       notes: fields[4] as String?,
+      flowIntensity: fields[5] as String?,
+      physicalActivity: (fields[6] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, DailyLog obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7) // Increased from 5
       ..writeByte(0)
       ..write(obj.date)
       ..writeByte(1)
@@ -58,7 +68,11 @@ class DailyLogAdapter extends TypeAdapter<DailyLog> {
       ..writeByte(3)
       ..write(obj.waterIntake)
       ..writeByte(4)
-      ..write(obj.notes);
+      ..write(obj.notes)
+      ..writeByte(5)
+      ..write(obj.flowIntensity)
+      ..writeByte(6)
+      ..write(obj.physicalActivity);
   }
 
   @override

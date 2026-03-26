@@ -13,6 +13,7 @@ import '../widgets/cycle_widgets.dart';
 
 import 'log_period_screen.dart';
 import 'education_hub_screen.dart';
+import 'daily_checkin_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -67,6 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildCurrentModeBadge(storage),
                   const SizedBox(height: 24),
                   _GreetingSection(storage: storage),
+                  const SizedBox(height: 24),
+                  _buildQuickLogCard(context),
                   const SizedBox(height: 32),
                 
                 if (storage.userGoal == 'pregnant')
@@ -168,6 +171,44 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildQuickLogCard(BuildContext context) {
+    return GlassContainer(
+      radius: 24,
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => const DailyCheckinScreen(),
+        );
+      },
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.accentPurple.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.add_reaction_rounded, color: AppTheme.accentPurple, size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Daily Quick Log', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textDark)),
+                const SizedBox(height: 2),
+                Text('Track mood, symptoms & flow', style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary)),
+              ],
+            ),
+          ),
+          const Icon(Icons.add_circle_outline_rounded, color: AppTheme.accentPurple),
+        ],
+      ),
+    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1);
+  }
 
   Widget _buildCycleDashboard(BuildContext context, StorageService storage, PredictionService pred) {
     final cycleDay = pred.currentCycleDay;
