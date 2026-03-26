@@ -239,65 +239,10 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 32),
         _buildCycleStatusRow(cycleDay, daysToNext),
         const SizedBox(height: 24),
-        _buildNextOvulationCard(pred),
-        const SizedBox(height: 24),
         if (phaseName == 'Ovulation' || phaseName == 'Follicular')
           _buildFertilityCard(pred),
       ],
     );
-  }
-
-  Widget _buildNextOvulationCard(PredictionService pred) {
-    if (pred.nextPeriodDate == null) return const SizedBox.shrink();
-    
-    final currentOvulationDate = pred.nextPeriodDate!.subtract(const Duration(days: 14));
-    
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final ovDate = DateTime(currentOvulationDate.year, currentOvulationDate.month, currentOvulationDate.day);
-    final daysUntil = ovDate.difference(today).inDays;
-
-    String daysText;
-    if (daysUntil == 0) {
-      daysText = '(Today)';
-    } else if (daysUntil == 1) {
-      daysText = '(Tomorrow)';
-    } else if (daysUntil < 0) {
-      daysText = '(Passed)';
-    } else {
-      daysText = '(in $daysUntil days)';
-    }
-
-    return GlassContainer(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      radius: 24,
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppTheme.phaseColors['Ovulation']!.withOpacity(0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.wb_sunny_rounded, color: AppTheme.phaseColors['Ovulation'], size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Next Ovulation', style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 4),
-                Text(
-                  '${DateFormat('MMM d').format(currentOvulationDate)} $daysText',
-                  style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textDark)
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1);
   }
 
   Widget _buildTTCDashboard(BuildContext context, StorageService storage) {
@@ -383,6 +328,22 @@ class _HomeScreenState extends State<HomeScreen> {
     final phaseName = pred.phaseDisplayName;
     final day = pred.currentCycleDay == 0 ? 1 : pred.currentCycleDay;
     final cycleLen = pred.averageCycleLength;
+    
+    String ovulationText = '';
+    if (pred.nextPeriodDate != null) {
+      final currentOvDate = pred.nextPeriodDate!.subtract(const Duration(days: 14));
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final ovDate = DateTime(currentOvDate.year, currentOvDate.month, currentOvDate.day);
+      final daysUntil = ovDate.difference(today).inDays;
+      String daysText;
+      if (daysUntil == 0) daysText = '(Today)';
+      else if (daysUntil == 1) daysText = '(Tomorrow)';
+      else if (daysUntil < 0) daysText = '(Passed)';
+      else daysText = '(in $daysUntil days)';
+
+      ovulationText = 'Ovulation: ${DateFormat('MMM d').format(currentOvDate)} $daysText';
+    }
 
     return Center(
       child: SizedBox(
@@ -434,6 +395,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: Text(phaseName + ' Phase', style: GoogleFonts.inter(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
+                  if (ovulationText.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Text(ovulationText, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textDark, fontWeight: FontWeight.w600)),
+                  ],
                   const SizedBox(height: 16),
                 ],
               ),
