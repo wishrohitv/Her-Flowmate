@@ -13,6 +13,7 @@ import 'calendar_screen.dart';
 import 'feedback_screen.dart';
 import 'history_screen.dart';
 import 'profile_screen.dart';
+import 'partner_sync_screen.dart';
 import 'mode_settings_screen.dart';
 import '../widgets/notification_widgets.dart';
 import '../widgets/glass_container.dart';
@@ -216,6 +217,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   _drawerItem(icon: Icons.lightbulb_rounded, title: 'Insights', index: 1),
                   const SizedBox(height: 12),
                   _drawerItem(icon: Icons.history_rounded, title: 'History', index: 2),
+                  const SizedBox(height: 12),
+                  _actionDrawerItem(
+                    icon: Icons.favorite_rounded,
+                    title: 'Partner Sync',
+                    onTap: () {
+                      Navigator.pop(context); // Close drawer
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const PartnerSyncScreen()));
+                    }
+                  ),
                   
                   const SizedBox(height: 24),
                   Divider(color: AppTheme.shadowDark.withOpacity(0.3)),

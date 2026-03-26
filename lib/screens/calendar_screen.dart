@@ -110,13 +110,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                       calendarBuilders: CalendarBuilders(
                         defaultBuilder: (context, day, focusedDay) {
-                          return _buildCalendarCell(day, pred, isSelected: false);
+                          return _buildCalendarCell(day, pred, storage, isSelected: false);
                         },
                         selectedBuilder: (context, day, focusedDay) {
-                          return _buildCalendarCell(day, pred, isSelected: true);
+                          return _buildCalendarCell(day, pred, storage, isSelected: true);
                         },
                         todayBuilder: (context, day, focusedDay) {
-                          return _buildCalendarCell(day, pred, isSelected: false, isToday: true);
+                          return _buildCalendarCell(day, pred, storage, isSelected: false, isToday: true);
                         },
                       ),
                     ),
@@ -253,7 +253,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  Widget _buildCalendarCell(DateTime day, PredictionService pred, {required bool isSelected, bool isToday = false}) {
+  Widget _buildCalendarCell(DateTime day, PredictionService pred, StorageService storage, {required bool isSelected, bool isToday = false}) {
     final phase = pred.getPhaseForDay(day);
     final isPeriod = phase == CyclePhase.menstrual;
     final isOvulation = phase == CyclePhase.ovulation;
@@ -310,6 +310,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   color: AppTheme.phaseColors['Ovulation'],
                   shape: BoxShape.circle,
                   boxShadow: [BoxShadow(color: AppTheme.phaseColors['Ovulation']!, blurRadius: 4)]
+                ),
+              ),
+            ),
+          if (storage.getDailyLog(day) != null)
+            Positioned(
+              top: 2,
+              right: 2,
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                child: Text(
+                  storage.getDailyLog(day)?.moods?.first ?? '📝',
+                  style: const TextStyle(fontSize: 8),
                 ),
               ),
             ),
@@ -427,6 +440,9 @@ class _DailyLogSheet extends StatelessWidget {
     final isHigh = chance >= 25;
     final statusText = isHigh ? 'High Fertility' : (chance >= 10 ? 'Moderate Fertility' : 'Low Fertility');
 
+    final storage = context.watch<StorageService>();
+    final dailyLog = storage.getDailyLog(date);
+
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.frameColor,
@@ -500,6 +516,61 @@ class _DailyLogSheet extends StatelessWidget {
                   ),
                 ),
               ),
+
+              if (dailyLog != null) ...[
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: GlassContainer(
+                    padding: const EdgeInsets.all(20),
+                    radius: 24,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Daily Check-in', style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary, fontWeight: FontWeight.w700)),
+                            if (dailyLog.moods?.isNotEmpty == true)
+                              Text(dailyLog.moods!.first, style: const TextStyle(fontSize: 24)),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        if (dailyLog.symptoms?.isNotEmpty == true) ...[
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: dailyLog.symptoms!.map((s) => Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(color: AppTheme.accentPink.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                              child: Text(s, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.accentPink, fontWeight: FontWeight.w600)),
+                            )).toList(),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        if (dailyLog.waterIntake != null && dailyLog.waterIntake! > 0) ...[
+                          Row(
+                            children: [
+                              const Text('💧', style: TextStyle(fontSize: 14)),
+                              const SizedBox(width: 8),
+                              Text('${dailyLog.waterIntake} Glasses', style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textDark, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                        if (dailyLog.notes?.isNotEmpty == true) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(12)),
+                            child: Text(dailyLog.notes!, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary, fontStyle: FontStyle.italic)),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 24),
             

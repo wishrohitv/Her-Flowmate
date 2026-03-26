@@ -12,6 +12,7 @@ import '../widgets/cycle_widgets.dart';
 import '../widgets/educational_widgets.dart';
 
 import 'log_period_screen.dart';
+import 'education_hub_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -141,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _modeButton('Normal Tracking', 'tracking', mode, storage),
+          _modeButton('Period Tracking', 'tracking', mode, storage),
           _modeButton('Conceive', 'conceive', mode, storage),
           _modeButton('Pregnancy', 'pregnant', mode, storage),
         ],
@@ -521,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildEducationalCard(BuildContext context) {
     return GlassContainer(
       radius: 28,
-      onTap: () => showPeriodColorGuide(context),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EducationHubScreen())),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Row(
@@ -532,16 +533,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: AppTheme.accentPink.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.water_drop_rounded, color: AppTheme.accentPink, size: 32),
+              child: const Icon(Icons.menu_book_rounded, color: AppTheme.accentPink, size: 32),
             ),
             const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Know your period', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: AppTheme.textDark)),
+                  Text('Education Hub', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: AppTheme.textDark)),
                   const SizedBox(height: 4),
-                  Text('What does the color of your flow mean?', style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
+                  Text('Discover insights about your cycle and body', style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
                 ],
               ),
             ),
