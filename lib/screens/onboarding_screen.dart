@@ -66,11 +66,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _next() {
     if (_currentPage == 0 && _selectedGoal.isEmpty) return;
-    if (_currentPage == 1 && _nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your name to continue.')),
-      );
-      return;
+    if (_currentPage == 1) {
+      if (_nameController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter your name to continue.')),
+        );
+        return;
+      }
+      
+      final ageStr = _ageController.text.trim();
+      if (ageStr.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter your age to continue.')),
+        );
+        return;
+      }
+      
+      final age = int.tryParse(ageStr);
+      if (age == null || age < 10 || age > 100) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a valid age between 10 and 100.')),
+        );
+        return;
+      }
     }
     if (_currentPage == 2 &&
         _lastPeriodStart == null &&
@@ -454,8 +472,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           _setupInput(
             "AND YOUR AGE?",
             _ageController,
-            'Age (optional)',
+            'Enter age...',
             isNumeric: true,
+            isRequired: true,
           ),
         ],
       ),

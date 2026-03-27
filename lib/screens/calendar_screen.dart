@@ -44,216 +44,219 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final pred = context.watch<PredictionService>();
     final storage = context.watch<StorageService>();
 
-    return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-      child: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Custom Top Bar (replacing AppBar)
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 24,
-                right: 24,
-                top: 24,
-                bottom: 16,
-              ),
-              child: Row(
-                children: [
-                  Builder(
-                    builder: (context) => NeuContainer(
-                      padding: const EdgeInsets.all(10),
-                      radius: 18,
-                      style: NeuStyle.convex,
-                      onTap: () => Scaffold.of(context).openDrawer(),
-                      child: const Icon(
-                        Icons.menu_rounded,
-                        color: AppTheme.accentPink,
-                        size: 26,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        'Cycle Calendar',
-                        style: GoogleFonts.poppins(
-                          color: AppTheme.midnightPlum,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 22,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const NotificationBell(),
-                ],
-              ),
-            ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
+    return Material(
+      color: AppTheme.frameColor,
+      child: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              // Custom Top Bar (replacing AppBar)
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24,
+                  bottom: 16,
+                ),
+                child: Row(
                   children: [
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: GlassContainer(
-                        radius: 32,
-                        padding: const EdgeInsets.all(16),
-                        child: TableCalendar(
-                          firstDay: DateTime.utc(2020, 1, 1),
-                          lastDay: DateTime.utc(2030, 12, 31),
-                          focusedDay: _focusedDay,
-                          selectedDayPredicate: (day) =>
-                              isSameDay(_selectedDay, day),
-                          onDaySelected: (selectedDay, focusedDay) {
-                            setState(() {
-                              _selectedDay = selectedDay;
-                              _focusedDay = focusedDay;
-                            });
-                            _showDailyLogSheet(context, selectedDay);
-                          },
-                          calendarFormat: CalendarFormat.month,
-                          headerStyle: HeaderStyle(
-                            formatButtonVisible: false,
-                            titleCentered: true,
-                            titleTextStyle: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: AppTheme.midnightPlum,
-                            ),
-                            leftChevronIcon: const Icon(
-                              Icons.chevron_left_rounded,
-                              color: AppTheme.accentPink,
-                              size: 28,
-                            ),
-                            rightChevronIcon: const Icon(
-                              Icons.chevron_right_rounded,
-                              color: AppTheme.accentPink,
-                              size: 28,
-                            ),
-                          ),
-                          daysOfWeekStyle: DaysOfWeekStyle(
-                            weekdayStyle: GoogleFonts.inter(
-                              color: AppTheme.textSecondary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            weekendStyle: GoogleFonts.inter(
-                              color: AppTheme.accentPink,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          calendarBuilders: CalendarBuilders(
-                            defaultBuilder: (context, day, focusedDay) {
-                              return _buildCalendarCell(
-                                day,
-                                pred,
-                                storage,
-                                isSelected: false,
-                              );
-                            },
-                            selectedBuilder: (context, day, focusedDay) {
-                              return _buildCalendarCell(
-                                day,
-                                pred,
-                                storage,
-                                isSelected: true,
-                              );
-                            },
-                            todayBuilder: (context, day, focusedDay) {
-                              return _buildCalendarCell(
-                                day,
-                                pred,
-                                storage,
-                                isSelected: false,
-                                isToday: true,
-                              );
-                            },
+                    Builder(
+                      builder: (context) => NeuContainer(
+                        padding: const EdgeInsets.all(10),
+                        radius: 18,
+                        style: NeuStyle.convex,
+                        onTap: () => Scaffold.of(context).openDrawer(),
+                        child: const Icon(
+                          Icons.menu_rounded,
+                          color: AppTheme.accentPink,
+                          size: 26,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          'Cycle Calendar',
+                          style: GoogleFonts.poppins(
+                            color: AppTheme.midnightPlum,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 22,
+                            letterSpacing: -0.5,
                           ),
                         ),
                       ),
-                    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
-
-                    const SizedBox(height: 32),
-
-                    // Legend
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: _buildLegend(pred),
-                    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
-
-                    const SizedBox(height: 24),
-
-                    // Floating Phase Explanation Card
-                    if (_selectedDay != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: _buildPhaseExplanationCard(
-                          context,
-                          pred,
-                          _selectedDay!,
-                        ),
-                      ),
-
-                    const SizedBox(height: 24),
-
-                    // Additional Actions
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: NeuContainer(
-                              radius: 20,
-                              onTap: () {},
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Add Note',
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w700,
-                                      color: AppTheme.textDark,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: NeuContainer(
-                              radius: 20,
-                              onTap: () => Navigator.pop(context),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'View Insights',
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w700,
-                                      color: AppTheme.textDark,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ).animate().fadeIn(delay: 400.ms),
-
-                    const SizedBox(height: 120),
+                    ),
+                    const NotificationBell(),
                   ],
                 ),
               ),
-            ),
-          ],
+
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: GlassContainer(
+                          radius: 32,
+                          padding: const EdgeInsets.all(16),
+                          child: TableCalendar(
+                            firstDay: DateTime.utc(2020, 1, 1),
+                            lastDay: DateTime.utc(2030, 12, 31),
+                            focusedDay: _focusedDay,
+                            selectedDayPredicate: (day) =>
+                                isSameDay(_selectedDay, day),
+                            onDaySelected: (selectedDay, focusedDay) {
+                              setState(() {
+                                _selectedDay = selectedDay;
+                                _focusedDay = focusedDay;
+                              });
+                              _showDailyLogSheet(context, selectedDay);
+                            },
+                            calendarFormat: CalendarFormat.month,
+                            headerStyle: HeaderStyle(
+                              formatButtonVisible: false,
+                              titleCentered: true,
+                              titleTextStyle: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: AppTheme.midnightPlum,
+                              ),
+                              leftChevronIcon: const Icon(
+                                Icons.chevron_left_rounded,
+                                color: AppTheme.accentPink,
+                                size: 28,
+                              ),
+                              rightChevronIcon: const Icon(
+                                Icons.chevron_right_rounded,
+                                color: AppTheme.accentPink,
+                                size: 28,
+                              ),
+                            ),
+                            daysOfWeekStyle: DaysOfWeekStyle(
+                              weekdayStyle: GoogleFonts.inter(
+                                color: AppTheme.textSecondary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              weekendStyle: GoogleFonts.inter(
+                                color: AppTheme.accentPink,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            calendarBuilders: CalendarBuilders(
+                              defaultBuilder: (context, day, focusedDay) {
+                                return _buildCalendarCell(
+                                  day,
+                                  pred,
+                                  storage,
+                                  isSelected: false,
+                                );
+                              },
+                              selectedBuilder: (context, day, focusedDay) {
+                                return _buildCalendarCell(
+                                  day,
+                                  pred,
+                                  storage,
+                                  isSelected: true,
+                                );
+                              },
+                              todayBuilder: (context, day, focusedDay) {
+                                return _buildCalendarCell(
+                                  day,
+                                  pred,
+                                  storage,
+                                  isSelected: false,
+                                  isToday: true,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
+
+                      const SizedBox(height: 32),
+
+                      // Legend
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: _buildLegend(pred),
+                      ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
+
+                      const SizedBox(height: 24),
+
+                      // Floating Phase Explanation Card
+                      if (_selectedDay != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: _buildPhaseExplanationCard(
+                            context,
+                            pred,
+                            _selectedDay!,
+                          ),
+                        ),
+
+                      const SizedBox(height: 24),
+
+                      // Additional Actions
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NeuContainer(
+                                radius: 20,
+                                onTap: () {},
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Add Note',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w700,
+                                        color: AppTheme.textDark,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: NeuContainer(
+                                radius: 20,
+                                onTap: () => Navigator.pop(context),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'View Insights',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w700,
+                                        color: AppTheme.textDark,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ).animate().fadeIn(delay: 400.ms),
+
+                      const SizedBox(height: 120),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -337,7 +340,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            biology['insight']!,
+            '${biology['hormoneActivity']}\n\n${biology['energy']}\n\n${biology['mood']}',
             style: GoogleFonts.inter(
               fontSize: 14,
               color: AppTheme.textSecondary,

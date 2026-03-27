@@ -48,134 +48,137 @@ class EducationHubScreen extends StatelessWidget {
       },
     ];
 
-    return Stack(
-      children: [
-        Container(
-          decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        ),
-        _buildDreamyBackground(),
-        SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              // ── Static Top Bar ──────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24,
-                  bottom: 16,
-                ),
-                child: Row(
-                  children: [
-                    NeuContainer(
-                      padding: const EdgeInsets.all(12),
-                      radius: 16,
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(
-                        Icons.arrow_back_rounded,
-                        color: AppTheme.accentPink,
-                        size: 26,
+    return Scaffold(
+      backgroundColor: AppTheme.frameColor,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+          ),
+          _buildDreamyBackground(),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                // ── Static Top Bar ──────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                    top: 24,
+                    bottom: 16,
+                  ),
+                  child: Row(
+                    children: [
+                      NeuContainer(
+                        padding: const EdgeInsets.all(12),
+                        radius: 16,
+                        onTap: () => Navigator.pop(context),
+                        child: const Icon(
+                          Icons.arrow_back_rounded,
+                          color: AppTheme.accentPink,
+                          size: 26,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          'Knowledge Base',
-                          style: GoogleFonts.poppins(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.midnightPlum,
-                            letterSpacing: -0.5,
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Knowledge Base',
+                            style: GoogleFonts.poppins(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: AppTheme.midnightPlum,
+                              letterSpacing: -0.5,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 48), // Balance for back button
-                  ],
-                ),
-              ),
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(24),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.85,
+                      const SizedBox(width: 48), // Balance for back button
+                    ],
                   ),
-                  itemCount: articles.length,
-                  itemBuilder: (context, index) {
-                    final a = articles[index];
-                    final color = Color(int.parse(a['color']!, radix: 16));
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => _ArticleDetailScreen(
-                              title: a['title']!,
-                              content: a['content']!,
-                              icon: a['icon']!,
-                              themeColor: color,
-                            ),
-                          ),
-                        );
-                      },
-                      child:
-                          GlassContainer(
-                            radius: 24,
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: color.withValues(alpha: 0.15),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    a['icon']!,
-                                    style: const TextStyle(fontSize: 24),
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  a['title']!,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.midnightPlum,
-                                    height: 1.2,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  a['subtitle']!,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: AppTheme.textSecondary,
-                                    height: 1.3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ).animate().scale(
-                            delay: (100 * index).ms,
-                            duration: 400.ms,
-                            curve: Curves.easeOutBack,
-                          ),
-                    );
-                  },
                 ),
-              ),
-            ],
+                Expanded(
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(24),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.85,
+                        ),
+                    itemCount: articles.length,
+                    itemBuilder: (context, index) {
+                      final a = articles[index];
+                      final color = Color(int.parse(a['color']!, radix: 16));
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => _ArticleDetailScreen(
+                                title: a['title']!,
+                                content: a['content']!,
+                                icon: a['icon']!,
+                                themeColor: color,
+                              ),
+                            ),
+                          );
+                        },
+                        child: GlassContainer(
+                          radius: 24,
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: color.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  a['icon']!,
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                a['title']!,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.midnightPlum,
+                                  height: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                a['subtitle']!,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: AppTheme.textSecondary,
+                                  height: 1.3,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ).animate().scale(
+                          delay: (100 * index).ms,
+                          duration: 400.ms,
+                          curve: Curves.easeOutBack,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

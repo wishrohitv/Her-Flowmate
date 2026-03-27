@@ -239,32 +239,33 @@ class PredictionService {
     switch (phase) {
       case CyclePhase.menstrual:
         return {
-          'insight':
-              'Your period is occurring. The uterus is shedding its lining because pregnancy did not occur in the previous cycle.',
-          'hormoneActivity': 'Low estrogen and progesterone.',
+          'hormoneActivity': 'Estrogen and progesterone levels are low.',
+          'energy': 'Energy levels may dip, especially early on.',
+          'mood': 'You may feel more inward-focused or fatigued.',
         };
       case CyclePhase.follicular:
         return {
-          'insight':
-              'Your body is preparing for ovulation. The ovaries are developing follicles, and estrogen levels are gradually increasing.',
-          'hormoneActivity': 'Rising estrogen, low progesterone.',
+          'hormoneActivity': 'Estrogen levels are rising.',
+          'energy': 'Energy levels may increase.',
+          'mood': 'You may feel more motivated and focused.',
         };
       case CyclePhase.ovulation:
         return {
-          'insight':
-              'An egg is released from the ovary. This is the most fertile point in the cycle.',
-          'hormoneActivity': 'LH surge and peak estrogen levels.',
+          'hormoneActivity': 'Estrogen peaks and LH surges.',
+          'energy': 'Energy levels are typically at their highest.',
+          'mood': 'You may feel extra confident and sociable.',
         };
       case CyclePhase.luteal:
         return {
-          'insight':
-              'Progesterone increases to support a potential pregnancy. If fertilization does not occur, hormone levels will drop.',
-          'hormoneActivity': 'High progesterone, declining estrogen.',
+          'hormoneActivity': 'Progesterone rises and then drops.',
+          'energy': 'Energy levels may gradually decrease.',
+          'mood': 'You may experience PMS symptoms and crave rest.',
         };
       default: // Handles CyclePhase.unknown
         return {
-          'insight': 'Data unavailable for this day.',
-          'hormoneActivity': 'Unknown',
+          'hormoneActivity': 'Hormone data is unavailable for this day.',
+          'energy': '',
+          'mood': '',
         };
     }
   }

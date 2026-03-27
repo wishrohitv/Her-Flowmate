@@ -43,108 +43,137 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
       body: AnimatedGlowBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 40),
-                  const Center(
-                    child: BrandLogo(
-                      size: 100,
-                      imagePath: 'assets/images/feature_graphic.png',
-                      showName: true,
-                      nameFontSize: 32,
-                    ),
-                  ).animate()
-                    .fadeIn(duration: 800.ms)
-                    .scale(
-                      begin: const Offset(0.8, 0.8),
-                      curve: Curves.easeOutBack,
-                    ),
-
-                const SizedBox(height: 48),
-
-                Text(
-                  'Welcome to',
-                  style: GoogleFonts.outfit(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textSecondary,
-                    letterSpacing: 0.5,
-                  ),
-                ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
-
-                  const SizedBox(height: 48),
-
-                  // Auth Buttons with better layout
-                  _AuthButton(
-                    label: 'Continue with Google',
-                    icon: Icons.g_mobiledata_rounded,
-                    onTap: () => _handleLogin(context, true),
-                  ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1),
-
-                  const SizedBox(height: 24),
-
-                  _AuthButton(
-                    label: 'Continue as Guest',
-                    icon: Icons.person_outline_rounded,
-                    onTap: () => _handleLogin(context, false),
-                  ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
-
-                  const SizedBox(height: 48),
-
-                  // Privacy Section with better text
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: AppTheme.glassDecoration(
-                      radius: 24,
-                      opacity: 0.1,
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
+        child: Stack(
+          children: [
+            const FloatingSparkles(),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Icon(
-                              Icons.shield_outlined,
-                              size: 16,
-                              color: AppTheme.accentPink,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Privacy & Local Storage',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: AppTheme.textDark,
+                            const SizedBox(height: 60),
+                            const Center(
+                              child: BrandLogo(
+                                size: 120,
+                                imagePath: 'assets/images/feature_graphic.png',
+                                showName: true,
+                                nameFontSize: 36,
                               ),
-                            ),
+                            ).animate()
+                              .fadeIn(duration: 800.ms)
+                              .scale(
+                                begin: const Offset(0.8, 0.8),
+                                curve: Curves.easeOutBack,
+                              ),
+
+                            const SizedBox(height: 16),
+
+                            Text(
+                              'Empowering Your Cycle Journey',
+                              style: GoogleFonts.outfit(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: AppTheme.textSecondary.withValues(alpha: 0.8),
+                                letterSpacing: 1.2,
+                              ),
+                            ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
+
+                            const SizedBox(height: 64),
+
+                            // Auth Buttons with better layout
+                            _AuthButton(
+                              label: 'Continue with Google',
+                              icon: Icons.g_mobiledata_rounded,
+                              isPrimary: true,
+                              onTap: () => _handleLogin(context, true),
+                            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
+
+                            const SizedBox(height: 20),
+
+                            _AuthButton(
+                              label: 'Continue as Guest',
+                              icon: Icons.person_outline_rounded,
+                              isPrimary: false,
+                              onTap: () => _handleLogin(context, false),
+                            ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
+
+                            const SizedBox(height: 48),
+
+                            // Privacy Section with better text
+                            Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: AppTheme.glassDecoration(
+                                radius: 28,
+                                opacity: 0.08,
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.shield_moon_rounded,
+                                        size: 20,
+                                        color: AppTheme.accentPink,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        'Privacy First',
+                                        style: GoogleFonts.outfit(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppTheme.textDark,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Your health data is encrypted and stays on your device. We never sell your personal information.',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      color: AppTheme.textSecondary.withValues(alpha: 0.8),
+                                      height: 1.5,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ).animate().fadeIn(delay: 600.ms).scale(begin: const Offset(0.9, 0.9)),
+
+                            const SizedBox(height: 40),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'In guest mode, your health data stays on this device only. We recommend periodic backups.',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppTheme.textSecondary.withValues(alpha: 0.7),
-                            height: 1.4,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                      ),
                     ),
-                  ).animate().fadeIn(delay: 600.ms),
-
-                  const SizedBox(height: 40),
-                ],
+                    
+                    // Footer
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _FooterLink(label: 'Terms', onTap: () {}),
+                          _Bullet(),
+                          _FooterLink(label: 'Privacy', onTap: () {}),
+                          _Bullet(),
+                          _FooterLink(label: 'Support', onTap: () {}),
+                        ],
+                      ),
+                    ).animate().fadeIn(delay: 800.ms),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -174,11 +203,13 @@ class _LoginScreenState extends State<LoginScreen> {
 class _AuthButton extends StatelessWidget {
   final String label;
   final IconData icon;
+  final bool isPrimary;
   final VoidCallback onTap;
 
   const _AuthButton({
     required this.label,
     required this.icon,
+    required this.isPrimary,
     required this.onTap,
   });
 
@@ -186,27 +217,77 @@ class _AuthButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShimmerButton(
       onTap: onTap,
-      radius: 20,
+      radius: 24,
       child: NeuContainer(
-        radius: 20,
+        radius: 24,
+        gradient: isPrimary ? LinearGradient(
+          colors: AppTheme.brandGradient.colors.map((c) => c.withValues(alpha: 0.1)).toList(),
+          begin: AppTheme.brandGradient.begin,
+          end: AppTheme.brandGradient.end,
+        ) : null,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: AppTheme.accentPink, size: 28),
-              const SizedBox(width: 12),
+              Icon(
+                icon, 
+                color: isPrimary ? AppTheme.deepRose : AppTheme.accentPink, 
+                size: 26
+              ),
+              const SizedBox(width: 16),
               Text(
                 label,
-                style: GoogleFonts.inter(
+                style: GoogleFonts.outfit(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
                   color: AppTheme.textDark,
+                  letterSpacing: 0.3,
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _FooterLink extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _FooterLink({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textSecondary.withValues(alpha: 0.6),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Bullet extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 4,
+      height: 4,
+      decoration: BoxDecoration(
+        color: AppTheme.accentPink.withValues(alpha: 0.3),
+        shape: BoxShape.circle,
       ),
     );
   }

@@ -1,4 +1,7 @@
+import 'dart:math';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +12,9 @@ import '../utils/app_theme.dart';
 import '../widgets/info_widgets.dart';
 import '../widgets/cycle_widgets.dart';
 import '../widgets/neu_container.dart';
+import '../widgets/delight_widgets.dart';
+import '../widgets/glass_container.dart';
+import '../models/daily_log.dart';
 import 'log_period_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,12 +25,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late ConfettiController _confettiController;
+
   @override
   void initState() {
     super.initState();
+    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkFirstTimeInfo();
     });
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
   }
 
   void _checkFirstTimeInfo() {
@@ -46,51 +61,89 @@ class _HomeScreenState extends State<HomeScreen> {
     final storage = context.watch<StorageService>();
     final pred = context.watch<PredictionService>();
 
-    return Stack(
-      children: [
-        Container(
-          decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        ),
-        _buildDreamyBackground(),
-        SafeArea(
-          bottom: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 24), // Premium top breathing room
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildTopRow(context, storage),
-              ),
-              const SizedBox(height: 32),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _GreetingSection(storage: storage),
-                      const SizedBox(height: 48),
-
-                      if (storage.userGoal == 'pregnant')
-                        _buildPregnancyDashboard(context, storage)
-                      else if (storage.userGoal == 'conceive')
-                        _buildTTCDashboard(context, storage)
-                      else
-                        _buildCycleDashboard(context, storage, pred),
-
-                      const SizedBox(height: 48),
-                      _buildMedicalDisclaimer(),
-                      const SizedBox(height: 120),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+    return Material(
+      color: Colors.transparent,
+      child: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
           ),
-        ),
-      ],
+          _buildDreamyBackground(),
+          SafeArea(
+            bottom: false,
+            child: Builder(
+              builder: (context) {
+                final screenWidth = MediaQuery.of(context).size.width;
+                final hPad = (screenWidth * 0.05).clamp(16.0, 24.0);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: _buildTopRow(context, storage),
+                    ),
+                    const SizedBox(height: 24),
+                    Expanded(
+                      child: RefreshIndicator(
+                        color: AppTheme.accentPink,
+                        backgroundColor: AppTheme.bgColor,
+                        onRefresh: () async => setState(() {}),
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: hPad),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _GreetingSection(storage: storage),
+                              const SizedBox(height: 24),
+
+                              if (storage.userGoal == 'pregnant')
+                                _buildPregnancyDashboard(context, storage)
+                              else if (storage.userGoal == 'conceive')
+                                _buildTTCDashboard(context, storage)
+                              else
+                                _buildModernBentoDashboard(context, storage, pred),
+
+                              const SizedBox(height: 28),
+                              _buildInsightCarousel(context),
+                              const SizedBox(height: 28),
+                              _buildMedicalDisclaimer(),
+                              const SizedBox(height: 88),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          // Confetti overlay at the top center
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirection: pi / 2, // Straight down
+              maxBlastForce: 5,
+              minBlastForce: 2,
+              emissionFrequency: 0.05,
+              numberOfParticles: 50,
+              gravity: 0.2,
+              colors: const [
+                AppTheme.accentPink,
+                AppTheme.accentPurple,
+                Colors.blueAccent,
+                Colors.amber,
+                Colors.tealAccent,
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -127,20 +180,26 @@ class _HomeScreenState extends State<HomeScreen> {
         _buildGlowBlob(
           top: -100,
           right: -50,
-          size: 250,
-          color: AppTheme.accentPink.withValues(alpha: 0.08),
-        ),
-        _buildGlowBlob(
-          bottom: 100,
-          left: -80,
           size: 300,
-          color: AppTheme.accentPurple.withValues(alpha: 0.05),
+          color: AppTheme.accentPink.withValues(alpha: 0.12),
         ),
         _buildGlowBlob(
-          top: 400,
-          right: -120,
-          size: 200,
-          color: Colors.white.withValues(alpha: 0.2),
+          bottom: 200,
+          left: -100,
+          size: 400,
+          color: AppTheme.accentPurple.withValues(alpha: 0.08),
+        ),
+        _buildGlowBlob(
+          top: 300,
+          right: -80,
+          size: 250,
+          color: Colors.white.withValues(alpha: 0.15),
+        ),
+        const RepaintBoundary(
+          child: FloatingSparkles(
+            count: 15,
+            color: Colors.white,
+          ),
         ),
       ],
     );
@@ -353,21 +412,307 @@ class _HomeScreenState extends State<HomeScreen> {
             const Icon(
               Icons.check_circle_rounded,
               color: AppTheme.accentPink,
-              size: 24,
+      size: 24,
             ),
         ],
       ),
     );
   }
 
-  Widget _buildCycleDashboard(
+  Widget _buildModernBentoDashboard(
     BuildContext context,
     StorageService storage,
     PredictionService pred,
   ) {
-    if (storage.getLogs().isEmpty)
+    if (storage.getLogs().isEmpty) {
       return _buildNewUserContent(context, storage);
-    return CycleDashboard(storage: storage, pred: pred);
+    }
+
+    return Column(
+      children: [
+        _buildFloralRingDashboard(context, pred),
+        const SizedBox(height: 20),
+        _buildYourBodyTodayCard(context, pred),
+        const SizedBox(height: 16),
+        _buildBentoWaterCard(storage),
+        const SizedBox(height: 20),
+        HormoneGraph(pred: pred),
+        const SizedBox(height: 24),
+        PhaseHealthTipsWidget(pred: pred),
+      ],
+    );
+  }
+
+  /// Your Body Today card
+  Widget _buildYourBodyTodayCard(BuildContext context, PredictionService pred) {
+    final phaseName = pred.phaseDisplayName;
+    final day = pred.currentCycleDay == 0 ? 1 : pred.currentCycleDay;
+    final biology = pred.getPhaseBiology(day);
+    
+    return NeuContainer(
+      padding: const EdgeInsets.all(24),
+      radius: 20,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.auto_awesome_rounded,
+                color: AppTheme.accentPurple,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'YOUR BODY TODAY',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  color: AppTheme.textSecondary,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'You are in the $phaseName Phase.',
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textDark,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            biology['hormoneActivity'] ?? '',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            biology['energy'] ?? '',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            biology['mood'] ?? '',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.textSecondary,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(delay: 100.ms);
+  }
+
+  Widget _buildBentoWaterCard(StorageService storage) {
+    final log = storage.getDailyLog(DateTime.now());
+    final water = log?.waterIntake ?? 0;
+
+    return NeuContainer(
+      padding: const EdgeInsets.all(20),
+      radius: 24,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  showGlassInfoPopup(
+                    context,
+                    title: 'Hydration Tracking 💧',
+                    explanation: 'Staying hydrated during your cycle helps reduce cramps, bloating, and fatigue.',
+                    tip: 'Try reaching your 15-glass goal every day to maintain a healthy streak!',
+                  );
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.water_drop_rounded,
+                      color: Colors.blueAccent,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'HYDRATION',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: AppTheme.textSecondary,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Larger hit-targets (44×44) per accessibility guidelines
+              Row(
+                children: [
+                  NeuContainer(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _removeWater(storage);
+                    },
+                    width: 44,
+                    height: 44,
+                    radius: 14,
+                    padding: EdgeInsets.zero,
+                    child: const Icon(
+                      Icons.remove_rounded,
+                      color: Colors.blueAccent,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  NeuContainer(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _addWater(storage);
+                    },
+                    width: 44,
+                    height: 44,
+                    radius: 14,
+                    padding: EdgeInsets.zero,
+                    child: const Icon(
+                      Icons.add_rounded,
+                      color: Colors.blueAccent,
+                      size: 22,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          // Glass markers row
+          Row(
+            children: List.generate(15, (i) {
+              final filled = i < water;
+              return Expanded(
+                child: Container(
+                  margin: const EdgeInsets.only(right: 2),
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: filled
+                        ? Colors.blueAccent
+                        : Colors.blueAccent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '$water / 15 glasses',
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textDark,
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1);
+  }
+
+
+  Widget _buildInsightCarousel(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = (screenWidth * 0.60).clamp(160.0, 220.0);
+
+    final insights = [
+      {'title': 'Cycle Syncing', 'sub': 'Boost energy with yoga', 'icon': '🧘‍♀️'},
+      {'title': 'Nutrition Tip', 'sub': 'Drink more raspberry tea', 'icon': '🍵'},
+      {'title': 'Sleep Hygiene', 'sub': '8h sleep for balance', 'icon': '🌙'},
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            'Today\'s Insights',
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: AppTheme.textDark,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 110,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            itemCount: insights.length,
+            itemBuilder: (context, i) {
+              return Container(
+                width: cardWidth,
+                margin: const EdgeInsets.only(right: 12),
+                child: GlassContainer(
+                  padding: const EdgeInsets.all(16),
+                  radius: 24,
+                  child: Row(
+                    children: [
+                      Text(
+                        insights[i]['icon']!,
+                        style: const TextStyle(fontSize: 28),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              insights[i]['title']!,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppTheme.midnightPlum,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              insights[i]['sub']!,
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                color: AppTheme.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ).animate().fadeIn(delay: (i * 200).ms).slideX(begin: 0.2);
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildTTCDashboard(BuildContext context, StorageService storage) {
@@ -455,130 +800,64 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
 
-class _GreetingSection extends StatelessWidget {
-  final StorageService storage;
-  const _GreetingSection({required this.storage});
+  Future<void> _addWater(StorageService storage) async {
+    debugPrint('HomeScreen: _addWater called');
+    final now = DateTime.now();
+    final log = storage.getDailyLog(now) ??
+        DailyLog(
+          date: now,
+          waterIntake: 0,
+        );
+    final newWater = ((log.waterIntake ?? 0) + 1).clamp(0, 15);
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Hello, ${storage.userName.split(' ').first}!',
-          style: GoogleFonts.poppins(
-            fontSize: 32,
-            fontWeight: FontWeight.w800,
-            color: AppTheme.midnightPlum,
-            letterSpacing: -1.0,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          DateFormat('EEEE, MMMM d').format(DateTime.now()),
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            color: AppTheme.textSecondary,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ],
-    ).animate().fadeIn().slideX(begin: -0.05);
-  }
-}
+    // Check for celebration milestone
+    if (newWater == 15 && log.waterIntake != 15) {
+      _confettiController.play();
+      if (mounted) {
+        showGlassInfoPopup(
+          context,
+          title: 'Hydration Goal Met! 💧',
+          explanation: 'Amazing! You successfully reached 15 glasses of water today.',
+          tip: 'You are maintaining a great hydration streak. Your body thanks you!',
+        );
+      }
+    }
 
-class CycleDashboard extends StatelessWidget {
-  final StorageService storage;
-  final PredictionService pred;
-
-  const CycleDashboard({super.key, required this.storage, required this.pred});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildFloralRingDashboard(context, pred),
-        const SizedBox(height: 48),
-        _buildFertilityCard(pred),
-        const SizedBox(height: 32),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Hormone Trends',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: AppTheme.textDark,
-              ),
-            ),
-            IconButton(
-              onPressed: () => _showHormonePopup(context, pred),
-              icon: NeuContainer(
-                radius: 12,
-                padding: const EdgeInsets.all(8),
-                style: NeuStyle.convex,
-                child: const Icon(
-                  Icons.bar_chart_rounded,
-                  color: AppTheme.accentPink,
-                  size: 22,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        RepaintBoundary(
-          child: HormoneGraph(
-            pred: pred,
-            showHeader: false,
-          ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
-        ),
-        const SizedBox(height: 24),
-        HormoneFocusWidget(pred: pred),
-        const SizedBox(height: 24),
-        PhaseHealthTipsWidget(pred: pred),
-      ],
+    final updatedLog = DailyLog(
+      date: log.date,
+      moods: log.moods,
+      symptoms: log.symptoms,
+      waterIntake: newWater,
+      notes: log.notes,
+      flowIntensity: log.flowIntensity,
+      physicalActivity: log.physicalActivity,
     );
+    
+    debugPrint('HomeScreen: Saving waterIntake = ${updatedLog.waterIntake}');
+    await storage.saveDailyLog(updatedLog);
+    if (mounted) setState(() {});
   }
 
-  void _showHormonePopup(BuildContext context, PredictionService pred) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.85,
-        decoration: const BoxDecoration(
-          color: AppTheme.bgColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            Container(
-              width: 40,
-              height: 6,
-              decoration: BoxDecoration(
-                color: AppTheme.textSecondary.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(3),
-              ),
-            ),
-            const SizedBox(height: 32),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: HormoneGraph(pred: pred),
-              ),
-            ),
-          ],
-        ),
-      ),
+  Future<void> _removeWater(StorageService storage) async {
+    debugPrint('HomeScreen: _removeWater called');
+    final now = DateTime.now();
+    final log = storage.getDailyLog(now);
+    if (log == null) return;
+    
+    final updatedLog = DailyLog(
+      date: log.date,
+      moods: log.moods,
+      symptoms: log.symptoms,
+      waterIntake: ((log.waterIntake ?? 0) - 1).clamp(0, 15),
+      notes: log.notes,
+      flowIntensity: log.flowIntensity,
+      physicalActivity: log.physicalActivity,
     );
+    
+    debugPrint('HomeScreen: Saving waterIntake = ${updatedLog.waterIntake}');
+    await storage.saveDailyLog(updatedLog);
+    if (mounted) setState(() {});
   }
 
   Widget _buildFloralRingDashboard(
@@ -589,181 +868,244 @@ class CycleDashboard extends StatelessWidget {
     final day = pred.currentCycleDay == 0 ? 1 : pred.currentCycleDay;
     final cycleLen = pred.averageCycleLength;
 
-    return Center(
-      child: SizedBox(
-        width: 330,
-        height: 330,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 320,
-              height: 320,
-              child: CustomPaint(
-                painter: _CycleRingPainter(
-                  progress: day / (cycleLen == 0 ? 28 : cycleLen),
-                  activeColor: AppTheme.phaseColor(phaseName),
-                  trackColor: Colors.white.withValues(alpha: 0.6),
+    return Column(
+      children: [
+        // Center: Glowing Ring
+        SizedBox(
+          width: 220,
+          height: 220,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Soft Glow Effect
+              Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.phaseColor(phaseName).withValues(alpha: 0.25),
+                      blurRadius: 40,
+                      spreadRadius: 8,
+                    ),
+                  ],
                 ),
               ),
-            ),
-            NeuContainer(
-              width: 290,
-              height: 290,
-              radius: 145,
-              style: NeuStyle.convex,
-              borderColor: Colors.white.withValues(alpha: 0.5),
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'CYCLE DAY',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      color: AppTheme.textSecondary,
-                      letterSpacing: 1.5,
-                    ),
+              SizedBox(
+                width: 210,
+                height: 210,
+                child: CustomPaint(
+                  painter: _CycleRingPainter(
+                    progress: day / (cycleLen == 0 ? 28 : cycleLen),
+                    activeColor: AppTheme.phaseColor(phaseName),
+                    trackColor: Colors.white.withValues(alpha: 0.6),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$day',
-                    style: GoogleFonts.poppins(
-                      fontSize: 52,
-                      fontWeight: FontWeight.w900,
-                      color: AppTheme.textDark,
-                      height: 1.0,
-                    ),
-                  ),
-                  Text(
-                    phaseName.toUpperCase(),
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: AppTheme.phaseColor(phaseName),
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Divider(
-                    color: AppTheme.textSecondary.withValues(alpha: 0.1),
-                    indent: 40,
-                    endIndent: 40,
-                    height: 1,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                        pred.currentPhase == CyclePhase.ovulation
-                            ? 'PEAK FERTILITY'
-                            : 'OVULATION IN ${pred.daysUntilOvulation}D',
-                        style: GoogleFonts.inter(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          color: AppTheme.accentPurple,
-                          letterSpacing: 1.2,
+                ),
+              ),
+              NeuContainer(
+                onTap: () {
+                  final biology = pred.getPhaseBiology(day);
+                  final phase = pred.phaseDisplayName;
+                  final symptoms = AppTheme.getPhaseSymptoms(phase);
+                  
+                  showGlassInfoPopup(
+                    context,
+                    title: '$phase Phase',
+                    explanation: '${biology['hormoneActivity']}\n\n${biology['energy']}\n\n${biology['mood']}',
+                    tip: 'Common symptoms: ${symptoms.join(", ")}',
+                  );
+                },
+                width: 170,
+                height: 170,
+                radius: 85,
+                style: NeuStyle.convex,
+                borderColor: Colors.white.withValues(alpha: 0.5),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        phaseName.toUpperCase(),
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.phaseColor(phaseName),
                         ),
-                      )
-                      .animate(onPlay: (c) => c.repeat())
-                      .shimmer(
-                        duration: 2.seconds,
-                        color: AppTheme.accentPurple.withValues(alpha: 0.3),
                       ),
-                  const SizedBox(height: 8),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Day $day / $cycleLen',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 32),
+        _buildPredictiveMessage(pred),
+      ],
+    );
+  }
+
+  Widget _buildPredictiveMessage(PredictionService pred) {
+    final chance = pred.currentConceptionChance;
+    final daysToPeriod = pred.daysUntilNextPeriod;
+    final daysToOvulation = pred.daysUntilOvulation;
+    final nextPeriod = pred.nextPeriodDate;
+    final avgLen = pred.averageCycleLength;
+    final nextOvulation = pred.currentPeriodStart?.add(Duration(days: avgLen - 14));
+
+    final chips = <_ChipData>[];
+
+    chips.add(_ChipData(
+      icon: Icons.favorite_rounded,
+      label: 'Conception $chance%',
+      color: AppTheme.accentPink,
+      explanation: 'Your current estimated chance of conception is $chance%.',
+      tip: chance > 20 
+          ? 'You are in or approaching your fertile window.' 
+          : 'Chances are currently low based on your cycle day.',
+    ));
+
+    if (nextOvulation != null) {
+      chips.add(_ChipData(
+        icon: Icons.wb_sunny_rounded,
+        label: 'Ovulation in ${daysToOvulation}d',
+        color: AppTheme.accentPurple,
+        explanation: 'Ovulation is estimated to occur in $daysToOvulation days.',
+        tip: 'This is usually your highest phase of energy and fertility.',
+      ));
+    }
+
+    if (nextPeriod != null) {
+      chips.add(_ChipData(
+        icon: Icons.calendar_today_rounded,
+        label: 'Period in ${daysToPeriod}d',
+        color: AppTheme.textSecondary,
+        explanation: 'Your next period is predicted to start in $daysToPeriod days.',
+        tip: 'Log any PMS symptoms to improve future predictions.',
+      ));
+    }
+
+    if (daysToOvulation > 0 && daysToOvulation <= 5) {
+      final peakIn = (daysToOvulation - 1).clamp(0, 5);
+      chips.add(_ChipData(
+        icon: Icons.auto_awesome_rounded,
+        label: peakIn == 0 ? 'Peak today!' : 'Peak in ${peakIn}d',
+        color: AppTheme.accentPink,
+        explanation: 'Your fertility peak is very close.',
+        tip: 'Track your basal body temperature and cervical mucus for higher accuracy.',
+      ));
+    }
+
+    if (chips.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: chips.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          final c = chips[i];
+          return GestureDetector(
+            onTap: () => showGlassInfoPopup(
+              context,
+              title: c.label,
+              explanation: c.explanation,
+              tip: c.tip,
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: c.color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: c.color.withValues(alpha: 0.35)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(c.icon, size: 13, color: c.color),
+                  const SizedBox(width: 6),
                   Text(
-                    pred.nextPeriodDate != null
-                        ? 'Period in ${pred.daysUntilNextPeriod} days'
-                        : 'Next period: ...',
+                    c.label,
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.textSecondary,
+                      color: c.color,
                     ),
                   ),
                 ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _GreetingSection extends StatelessWidget {
+  final StorageService storage;
+  const _GreetingSection({required this.storage});
+
+  @override
+  Widget build(BuildContext context) {
+    final hour = DateTime.now().hour;
+    String greeting = 'Good Morning';
+    String emoji = '☀️';
+    if (hour >= 12 && hour < 17) {
+      greeting = 'Good Afternoon';
+      emoji = '🌤️';
+    } else if (hour >= 17 || hour < 5) {
+      greeting = 'Good Evening';
+      emoji = '🌙';
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              '$emoji $greeting, ',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textSecondary,
+                letterSpacing: 0.5,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildFertilityCard(
-    PredictionService pred, {
-    String title = 'FERTILITY STATUS',
-  }) {
-    final chance = pred.currentConceptionChance;
-    return NeuContainer(
-      padding: const EdgeInsets.all(32),
-      radius: 40,
-      style: NeuStyle.convex,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppTheme.textSecondary,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    chance > 50
-                        ? 'High probability today'
-                        : 'Low probability today',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: AppTheme.textDark,
-                    ),
-                  ),
-                ],
-              ),
-              Icon(
-                Icons.spa_rounded,
-                color: AppTheme.phaseColor(
-                  pred.phaseDisplayName,
-                ).withValues(alpha: 0.6),
-                size: 32,
-              ),
-            ],
+        const SizedBox(height: 2),
+        Text(
+          '${storage.userName.split(' ').first}!',
+          style: GoogleFonts.poppins(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            color: AppTheme.midnightPlum,
+            height: 1.0,
+            letterSpacing: -0.5,
           ),
-          const SizedBox(height: 32),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: LinearProgressIndicator(
-              value: (chance / 100).clamp(0.05, 1.0),
-              backgroundColor: Colors.white.withValues(alpha: 0.3),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                AppTheme.phaseColor(pred.phaseDisplayName),
-              ),
-              minHeight: 10,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Biological Window: ${pred.phaseDisplayName}',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textSecondary,
-            ),
-          ),
-        ],
-      ).animate().fadeIn(delay: 100.ms),
-    );
+        ),
+      ],
+    ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.05);
   }
 }
+
 
 class TTCDashboard extends StatelessWidget {
   final StorageService storage;
@@ -1082,7 +1424,7 @@ class _CycleRingPainter extends CustomPainter {
       ..shader = SweepGradient(
         colors: [activeColor.withValues(alpha: 0.4), activeColor, activeColor],
         stops: const [0.0, 0.5, 1.0],
-        transform: GradientRotation(-3.14159265359 / 2),
+        transform: const GradientRotation(-3.14159265359 / 2),
       ).createShader(Rect.fromCircle(center: center, radius: radius))
       ..style = PaintingStyle.stroke
       ..strokeWidth = 16
@@ -1102,4 +1444,21 @@ class _CycleRingPainter extends CustomPainter {
     return oldDelegate.progress != progress ||
         oldDelegate.activeColor != activeColor;
   }
+}
+
+/// Lightweight data holder for the predictive chip strip.
+class _ChipData {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final String explanation;
+  final String tip;
+  
+  const _ChipData({
+    required this.icon, 
+    required this.label, 
+    required this.color,
+    required this.explanation,
+    required this.tip,
+  });
 }

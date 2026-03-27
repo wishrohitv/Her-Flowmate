@@ -17,6 +17,7 @@ class NeuContainer extends StatefulWidget {
   final double offset;
   final double blur;
   final Color? borderColor;
+  final Gradient? gradient;
 
   const NeuContainer({
     super.key,
@@ -32,6 +33,7 @@ class NeuContainer extends StatefulWidget {
     this.offset = 6.0,
     this.blur = 12.0,
     this.borderColor,
+    this.gradient,
   });
 
   @override
@@ -67,7 +69,8 @@ class _NeuContainerState extends State<NeuContainer> {
         padding: widget.padding,
         margin: widget.margin,
         decoration: BoxDecoration(
-          color: widget.color,
+          color: widget.gradient == null ? widget.color : null,
+          gradient: widget.gradient,
           borderRadius: BorderRadius.circular(widget.radius),
           border: widget.borderColor != null
               ? Border.all(color: widget.borderColor!, width: 1.5)

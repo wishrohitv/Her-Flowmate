@@ -84,14 +84,21 @@ class PhaseDelightOverlay extends StatelessWidget {
 }
 
 class FloatingSparkles extends StatelessWidget {
-  const FloatingSparkles({super.key});
+  final int count;
+  final Color color;
+
+  const FloatingSparkles({
+    super.key,
+    this.count = 12,
+    this.color = Colors.white,
+  });
 
   @override
   Widget build(BuildContext context) {
     final random = Random();
     return IgnorePointer(
       child: Stack(
-        children: List.generate(12, (index) {
+        children: List.generate(count, (index) {
           final x = random.nextDouble();
           final y = random.nextDouble();
           final size = 4.0 + random.nextDouble() * 6.0;
@@ -100,30 +107,29 @@ class FloatingSparkles extends StatelessWidget {
           return Positioned(
             left: MediaQuery.of(context).size.width * x,
             top: MediaQuery.of(context).size.height * y,
-            child:
-                Container(
-                      width: size,
-                      height: size,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.4),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withValues(alpha: 0.5),
-                            blurRadius: 8,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                    )
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
-                    .fadeIn(duration: duration.seconds)
-                    .scale(
-                      begin: const Offset(0.5, 0.5),
-                      end: const Offset(1.2, 1.2),
-                      duration: duration.seconds,
-                    )
-                    .moveY(begin: 0, end: -30, duration: (duration + 2).seconds),
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.4),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.5),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+            )
+                .animate(onPlay: (c) => c.repeat(reverse: true))
+                .fadeIn(duration: duration.seconds)
+                .scale(
+                  begin: const Offset(0.5, 0.5),
+                  end: const Offset(1.2, 1.2),
+                  duration: duration.seconds,
+                )
+                .moveY(begin: 0, end: -30, duration: (duration + 2).seconds),
           );
         }),
       ),

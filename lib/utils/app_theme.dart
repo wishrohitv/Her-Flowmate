@@ -46,27 +46,23 @@ abstract final class AppTheme {
   );
 
   static const Map<String, Color> phaseColors = {
-    'Menstrual': Color(0xFFF06292), // Vibrant Rose
-    'Follicular': Color(0xFFFFB2C1), // Soft Nude Pink
-    'Ovulation': Color(0xFFAB47BC), // Deep Orchid
-    'Luteal': Color(0xFF9575CD), // Muted Lavender
+    'Menstrual': Color(0xFFFF486A), // Vibrant Coral Red
+    'Follicular': Color(0xFF7DD8FF), // Sky Blue
+    'Ovulation': Color(0xFFD481FF), // Bright Orchid Purple
+    'Luteal': Color(0xFFFFB347), // Sunset Orange
   };
 
   static const Map<String, Color> hormoneColors = {
     'Estrogen': Color(0xFFF06292),
-    'Progesterone': Color(0xFFAB47BC),
-    'LH': Color(0xFF42A5F5), // Premium Azure
-    'FSH': Color(0xFF66BB6A), // Premium Emerald
+    'Progesterone': Color(0xFFD481FF), // Match Ovulation
+    'LH': Color(0xFF42A5F5),
+    'FSH': Color(0xFF66BB6A),
   };
 
   // Aliases for Backward Compatibility
   static const Color primaryPink = roseGold;
-  static const Color accentPurple = Color(
-    0xFFAB47BC,
-  ); // Ovulation phase deep orchid
-  static const Color lavender = Color(
-    0xFF9575CD,
-  ); // Luteal phase muted lavender
+  static const Color accentPurple = Color(0xFFD481FF); // New Ovulation color
+  static const Color lavender = Color(0xFFFFB347); // New Luteal color (Orange)
   static const Color softPink = softRose;
 
   static Color phaseColor(String phase) => phaseColors[phase] ?? roseGold;
@@ -177,6 +173,21 @@ abstract final class AppTheme {
           diet: ['Mindful nutrition'],
           nutrients: ['Essential Multivitamin'],
         );
+    }
+  }
+
+  static List<String> getPhaseSymptoms(String phase) {
+    switch (phase) {
+      case 'Menstrual':
+        return ['Cramps', 'Fatigue', 'Low Back Pain'];
+      case 'Follicular':
+        return ['Rising Energy', 'Optimism', 'Focus'];
+      case 'Ovulation':
+        return ['High Libido', 'Mild Cramp', 'Energy↑'];
+      case 'Luteal':
+        return ['Bloating', 'Mood Swings', 'Sensitivity'];
+      default:
+        return ['Varies'];
     }
   }
 

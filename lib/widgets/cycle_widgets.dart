@@ -204,7 +204,7 @@ class _HormoneGraphState extends State<HormoneGraph> {
                           ),
                           children: [
                             TextSpan(
-                              text: biology['insight'],
+                              text: '${biology['hormoneActivity']}\n\n${biology['energy']}',
                               style: GoogleFonts.inter(
                                 color: AppTheme.textSecondary,
                                 fontWeight: FontWeight.w500,
