@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -161,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return AnimatedGlowBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -423,10 +422,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          NeuContainer(
-            padding: const EdgeInsets.all(20),
+          const NeuContainer(
+            padding: EdgeInsets.all(20),
             radius: 28,
-            child: const Icon(
+            child: Icon(
               Icons.person_rounded,
               color: AppTheme.accentPink,
               size: 48,
@@ -503,7 +502,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
             if (isRequired)
-              Text(
+              const Text(
                 ' *',
                 style: TextStyle(
                   color: AppTheme.accentPink,
