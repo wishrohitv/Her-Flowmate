@@ -29,7 +29,6 @@ class SharedDrawer extends StatelessWidget {
             const SizedBox(height: 48),
             const Center(child: BrandName(fontSize: 24)),
             const SizedBox(height: 48),
-
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -86,7 +85,6 @@ class SharedDrawer extends StatelessWidget {
                   const SizedBox(height: 24),
                   Divider(color: AppTheme.shadowDark.withValues(alpha: 0.3)),
                   const SizedBox(height: 24),
-
                   _actionDrawerItem(
                     context: context,
                     icon: Icons.settings_rounded,
@@ -141,7 +139,6 @@ class SharedDrawer extends StatelessWidget {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 24.0,
@@ -163,7 +160,6 @@ class SharedDrawer extends StatelessWidget {
                 },
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
               child: Row(

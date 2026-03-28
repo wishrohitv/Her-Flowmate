@@ -202,19 +202,16 @@ class FertilityCard extends StatelessWidget {
                   radius: 16,
                   padding: const EdgeInsets.all(12),
                   borderColor: Colors.white.withValues(alpha: 0.5),
-                  child:
-                      const Icon(
-                            Icons.favorite_rounded,
-                            color: AppTheme.accentPink,
-                            size: 24,
-                          )
-                          .animate(onPlay: (c) => c.repeat())
-                          .scale(
-                            begin: const Offset(1, 1),
-                            end: const Offset(1.2, 1.2),
-                            duration: 800.ms,
-                            curve: Curves.easeInOut,
-                          ),
+                  child: const Icon(
+                    Icons.favorite_rounded,
+                    color: AppTheme.accentPink,
+                    size: 24,
+                  ).animate(onPlay: (c) => c.repeat()).scale(
+                        begin: const Offset(1, 1),
+                        end: const Offset(1.2, 1.2),
+                        duration: 800.ms,
+                        curve: Curves.easeInOut,
+                      ),
                 ),
               ],
             ),

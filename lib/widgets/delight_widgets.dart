@@ -187,7 +187,7 @@ void showPhaseDelight(BuildContext context, String phase) {
     ),
   );
   Overlay.of(context).insert(entry!);
-  
+
   // Safety removal after 3 seconds
   Future.delayed(const Duration(seconds: 3), () {
     if (entry != null) {
@@ -257,23 +257,21 @@ class _GlowBlob extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.4),
-                  blurRadius: 100,
-                  spreadRadius: 50,
-                ),
-              ],
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.4),
+              blurRadius: 100,
+              spreadRadius: 50,
             ),
-          ),
-        )
-        .animate(onPlay: (c) => c.repeat(reverse: true))
-        .move(
+          ],
+        ),
+      ),
+    ).animate(onPlay: (c) => c.repeat(reverse: true)).move(
           begin: const Offset(-20, -20),
           end: const Offset(20, 20),
           duration: (8 + Random().nextInt(4)).seconds,
@@ -303,9 +301,7 @@ class ShimmerButton extends StatelessWidget {
           IgnorePointer(ignoring: onTap != null, child: child),
           Positioned.fill(
             child: IgnorePointer(
-              child: Container()
-                  .animate(onPlay: (c) => c.repeat())
-                  .shimmer(
+              child: Container().animate(onPlay: (c) => c.repeat()).shimmer(
                     duration: 2.seconds,
                     color: Colors.white.withValues(alpha: 0.2),
                     angle: pi / 4,

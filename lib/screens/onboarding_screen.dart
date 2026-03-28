@@ -73,7 +73,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         );
         return;
       }
-      
+
       final ageStr = _ageController.text.trim();
       if (ageStr.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -81,32 +81,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         );
         return;
       }
-      
+
       final age = int.tryParse(ageStr);
       if (age == null || age < 10 || age > 100) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid age between 10 and 100.')),
+          const SnackBar(
+              content: Text('Please enter a valid age between 10 and 100.')),
         );
         return;
       }
     }
     if (_currentPage == 2) {
       if (_selectedGoal == 'pregnant') {
-        if (_pregnancyInputMode == 'weeks' && _weeksController.text.trim().isEmpty) {
+        if (_pregnancyInputMode == 'weeks' &&
+            _weeksController.text.trim().isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please enter how many weeks pregnant you are.')),
+            const SnackBar(
+                content: Text('Please enter how many weeks pregnant you are.')),
           );
           return;
         }
         if (_pregnancyInputMode == 'date' && _conceptionDate == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please select your conception date.')),
+            const SnackBar(
+                content: Text('Please select your conception date.')),
           );
           return;
         }
       } else if (_lastPeriodStart == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select your last period start date.')),
+          const SnackBar(
+              content: Text('Please select your last period start date.')),
         );
         return;
       }
@@ -193,23 +198,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           leading: Center(
             child: Padding(
               padding: const EdgeInsets.only(left: 12, top: 8),
-            child: NeuContainer(
-              padding: const EdgeInsets.all(12),
-              radius: 16,
-              onTap: () {
-                debugPrint('Step Back: page=$_currentPage, init=${widget.initialPage}');
-                if (_currentPage > widget.initialPage) {
-                  _back();
-                } else {
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppTheme.textDark,
-                size: 18,
+              child: NeuContainer(
+                padding: const EdgeInsets.all(12),
+                radius: 16,
+                onTap: () {
+                  debugPrint(
+                      'Step Back: page=$_currentPage, init=${widget.initialPage}');
+                  if (_currentPage > widget.initialPage) {
+                    _back();
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: AppTheme.textDark,
+                  size: 18,
+                ),
               ),
-            ),
             ),
           ),
           title: Padding(
@@ -290,9 +296,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                 ),
-              ).animate(
-                target: (_currentPage == 0 && _selectedGoal.isEmpty) ? 0 : 1,
-              ).fadeIn().slideY(begin: 0.2, end: 0, curve: Curves.easeOutBack),
+              )
+                  .animate(
+                    target:
+                        (_currentPage == 0 && _selectedGoal.isEmpty) ? 0 : 1,
+                  )
+                  .fadeIn()
+                  .slideY(begin: 0.2, end: 0, curve: Curves.easeOutBack),
             ],
           ),
         ),
@@ -391,9 +401,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 child: Icon(
                   icon,
-                  color: isSelected
-                      ? AppTheme.accentPink
-                      : AppTheme.textSecondary,
+                  color:
+                      isSelected ? AppTheme.accentPink : AppTheme.textSecondary,
                   size: 32,
                 ),
               ),
@@ -417,9 +426,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         color: AppTheme.textSecondary,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w400,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w400,
                       ),
                     ),
                   ],
@@ -585,7 +593,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ).animate().fadeIn(delay: 200.ms),
             const SizedBox(height: 32),
-            
+
             // Toggle
             Container(
               decoration: AppTheme.glassDecoration(radius: 16),
@@ -594,7 +602,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => setState(() => _pregnancyInputMode = 'weeks'),
+                      onTap: () =>
+                          setState(() => _pregnancyInputMode = 'weeks'),
                       child: AnimatedContainer(
                         duration: 300.ms,
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -647,56 +656,60 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ],
               ),
             ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
-            
+
             const SizedBox(height: 32),
- 
-             AnimatedSwitcher(
-               duration: 400.ms,
-               transitionBuilder: (child, animation) => FadeTransition(
-                 opacity: animation,
-                 child: SlideTransition(
-                   position: Tween<Offset>(
-                     begin: const Offset(0.05, 0),
-                     end: Offset.zero,
-                   ).animate(animation),
-                   child: child,
-                 ),
-               ),
-               child: _pregnancyInputMode == 'weeks'
-                   ? _setupInput(
-                       "WEEKS PREGNANT",
-                       _weeksController,
-                       "e.g. 8",
-                       isNumeric: true,
-                       isRequired: true,
-                     )
-                   : Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       key: const ValueKey('date'),
-                       children: [
-                         Text(
-                           "SELECT LAST PERIOD (LMP) DATE",
-                           style: GoogleFonts.inter(
-                             fontSize: 12,
-                             fontWeight: FontWeight.w800,
-                             color: AppTheme.textSecondary,
-                             letterSpacing: 1,
-                           ),
-                         ),
-                         const SizedBox(height: 16),
-                         NeuContainer(
-                           padding: const EdgeInsets.all(12),
-                           radius: 24,
-                           child: CalendarDatePicker(
-                             initialDate: _conceptionDate ?? DateTime.now().subtract(const Duration(days: 30)),
-                             firstDate: DateTime.now().subtract(const Duration(days: 300)),
-                             lastDate: DateTime.now(),
-                             onDateChanged: (date) => setState(() => _conceptionDate = date),
-                           ),
-                         ),
-                       ],
-                     ),
-             ),
+
+            AnimatedSwitcher(
+              duration: 400.ms,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.05, 0),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              ),
+              child: _pregnancyInputMode == 'weeks'
+                  ? _setupInput(
+                      "WEEKS PREGNANT",
+                      _weeksController,
+                      "e.g. 8",
+                      isNumeric: true,
+                      isRequired: true,
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      key: const ValueKey('date'),
+                      children: [
+                        Text(
+                          "SELECT LAST PERIOD (LMP) DATE",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.textSecondary,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        NeuContainer(
+                          padding: const EdgeInsets.all(12),
+                          radius: 24,
+                          child: CalendarDatePicker(
+                            initialDate: _conceptionDate ??
+                                DateTime.now()
+                                    .subtract(const Duration(days: 30)),
+                            firstDate: DateTime.now()
+                                .subtract(const Duration(days: 300)),
+                            lastDate: DateTime.now(),
+                            onDateChanged: (date) =>
+                                setState(() => _conceptionDate = date),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
           ],
         ),
       );

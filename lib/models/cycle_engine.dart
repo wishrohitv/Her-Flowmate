@@ -122,8 +122,7 @@ class CycleEngine {
     } else {
       double lutealDay = (day - ovulationDay).toDouble();
       double lutealLen = (cycleLen - ovulationDay).toDouble();
-      estrogen =
-          0.3 +
+      estrogen = 0.3 +
           0.4 * (1.0 - (lutealDay - (lutealLen / 2)).abs() / (lutealLen / 2));
     }
 
@@ -132,8 +131,7 @@ class CycleEngine {
     if (day > ovulationDay) {
       double lutealDay = (day - ovulationDay).toDouble();
       double lutealLen = (cycleLen - ovulationDay).toDouble();
-      progesterone =
-          0.1 +
+      progesterone = 0.1 +
           0.8 * (1.0 - (lutealDay - (lutealLen / 2)).abs() / (lutealLen / 2));
     }
 

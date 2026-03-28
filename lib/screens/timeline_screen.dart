@@ -84,11 +84,11 @@ class TimelineScreen extends StatelessWidget {
                     final phaseColor = AppTheme.phaseColor(phase);
 
                     return _TimelineRow(
-                          day: day,
-                          isToday: isToday,
-                          phaseName: phase,
-                          phaseColor: phaseColor,
-                        )
+                      day: day,
+                      isToday: isToday,
+                      phaseName: phase,
+                      phaseColor: phaseColor,
+                    )
                         .animate()
                         .fadeIn(delay: Duration(milliseconds: 30 * index))
                         .slideX(begin: 0.05);

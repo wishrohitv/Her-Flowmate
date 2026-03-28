@@ -491,14 +491,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
               ]
             : (isSelected
-                  ? [
-                      BoxShadow(
-                        color: AppTheme.accentPink.withValues(alpha: 0.4),
-                        blurRadius: 8,
-                        spreadRadius: 1,
-                      ),
-                    ]
-                  : null),
+                ? [
+                    BoxShadow(
+                      color: AppTheme.accentPink.withValues(alpha: 0.4),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : null),
       ),
       alignment: Alignment.center,
       child: Stack(
@@ -507,9 +507,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
           Text(
             '${day.day}',
             style: GoogleFonts.inter(
-              color: isSelected || isPeriod
-                  ? Colors.white
-                  : AppTheme.midnightPlum,
+              color:
+                  isSelected || isPeriod ? Colors.white : AppTheme.midnightPlum,
               fontWeight: isSelected || isToday || isPeriod
                   ? FontWeight.w900
                   : FontWeight.w600,

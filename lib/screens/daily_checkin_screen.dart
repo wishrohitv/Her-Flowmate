@@ -177,9 +177,8 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                           _selectedFlow = null;
                           _selectedActivities.clear();
                         });
-                        final existing = context
-                            .read<StorageService>()
-                            .getDailyLog(date);
+                        final existing =
+                            context.read<StorageService>().getDailyLog(date);
                         if (existing != null) {
                           setState(() {
                             if (existing.moods?.isNotEmpty == true)
@@ -273,9 +272,8 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                                 e.key,
                                 style: GoogleFonts.inter(
                                   fontSize: 14,
-                                  fontWeight: isSel
-                                      ? FontWeight.bold
-                                      : FontWeight.w600,
+                                  fontWeight:
+                                      isSel ? FontWeight.bold : FontWeight.w600,
                                   color: isSel
                                       ? Colors.white
                                       : AppTheme.textSecondary,
@@ -295,8 +293,10 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                   const SizedBox(height: 16),
                   Builder(
                     builder: (context) {
-                      final isPregnant = context.read<StorageService>().userGoal == 'pregnant';
-                      final symptoms = isPregnant ? _pregnancySymptoms : _standardSymptoms;
+                      final isPregnant =
+                          context.read<StorageService>().userGoal == 'pregnant';
+                      final symptoms =
+                          isPregnant ? _pregnancySymptoms : _standardSymptoms;
                       return Wrap(
                         spacing: 10,
                         runSpacing: 10,
@@ -337,9 +337,8 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                                 sym,
                                 style: GoogleFonts.inter(
                                   fontSize: 13,
-                                  fontWeight: isSel
-                                      ? FontWeight.bold
-                                      : FontWeight.w600,
+                                  fontWeight:
+                                      isSel ? FontWeight.bold : FontWeight.w600,
                                   color: isSel
                                       ? Colors.white
                                       : AppTheme.textSecondary,
@@ -357,7 +356,8 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                   // ── Flow Intensity (Only if not pregnant) ──────────────────
                   Builder(
                     builder: (context) {
-                      final isPregnant = context.read<StorageService>().userGoal == 'pregnant';
+                      final isPregnant =
+                          context.read<StorageService>().userGoal == 'pregnant';
                       if (isPregnant) return const SizedBox.shrink();
 
                       return Column(
@@ -370,13 +370,15 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                               final isSel = _selectedFlow == flowStr;
                               return Expanded(
                                 child: GestureDetector(
-                                  onTap: () => setState(() => _selectedFlow = flowStr),
+                                  onTap: () =>
+                                      setState(() => _selectedFlow = flowStr),
                                   child: AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
                                     margin: EdgeInsets.only(
                                       right: flowStr == _allFlows.last ? 0 : 12,
                                     ),
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
                                     decoration: BoxDecoration(
                                       color: isSel
                                           ? AppTheme.accentPink
@@ -385,7 +387,8 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                                       boxShadow: isSel
                                           ? [
                                               BoxShadow(
-                                                color: AppTheme.accentPink.withValues(
+                                                color: AppTheme.accentPink
+                                                    .withValues(
                                                   alpha: 0.3,
                                                 ),
                                                 blurRadius: 10,
@@ -463,12 +466,10 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                             act,
                             style: GoogleFonts.inter(
                               fontSize: 14,
-                              fontWeight: isSel
-                                  ? FontWeight.bold
-                                  : FontWeight.w600,
-                              color: isSel
-                                  ? Colors.white
-                                  : AppTheme.textSecondary,
+                              fontWeight:
+                                  isSel ? FontWeight.bold : FontWeight.w600,
+                              color:
+                                  isSel ? Colors.white : AppTheme.textSecondary,
                             ),
                           ),
                         ),
@@ -572,7 +573,8 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                           SnackBar(
                             content: Row(
                               children: [
-                                const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                                const Icon(Icons.check_circle_rounded,
+                                    color: Colors.white, size: 20),
                                 const SizedBox(width: 10),
                                 Text(
                                   'Check-in saved! 🌸',
@@ -585,7 +587,8 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                             ),
                             backgroundColor: const Color(0xFF4CAF50),
                             behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
                             margin: const EdgeInsets.all(16),
                             duration: const Duration(seconds: 2),
                           ),

@@ -40,8 +40,7 @@ final routerProvider = rf.Provider<gr.GoRouter>((ref) {
       final isLoggedIn = storage.hasCompletedLogin;
       final isOnboarded = storage.hasCompletedOnboarding;
 
-      final inAuthFlow =
-          state.matchedLocation == '/welcome' ||
+      final inAuthFlow = state.matchedLocation == '/welcome' ||
           state.matchedLocation == '/login';
 
       if (!isLoggedIn) {

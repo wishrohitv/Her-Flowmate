@@ -397,8 +397,7 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                               _selectedDate!.day,
                               _isAM ? 8 : 20,
                             );
-                            final duration =
-                                int.tryParse(
+                            final duration = int.tryParse(
                                   _durationController.text.trim(),
                                 ) ??
                                 5;

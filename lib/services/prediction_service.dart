@@ -126,10 +126,10 @@ class PredictionService {
       CyclePhase.ovulation;
 
   CyclePhase getPhaseForDay(DateTime date) => CycleEngine.getPhaseForDate(
-    date,
-    storageService.getLogs(),
-    averageCycleLength,
-  );
+        date,
+        storageService.getLogs(),
+        averageCycleLength,
+      );
 
   int get daysUntilNextPeriod {
     final next = nextPeriodDate;
@@ -180,12 +180,10 @@ class PredictionService {
     final estrogen = levels['Estrogen']!;
     final progesterone = levels['Progesterone']!;
 
-    String eStatus = estrogen > 0.7
-        ? 'High'
-        : (estrogen > 0.4 ? 'Rising' : 'Low');
-    String pStatus = progesterone > 0.7
-        ? 'Peak'
-        : (progesterone > 0.3 ? 'Rising' : 'Low');
+    String eStatus =
+        estrogen > 0.7 ? 'High' : (estrogen > 0.4 ? 'Rising' : 'Low');
+    String pStatus =
+        progesterone > 0.7 ? 'Peak' : (progesterone > 0.3 ? 'Rising' : 'Low');
 
     return {'Estrogen': eStatus, 'Progesterone': pStatus};
   }

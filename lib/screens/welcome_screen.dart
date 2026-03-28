@@ -48,7 +48,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               onPlay: (controller) =>
                                   controller.repeat(reverse: true),
                             )
-                            .shimmer(duration: 3.seconds, color: Colors.white30),
+                            .shimmer(
+                                duration: 3.seconds, color: Colors.white30),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -124,7 +125,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                     NeonButterfly(
                                       key: _b3Key,
                                       size: 28,
-                                      color: const Color(0xFFE6A8FF), // Lavender
+                                      color:
+                                          const Color(0xFFE6A8FF), // Lavender
                                       animateOnTap: true,
                                     ),
                                   ],
@@ -146,7 +148,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           'Reset Experience',
                           style: GoogleFonts.inter(
                             fontSize: 13,
-                            color: AppTheme.textSecondary.withValues(alpha: 0.4),
+                            color:
+                                AppTheme.textSecondary.withValues(alpha: 0.4),
                             fontWeight: FontWeight.w600,
                           ),
                         ),

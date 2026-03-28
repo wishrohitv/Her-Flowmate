@@ -111,25 +111,23 @@ class _PartnerSyncScreenState extends State<PartnerSyncScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
-                  child:
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.favorite_rounded,
-                          color: AppTheme.accentPink,
-                          size: 64,
-                        ),
-                      ).animate().scale(
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.favorite_rounded,
+                      color: AppTheme.accentPink,
+                      size: 64,
+                    ),
+                  ).animate().scale(
                         duration: 600.ms,
                         curve: Curves.easeOutBack,
                       ),
                 ),
                 const SizedBox(height: 32),
-
                 Text(
                   'Share Your Cycle',
                   textAlign: TextAlign.center,
@@ -149,9 +147,7 @@ class _PartnerSyncScreenState extends State<PartnerSyncScreen> {
                     height: 1.5,
                   ),
                 ).animate().fadeIn(delay: 300.ms),
-
                 const SizedBox(height: 40),
-
                 GlassContainer(
                   padding: const EdgeInsets.all(32),
                   radius: 32,
@@ -225,9 +221,9 @@ class _PartnerSyncScreenState extends State<PartnerSyncScreen> {
                             ),
                           ),
                         ).animate().scale(
-                          duration: 400.ms,
-                          curve: Curves.easeOutBack,
-                        ),
+                              duration: 400.ms,
+                              curve: Curves.easeOutBack,
+                            ),
                         const SizedBox(height: 20),
                         TextButton.icon(
                           onPressed: _copyCode,
@@ -248,9 +244,7 @@ class _PartnerSyncScreenState extends State<PartnerSyncScreen> {
                     ],
                   ),
                 ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
-
                 const SizedBox(height: 48),
-
                 Text(
                   'Preview: What they will see today',
                   style: GoogleFonts.poppins(
@@ -260,7 +254,6 @@ class _PartnerSyncScreenState extends State<PartnerSyncScreen> {
                   ),
                 ).animate().fadeIn(delay: 500.ms),
                 const SizedBox(height: 16),
-
                 GlassContainer(
                   padding: const EdgeInsets.all(24),
                   radius: 28,
@@ -333,7 +326,6 @@ class _PartnerSyncScreenState extends State<PartnerSyncScreen> {
                     ],
                   ),
                 ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
-
                 const SizedBox(height: 60),
               ],
             ),

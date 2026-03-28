@@ -22,16 +22,16 @@ class NotificationService {
 
     const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
-        );
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: initializationSettingsDarwin,
-        );
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+    );
 
     await _notifications.initialize(
       settings: initializationSettings,
@@ -43,10 +43,8 @@ class NotificationService {
     // Request permissions for Android 13+
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-          _notifications
-              .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin
-              >();
+          _notifications.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
       await androidImplementation?.requestNotificationsPermission();
     }
   }

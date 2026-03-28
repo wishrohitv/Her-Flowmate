@@ -81,7 +81,6 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                   ),
                 ).animate().fadeIn(delay: 100.ms),
                 const SizedBox(height: 32),
-
                 _ModeCard(
                   title: 'Track my cycle',
                   subtitle: 'Period tracking & phase predictions',
@@ -90,7 +89,6 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                   isSelected: _selectedGoal == 'track_cycle',
                   onTap: () => setState(() => _selectedGoal = 'track_cycle'),
                 ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1),
-
                 _ModeCard(
                   title: 'Trying to conceive',
                   subtitle: 'Fertile window & ovulation tracking',
@@ -99,7 +97,6 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                   isSelected: _selectedGoal == 'conceive',
                   onTap: () => setState(() => _selectedGoal = 'conceive'),
                 ).animate().fadeIn(delay: 350.ms).slideX(begin: -0.1),
-
                 _ModeCard(
                   title: 'Already pregnant',
                   subtitle: 'Pregnancy week & baby development',
@@ -108,9 +105,7 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                   isSelected: _selectedGoal == 'pregnant',
                   onTap: () => setState(() => _selectedGoal = 'pregnant'),
                 ).animate().fadeIn(delay: 500.ms).slideX(begin: 0.1),
-
                 const Spacer(),
-
                 GlassContainer(
                   radius: 20,
                   child: ElevatedButton.icon(
@@ -181,9 +176,7 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                     ),
                   ),
                 ).animate().fadeIn(delay: 650.ms),
-
                 const SizedBox(height: 16),
-
                 TextButton(
                   onPressed: () async {
                     await context.read<StorageService>().logout();

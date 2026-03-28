@@ -101,7 +101,8 @@ class HistoryScreen extends StatelessWidget {
                                       height: 200,
                                       child: LineChart(
                                         LineChartData(
-                                          gridData: const FlGridData(show: false),
+                                          gridData:
+                                              const FlGridData(show: false),
                                           titlesData: const FlTitlesData(
                                             show: false,
                                           ),
@@ -114,7 +115,8 @@ class HistoryScreen extends StatelessWidget {
                                                   .map(
                                                     (e) => FlSpot(
                                                       e.key.toDouble(),
-                                                      e.value.duration.toDouble(),
+                                                      e.value.duration
+                                                          .toDouble(),
                                                     ),
                                                   )
                                                   .toList(),
@@ -176,15 +178,18 @@ class HistoryScreen extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(24, 8, 24, 100),
                             itemCount: logs.length,
                             itemBuilder: (ctx, i) {
-                              final log = logs[logs.length - 1 - i]; // Latest first
-                              final dailyLog = storage.getDailyLog(log.startDate);
+                              final log =
+                                  logs[logs.length - 1 - i]; // Latest first
+                              final dailyLog =
+                                  storage.getDailyLog(log.startDate);
 
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
                                 child: GlassContainer(
                                   radius: 28,
                                   onTap: dailyLog != null
-                                      ? () => _showDailyLogDetails(context, dailyLog)
+                                      ? () => _showDailyLogDetails(
+                                          context, dailyLog)
                                       : null,
                                   child: Padding(
                                     padding: const EdgeInsets.all(24),
@@ -194,7 +199,8 @@ class HistoryScreen extends StatelessWidget {
                                           width: 56,
                                           height: 56,
                                           decoration: BoxDecoration(
-                                            color: AppTheme.accentPink.withValues(
+                                            color:
+                                                AppTheme.accentPink.withValues(
                                               alpha: 0.1,
                                             ),
                                             shape: BoxShape.circle,
@@ -221,27 +227,35 @@ class HistoryScreen extends StatelessWidget {
                                                     ).format(log.startDate),
                                                     style: GoogleFonts.poppins(
                                                       fontSize: 18,
-                                                      fontWeight: FontWeight.w700,
-                                                      color: AppTheme.midnightPlum,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color:
+                                                          AppTheme.midnightPlum,
                                                     ),
                                                   ),
                                                   if (dailyLog != null) ...[
                                                     const SizedBox(width: 8),
                                                     Container(
-                                                      padding: const EdgeInsets.symmetric(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
                                                         horizontal: 8,
                                                         vertical: 4,
                                                       ),
                                                       decoration: BoxDecoration(
-                                                        color: AppTheme.accentPink
-                                                            .withValues(alpha: 0.1),
+                                                        color: AppTheme
+                                                            .accentPink
+                                                            .withValues(
+                                                                alpha: 0.1),
                                                         borderRadius:
-                                                            BorderRadius.circular(8),
+                                                            BorderRadius
+                                                                .circular(8),
                                                       ),
                                                       child: const Icon(
-                                                        Icons.assignment_turned_in_rounded,
+                                                        Icons
+                                                            .assignment_turned_in_rounded,
                                                         size: 14,
-                                                        color: AppTheme.accentPink,
+                                                        color:
+                                                            AppTheme.accentPink,
                                                       ),
                                                     ),
                                                   ],
@@ -254,9 +268,10 @@ class HistoryScreen extends StatelessWidget {
                                                     '${log.duration} days',
                                                     style: GoogleFonts.inter(
                                                       fontSize: 14,
-                                                      color:
-                                                          AppTheme.textSecondary,
-                                                      fontWeight: FontWeight.w600,
+                                                      color: AppTheme
+                                                          .textSecondary,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
                                                   ),
                                                   if (log.mood != null) ...[
@@ -267,8 +282,8 @@ class HistoryScreen extends StatelessWidget {
                                                         color: AppTheme
                                                             .textSecondary
                                                             .withValues(
-                                                               alpha: 0.5,
-                                                            ),
+                                                          alpha: 0.5,
+                                                        ),
                                                       ),
                                                     ),
                                                     const SizedBox(width: 8),
@@ -290,7 +305,8 @@ class HistoryScreen extends StatelessWidget {
                                         ),
                                         Icon(
                                           dailyLog != null
-                                              ? Icons.keyboard_arrow_down_rounded
+                                              ? Icons
+                                                  .keyboard_arrow_down_rounded
                                               : Icons.chevron_right_rounded,
                                           color: AppTheme.textSecondary,
                                           size: 28,
@@ -300,8 +316,8 @@ class HistoryScreen extends StatelessWidget {
                                   ),
                                 ),
                               ).animate().fadeIn(
-                                delay: Duration(milliseconds: 100 * i),
-                              );
+                                    delay: Duration(milliseconds: 100 * i),
+                                  );
                             },
                           ),
                       ],
@@ -403,7 +419,8 @@ class HistoryScreen extends StatelessWidget {
                             Wrap(
                               spacing: 8,
                               children: log.moods!
-                                  .map<Widget>((m) => _buildChip(m, AppTheme.accentPink))
+                                  .map<Widget>(
+                                      (m) => _buildChip(m, AppTheme.accentPink))
                                   .toList(),
                             ),
                           if (log.symptoms?.isNotEmpty ?? false) ...[
@@ -412,7 +429,8 @@ class HistoryScreen extends StatelessWidget {
                               spacing: 8,
                               runSpacing: 8,
                               children: log.symptoms!
-                                  .map<Widget>((s) => _buildChip(s, const Color(0xFFBA68C8)))
+                                  .map<Widget>((s) =>
+                                      _buildChip(s, const Color(0xFFBA68C8)))
                                   .toList(),
                             ),
                           ],
@@ -460,7 +478,8 @@ class HistoryScreen extends StatelessWidget {
                               spacing: 8,
                               runSpacing: 8,
                               children: log.physicalActivity!
-                                  .map<Widget>((a) => _buildChip(a, const Color(0xFF81C784)))
+                                  .map<Widget>((a) =>
+                                      _buildChip(a, const Color(0xFF81C784)))
                                   .toList(),
                             ),
                           ),
@@ -489,7 +508,7 @@ class HistoryScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  
+
                   const SizedBox(height: 24),
                 ],
               ),

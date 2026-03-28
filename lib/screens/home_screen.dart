@@ -31,7 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 3));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkFirstTimeInfo();
     });
@@ -100,14 +101,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               _GreetingSection(storage: storage),
                               const SizedBox(height: 12),
-
                               if (storage.userGoal == 'pregnant')
                                 _buildPregnancyDashboard(context, storage)
                               else if (storage.userGoal == 'conceive')
                                 _buildTTCDashboard(context, storage)
                               else
-                                _buildModernBentoDashboard(context, storage, pred),
-
+                                _buildModernBentoDashboard(
+                                    context, storage, pred),
                               const SizedBox(height: 16),
                               _buildInsightCarousel(context),
                               const SizedBox(height: 16),
@@ -408,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Icon(
               Icons.check_circle_rounded,
               color: AppTheme.accentPink,
-      size: 24,
+              size: 24,
             ),
         ],
       ),
@@ -444,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final phaseName = pred.phaseDisplayName;
     final day = pred.currentCycleDay == 0 ? 1 : pred.currentCycleDay;
     final biology = pred.getPhaseBiology(day);
-    
+
     return NeuContainer(
       padding: const EdgeInsets.all(24),
       radius: 20,
@@ -533,8 +533,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   showGlassInfoPopup(
                     context,
                     title: 'Hydration Tracking 💧',
-                    explanation: 'Staying hydrated during your cycle helps reduce cramps, bloating, and fatigue.',
-                    tip: 'Try reaching your 15-glass goal every day to maintain a healthy streak!',
+                    explanation:
+                        'Staying hydrated during your cycle helps reduce cramps, bloating, and fatigue.',
+                    tip:
+                        'Try reaching your 15-glass goal every day to maintain a healthy streak!',
                   );
                 },
                 child: Row(
@@ -628,7 +630,6 @@ class _HomeScreenState extends State<HomeScreen> {
     ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1);
   }
 
-
   Widget _buildInsightCarousel(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = (screenWidth * 0.60).clamp(160.0, 220.0);
@@ -638,36 +639,105 @@ class _HomeScreenState extends State<HomeScreen> {
     // Phase-aware insights
     final Map<String, List<Map<String, String>>> phaseInsights = {
       'Menstruation': [
-        {'title': 'Rest & Restore', 'sub': 'Light stretching eases cramps', 'icon': '🛌'},
-        {'title': 'Iron Foods', 'sub': 'Spinach & lentils replenish iron', 'icon': '🥬'},
-        {'title': 'Heat Therapy', 'sub': 'Warm compress relieves pain', 'icon': '🌡️'},
-        {'title': 'Magnesium', 'sub': 'Dark chocolate reduces cramping', 'icon': '🍫'},
+        {
+          'title': 'Rest & Restore',
+          'sub': 'Light stretching eases cramps',
+          'icon': '🛌'
+        },
+        {
+          'title': 'Iron Foods',
+          'sub': 'Spinach & lentils replenish iron',
+          'icon': '🥬'
+        },
+        {
+          'title': 'Heat Therapy',
+          'sub': 'Warm compress relieves pain',
+          'icon': '🌡️'
+        },
+        {
+          'title': 'Magnesium',
+          'sub': 'Dark chocolate reduces cramping',
+          'icon': '🍫'
+        },
       ],
       'Follicular': [
-        {'title': 'Energy Rising', 'sub': 'Great time for new workouts', 'icon': '⚡'},
-        {'title': 'Brain Power', 'sub': 'Estrogen boosts focus & memory', 'icon': '🧠'},
+        {
+          'title': 'Energy Rising',
+          'sub': 'Great time for new workouts',
+          'icon': '⚡'
+        },
+        {
+          'title': 'Brain Power',
+          'sub': 'Estrogen boosts focus & memory',
+          'icon': '🧠'
+        },
         {'title': 'Protein Up', 'sub': 'Fuel your active phase', 'icon': '🥚'},
-        {'title': 'Social Time', 'sub': 'You\'re at your most outgoing', 'icon': '🌸'},
+        {
+          'title': 'Social Time',
+          'sub': 'You\'re at your most outgoing',
+          'icon': '🌸'
+        },
       ],
       'Ovulation': [
-        {'title': 'Peak Fertility', 'sub': 'Highest conception window now', 'icon': '🌟'},
-        {'title': 'High Energy', 'sub': 'HIIT and strength training ideal', 'icon': '💪'},
-        {'title': 'Zinc Rich', 'sub': 'Seeds & eggs support ovulation', 'icon': '🌻'},
-        {'title': 'Stay Hydrated', 'sub': 'Cervical fluid needs water', 'icon': '💧'},
+        {
+          'title': 'Peak Fertility',
+          'sub': 'Highest conception window now',
+          'icon': '🌟'
+        },
+        {
+          'title': 'High Energy',
+          'sub': 'HIIT and strength training ideal',
+          'icon': '💪'
+        },
+        {
+          'title': 'Zinc Rich',
+          'sub': 'Seeds & eggs support ovulation',
+          'icon': '🌻'
+        },
+        {
+          'title': 'Stay Hydrated',
+          'sub': 'Cervical fluid needs water',
+          'icon': '💧'
+        },
       ],
       'Luteal': [
         {'title': 'PMS Support', 'sub': 'B6 reduces mood swings', 'icon': '🌿'},
-        {'title': 'Slow Down', 'sub': 'Yoga & walking suit this phase', 'icon': '🧘‍♀️'},
-        {'title': 'Sleep First', 'sub': 'Progesterone disrupts sleep', 'icon': '🌙'},
-        {'title': 'Cravings OK', 'sub': 'Magnesium cuts chocolate cravings', 'icon': '🍵'},
+        {
+          'title': 'Slow Down',
+          'sub': 'Yoga & walking suit this phase',
+          'icon': '🧘‍♀️'
+        },
+        {
+          'title': 'Sleep First',
+          'sub': 'Progesterone disrupts sleep',
+          'icon': '🌙'
+        },
+        {
+          'title': 'Cravings OK',
+          'sub': 'Magnesium cuts chocolate cravings',
+          'icon': '🍵'
+        },
       ],
     };
 
-    final insights = phaseInsights[phase] ?? [
-      {'title': 'Track Your Cycle', 'sub': 'Log a period to see insights', 'icon': '🌸'},
-      {'title': 'Stay Hydrated', 'sub': 'Drink 8 glasses daily', 'icon': '💧'},
-      {'title': 'Rest Well', 'sub': '8h sleep for hormonal balance', 'icon': '🌙'},
-    ];
+    final insights = phaseInsights[phase] ??
+        [
+          {
+            'title': 'Track Your Cycle',
+            'sub': 'Log a period to see insights',
+            'icon': '🌸'
+          },
+          {
+            'title': 'Stay Hydrated',
+            'sub': 'Drink 8 glasses daily',
+            'icon': '💧'
+          },
+          {
+            'title': 'Rest Well',
+            'sub': '8h sleep for hormonal balance',
+            'icon': '🌙'
+          },
+        ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -844,8 +914,10 @@ class _HomeScreenState extends State<HomeScreen> {
         showGlassInfoPopup(
           context,
           title: 'Hydration Goal Met! 💧',
-          explanation: 'Amazing! You successfully reached 20 glasses of water today.',
-          tip: 'You are maintaining a great hydration streak. Your body thanks you!',
+          explanation:
+              'Amazing! You successfully reached 20 glasses of water today.',
+          tip:
+              'You are maintaining a great hydration streak. Your body thanks you!',
         );
       }
     }
@@ -859,7 +931,7 @@ class _HomeScreenState extends State<HomeScreen> {
       flowIntensity: log.flowIntensity,
       physicalActivity: log.physicalActivity,
     );
-    
+
     debugPrint('HomeScreen: Saving waterIntake = ${updatedLog.waterIntake}');
     await storage.saveDailyLog(updatedLog);
     if (mounted) setState(() {});
@@ -870,7 +942,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final now = DateTime.now();
     final log = storage.getDailyLog(now);
     if (log == null) return;
-    
+
     final updatedLog = DailyLog(
       date: log.date,
       moods: log.moods,
@@ -880,7 +952,7 @@ class _HomeScreenState extends State<HomeScreen> {
       flowIntensity: log.flowIntensity,
       physicalActivity: log.physicalActivity,
     );
-    
+
     debugPrint('HomeScreen: Saving waterIntake = ${updatedLog.waterIntake}');
     await storage.saveDailyLog(updatedLog);
     if (mounted) setState(() {});
@@ -911,7 +983,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.phaseColor(phaseName).withValues(alpha: 0.25),
+                      color: AppTheme.phaseColor(phaseName)
+                          .withValues(alpha: 0.25),
                       blurRadius: 40,
                       spreadRadius: 8,
                     ),
@@ -934,11 +1007,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   final biology = pred.getPhaseBiology(day);
                   final phase = pred.phaseDisplayName;
                   final symptoms = AppTheme.getPhaseSymptoms(phase);
-                  
+
                   showGlassInfoPopup(
                     context,
                     title: '$phase Phase',
-                    explanation: '${biology['hormoneActivity']}\n\n${biology['energy']}\n\n${biology['mood']}',
+                    explanation:
+                        '${biology['hormoneActivity']}\n\n${biology['energy']}\n\n${biology['mood']}',
                     tip: 'Common symptoms: ${symptoms.join(", ")}',
                   );
                 },
@@ -988,7 +1062,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final daysToOvulation = pred.daysUntilOvulation;
     final nextPeriod = pred.nextPeriodDate;
     final avgLen = pred.averageCycleLength;
-    final nextOvulation = pred.currentPeriodStart?.add(Duration(days: avgLen - 14));
+    final nextOvulation =
+        pred.currentPeriodStart?.add(Duration(days: avgLen - 14));
 
     final chips = <_ChipData>[];
 
@@ -997,8 +1072,8 @@ class _HomeScreenState extends State<HomeScreen> {
       label: 'Conception $chance%',
       color: AppTheme.accentPink,
       explanation: 'Your current estimated chance of conception is $chance%.',
-      tip: chance > 20 
-          ? 'You are in or approaching your fertile window.' 
+      tip: chance > 20
+          ? 'You are in or approaching your fertile window.'
           : 'Chances are currently low based on your cycle day.',
     ));
 
@@ -1007,7 +1082,8 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: Icons.wb_sunny_rounded,
         label: 'Ovulation in ${daysToOvulation}d',
         color: AppTheme.accentPurple,
-        explanation: 'Ovulation is estimated to occur in $daysToOvulation days.',
+        explanation:
+            'Ovulation is estimated to occur in $daysToOvulation days.',
         tip: 'This is usually your highest phase of energy and fertility.',
       ));
     }
@@ -1017,7 +1093,8 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: Icons.calendar_today_rounded,
         label: 'Period in ${daysToPeriod}d',
         color: AppTheme.textSecondary,
-        explanation: 'Your next period is predicted to start in $daysToPeriod days.',
+        explanation:
+            'Your next period is predicted to start in $daysToPeriod days.',
         tip: 'Log any PMS symptoms to improve future predictions.',
       ));
     }
@@ -1029,7 +1106,8 @@ class _HomeScreenState extends State<HomeScreen> {
         label: peakIn == 0 ? 'Peak today!' : 'Peak in ${peakIn}d',
         color: AppTheme.accentPink,
         explanation: 'Your fertility peak is very close.',
-        tip: 'Track your basal body temperature and cervical mucus for higher accuracy.',
+        tip:
+            'Track your basal body temperature and cervical mucus for higher accuracy.',
       ));
     }
 
@@ -1132,7 +1210,6 @@ class _GreetingSection extends StatelessWidget {
   }
 }
 
-
 class TTCDashboard extends StatelessWidget {
   final StorageService storage;
 
@@ -1143,7 +1220,7 @@ class TTCDashboard extends StatelessWidget {
     final pred = context.watch<PredictionService>();
     final nextOvulation =
         pred.nextPeriodDate?.subtract(const Duration(days: 14)) ??
-        DateTime.now();
+            DateTime.now();
 
     return Column(
       children: [
@@ -1256,8 +1333,6 @@ class TTCDashboard extends StatelessWidget {
   }
 }
 
-
-
 class _CycleRingPainter extends CustomPainter {
   final double progress;
   final Color activeColor;
@@ -1336,10 +1411,10 @@ class _ChipData {
   final Color color;
   final String explanation;
   final String tip;
-  
+
   const _ChipData({
-    required this.icon, 
-    required this.label, 
+    required this.icon,
+    required this.label,
     required this.color,
     required this.explanation,
     required this.tip,

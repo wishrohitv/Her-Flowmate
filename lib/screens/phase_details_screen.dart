@@ -73,9 +73,9 @@ class PhaseDetailsScreen extends StatelessWidget {
                             ),
                           ),
                         ).animate().scale(
-                          duration: 600.ms,
-                          curve: Curves.easeOutBack,
-                        ),
+                              duration: 600.ms,
+                              curve: Curves.easeOutBack,
+                            ),
                         const SizedBox(height: 24),
                         Text(
                           phaseName,

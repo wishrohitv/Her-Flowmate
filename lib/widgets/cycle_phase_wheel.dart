@@ -21,9 +21,8 @@ class CyclePhaseWheel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double progress = cycleLength > 0
-        ? currentCycleDay / cycleLength.clamp(1, 999)
-        : 0.0;
+    final double progress =
+        cycleLength > 0 ? currentCycleDay / cycleLength.clamp(1, 999) : 0.0;
     final accentColor = AppTheme.phaseColor(currentPhase);
 
     return RepaintBoundary(

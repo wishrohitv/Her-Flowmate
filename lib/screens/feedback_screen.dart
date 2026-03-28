@@ -99,18 +99,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               children: [
                 // Icon Header
                 Center(
-                  child:
-                      GlassContainer(
-                        radius: 40,
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: const Icon(
-                            Icons.rate_review_rounded,
-                            color: AppTheme.accentPink,
-                            size: 56,
-                          ),
-                        ),
-                      ).animate().scale(
+                  child: GlassContainer(
+                    radius: 40,
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: const Icon(
+                        Icons.rate_review_rounded,
+                        color: AppTheme.accentPink,
+                        size: 56,
+                      ),
+                    ),
+                  ).animate().scale(
                         curve: Curves.easeOutBack,
                         duration: 600.ms,
                       ),

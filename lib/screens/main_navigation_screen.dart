@@ -78,41 +78,41 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
       ),
     ).animate().slideY(
-      begin: 1.0,
-      duration: 800.ms,
-      curve: Curves.easeOutCubic,
-    );
+          begin: 1.0,
+          duration: 800.ms,
+          curve: Curves.easeOutCubic,
+        );
   }
 
   Widget _logButton() {
     return GestureDetector(
-          onTap: () {
-            HapticFeedback.mediumImpact();
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
-              barrierColor: Colors.black.withValues(alpha: 0.2),
-              builder: (context) => _buildAddMenu(context),
-            );
-          },
-          child: Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: AppTheme.brandGradient,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.roseGold.withValues(alpha: 0.4),
-                  blurRadius: 15,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.add_rounded, size: 32, color: Colors.white),
-          ),
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          barrierColor: Colors.black.withValues(alpha: 0.2),
+          builder: (context) => _buildAddMenu(context),
         );
+      },
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          gradient: AppTheme.brandGradient,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.roseGold.withValues(alpha: 0.4),
+              blurRadius: 15,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: const Icon(Icons.add_rounded, size: 32, color: Colors.white),
+      ),
+    );
   }
 
   Widget _bottomNavItem(int index, IconData icon, String label) {
@@ -126,14 +126,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-                  icon,
-                  color: isSelected
-                      ? AppTheme.accentPink
-                      : AppTheme.textSecondary,
-                  size: 26,
-                )
-                .animate(target: isSelected ? 1 : 0)
-                .scale(
+              icon,
+              color: isSelected ? AppTheme.accentPink : AppTheme.textSecondary,
+              size: 26,
+            ).animate(target: isSelected ? 1 : 0).scale(
                   begin: const Offset(1, 1),
                   end: const Offset(1.2, 1.2),
                   duration: 300.ms,
@@ -161,68 +157,69 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
       child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.95), // High opacity for stability
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-            border: Border.all(color: Colors.white, width: 1.5),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppTheme.textDark.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+        decoration: BoxDecoration(
+          color: Colors.white
+              .withValues(alpha: 0.95), // High opacity for stability
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+          border: Border.all(color: Colors.white, width: 1.5),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textDark.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                const SizedBox(height: 32),
-                if (isPregnant) ...[
-                  _menuItem(
-                    '📝',
-                    'Daily Check-in',
-                    'Log symptoms and moods',
-                    0,
-                    () => _openSheet(const DailyCheckinScreen()),
-                  ),
-                  const SizedBox(height: 12),
-                  _menuItem(
-                    '👣',
-                    'Kick Counter',
-                    'Track baby\'s movements',
-                    1,
-                    () => _showComingSoon(context, 'Kick Counter'),
-                  ),
-                  const SizedBox(height: 12),
-                  _menuItem(
-                    '⚖️',
-                    'Weight Log',
-                    'Track your pregnancy weight',
-                    2,
-                    () => _showComingSoon(context, 'Weight Log'),
-                  ),
-                ] else ...[
-                  _menuItem(
-                    '🩸',
-                    'Log Period',
-                    'Track your cycle start/end',
-                    0,
-                    () => _openSheet(const LogPeriodScreen()),
-                  ),
-                  const SizedBox(height: 16),
-                  _menuItem(
-                    '📝',
-                    'Daily Check-in',
-                    'Log symptoms and moods',
-                    1,
-                    () => _openSheet(const DailyCheckinScreen()),
-                  ),
-                ],
-                const SizedBox(height: 20),
+              ),
+              const SizedBox(height: 32),
+              if (isPregnant) ...[
+                _menuItem(
+                  '📝',
+                  'Daily Check-in',
+                  'Log symptoms and moods',
+                  0,
+                  () => _openSheet(const DailyCheckinScreen()),
+                ),
+                const SizedBox(height: 12),
+                _menuItem(
+                  '👣',
+                  'Kick Counter',
+                  'Track baby\'s movements',
+                  1,
+                  () => _showComingSoon(context, 'Kick Counter'),
+                ),
+                const SizedBox(height: 12),
+                _menuItem(
+                  '⚖️',
+                  'Weight Log',
+                  'Track your pregnancy weight',
+                  2,
+                  () => _showComingSoon(context, 'Weight Log'),
+                ),
+              ] else ...[
+                _menuItem(
+                  '🩸',
+                  'Log Period',
+                  'Track your cycle start/end',
+                  0,
+                  () => _openSheet(const LogPeriodScreen()),
+                ),
+                const SizedBox(height: 16),
+                _menuItem(
+                  '📝',
+                  'Daily Check-in',
+                  'Log symptoms and moods',
+                  1,
+                  () => _openSheet(const DailyCheckinScreen()),
+                ),
               ],
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),

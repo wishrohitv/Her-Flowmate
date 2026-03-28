@@ -18,7 +18,10 @@ class BrandName extends StatelessWidget {
         // "Her" - Bold & Vibrant Cursive
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
-            colors: [Color(0xFFFF1493), Color(0xFFFF69B4)], // Magenta to Hot Pink
+            colors: [
+              Color(0xFFFF1493),
+              Color(0xFFFF69B4)
+            ], // Magenta to Hot Pink
           ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
           child: Text(
             'Her ',
@@ -41,7 +44,10 @@ class BrandName extends StatelessWidget {
           shaderCallback: (bounds) => const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFFF69B4), Color(0xFF9370DB)], // Pink to Radiant Purple
+            colors: [
+              Color(0xFFFF69B4),
+              Color(0xFF9370DB)
+            ], // Pink to Radiant Purple
           ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
           child: Text(
             'FlowMate',
@@ -60,8 +66,9 @@ class BrandName extends StatelessWidget {
           ),
         ),
       ],
-    ).animate(onPlay: (c) => c.repeat())
-     .shimmer(duration: 2.seconds, color: Colors.white24);
+    )
+        .animate(onPlay: (c) => c.repeat())
+        .shimmer(duration: 2.seconds, color: Colors.white24);
   }
 }
 
@@ -125,14 +132,16 @@ class BrandLogo extends StatelessWidget {
                       width: size,
                       height: size,
                       fit: BoxFit.contain,
-                      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                      frameBuilder:
+                          (context, child, frame, wasSynchronouslyLoaded) {
                         if (wasSynchronouslyLoaded || frame != null) {
                           return child;
                         }
                         return Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentPink),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                AppTheme.accentPink),
                           ),
                         );
                       },
@@ -187,7 +196,8 @@ class _LogoPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..shader = gradient.createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..shader =
+          gradient.createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
     final path = Path();
@@ -253,8 +263,15 @@ class NeonButterflyState extends State<NeonButterfly> {
     if (_isTapped) {
       return Animate(
         effects: [
-          ScaleEffect(begin: const Offset(1, 1), end: const Offset(1.5, 1.5), duration: 400.ms),
-          MoveEffect(begin: Offset.zero, end: const Offset(0, -100), duration: 800.ms, curve: Curves.easeOutCubic),
+          ScaleEffect(
+              begin: const Offset(1, 1),
+              end: const Offset(1.5, 1.5),
+              duration: 400.ms),
+          MoveEffect(
+              begin: Offset.zero,
+              end: const Offset(0, -100),
+              duration: 800.ms,
+              curve: Curves.easeOutCubic),
           FadeEffect(begin: 1.0, end: 0.0, duration: 800.ms),
         ],
         child: _buildButterflyBody(isGlowing: true),
@@ -285,7 +302,8 @@ class NeonButterflyState extends State<NeonButterfly> {
           // Glow Pulse
           ShimmerEffect(
             duration: const Duration(seconds: 3),
-            color: const Color(0xFFFADADD).withValues(alpha: 0.6), // Light Pink Glow
+            color: const Color(0xFFFADADD)
+                .withValues(alpha: 0.6), // Light Pink Glow
           ),
         ],
         child: _buildButterflyBody(),
@@ -342,15 +360,21 @@ class _ButterflyPainter extends CustomPainter {
     void drawWing(double factorX, double factorY) {
       path.moveTo(cx, cy);
       path.cubicTo(
-        cx + (w * 0.45 * factorX), cy - (h * 0.6 * factorY),
-        cx + (w * 0.6 * factorX), cy + (h * 0.2 * factorY),
-        cx, cy,
+        cx + (w * 0.45 * factorX),
+        cy - (h * 0.6 * factorY),
+        cx + (w * 0.6 * factorX),
+        cy + (h * 0.2 * factorY),
+        cx,
+        cy,
       );
       path.moveTo(cx, cy);
       path.cubicTo(
-        cx + (w * 0.35 * factorX), cy + (h * 0.5 * factorY),
-        cx + (w * 0.15 * factorX), cy + (h * 0.6 * factorY),
-        cx, cy,
+        cx + (w * 0.35 * factorX),
+        cy + (h * 0.5 * factorY),
+        cx + (w * 0.15 * factorX),
+        cy + (h * 0.6 * factorY),
+        cx,
+        cy,
       );
     }
 

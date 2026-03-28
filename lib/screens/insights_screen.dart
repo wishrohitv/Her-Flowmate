@@ -63,11 +63,11 @@ class InsightsScreen extends StatelessWidget {
             children: [
               // Large Phase Wheel
               CyclePhaseWheel(
-                    currentCycleDay: cycleDay,
-                    cycleLength: cycleLen,
-                    currentPhase: phaseName,
-                    daysUntilNextPeriod: daysToNext,
-                  )
+                currentCycleDay: cycleDay,
+                cycleLength: cycleLen,
+                currentPhase: phaseName,
+                daysUntilNextPeriod: daysToNext,
+              )
                   .animate()
                   .fadeIn(duration: 800.ms)
                   .scale(curve: Curves.easeOutBack),
@@ -78,24 +78,24 @@ class InsightsScreen extends StatelessWidget {
 
               // Scores Row
               Row(
-                    children: [
-                      Expanded(
-                        child: _buildScoreCard(
-                          'Avg Cycle',
-                          '${pred.averageCycleLength}d',
-                          Icons.sync_rounded,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildScoreCard(
-                          'Avg Period',
-                          '${_getAveragePeriodLength(logs)}d',
-                          Icons.water_drop_rounded,
-                        ),
-                      ),
-                    ],
-                  )
+                children: [
+                  Expanded(
+                    child: _buildScoreCard(
+                      'Avg Cycle',
+                      '${pred.averageCycleLength}d',
+                      Icons.sync_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildScoreCard(
+                      'Avg Period',
+                      '${_getAveragePeriodLength(logs)}d',
+                      Icons.water_drop_rounded,
+                    ),
+                  ),
+                ],
+              )
                   .animate()
                   .fadeIn(delay: 500.ms, duration: 600.ms)
                   .slideY(begin: 0.1),
@@ -304,14 +304,14 @@ class InsightsScreen extends StatelessWidget {
                               getTooltipColor: (_) => AppTheme.textDark,
                               getTooltipItem:
                                   (group, groupIndex, rod, rodIndex) {
-                                    return BarTooltipItem(
-                                      '${rod.toY.toInt()} days',
-                                      GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    );
-                                  },
+                                return BarTooltipItem(
+                                  '${rod.toY.toInt()} days',
+                                  GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              },
                             ),
                           ),
                           titlesData: FlTitlesData(
@@ -362,8 +362,7 @@ class InsightsScreen extends StatelessWidget {
                               barRods: [
                                 BarChartRodData(
                                   toY: val,
-                                  width:
-                                      constraints.maxWidth /
+                                  width: constraints.maxWidth /
                                       (cycleLengths.length * 2),
                                   gradient: AppTheme.brandGradient,
                                   borderRadius: const BorderRadius.vertical(

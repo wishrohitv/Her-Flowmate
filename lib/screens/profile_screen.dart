@@ -70,50 +70,48 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       // ── Avatar ───────────────────────────────────────────────────
                       Center(
-                            child: Stack(
-                              children: [
-                                NeuContainer(
-                                  padding: const EdgeInsets.all(4),
-                                  radius: 50,
-                                  child: CircleAvatar(
-                                    radius: 46,
-                                    backgroundColor: AppTheme.frameColor,
-                                    backgroundImage:
-                                        storage.userImagePath != null
-                                            ? NetworkImage(
-                                              storage.userImagePath!,
-                                            )
-                                            : null,
-                                    child:
-                                        storage.userImagePath == null
-                                            ? const Icon(
-                                              Icons.person_rounded,
-                                              size: 52,
-                                              color: AppTheme.accentPink,
-                                            )
-                                            : null,
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: GestureDetector(
-                                    onTap: () => _pickImage(context, storage),
-                                    child: NeuContainer(
-                                      padding: const EdgeInsets.all(8),
-                                      radius: 12,
-                                      style: NeuStyle.convex,
-                                      child: const Icon(
-                                        Icons.camera_alt_rounded,
-                                        size: 18,
+                        child: Stack(
+                          children: [
+                            NeuContainer(
+                              padding: const EdgeInsets.all(4),
+                              radius: 50,
+                              child: CircleAvatar(
+                                radius: 46,
+                                backgroundColor: AppTheme.frameColor,
+                                backgroundImage: storage.userImagePath != null
+                                    ? NetworkImage(
+                                        storage.userImagePath!,
+                                      )
+                                    : null,
+                                child: storage.userImagePath == null
+                                    ? const Icon(
+                                        Icons.person_rounded,
+                                        size: 52,
                                         color: AppTheme.accentPink,
-                                      ),
-                                    ),
+                                      )
+                                    : null,
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () => _pickImage(context, storage),
+                                child: NeuContainer(
+                                  padding: const EdgeInsets.all(8),
+                                  radius: 12,
+                                  style: NeuStyle.convex,
+                                  child: const Icon(
+                                    Icons.camera_alt_rounded,
+                                    size: 18,
+                                    color: AppTheme.accentPink,
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          )
+                          ],
+                        ),
+                      )
                           .animate()
                           .fadeIn(duration: 600.ms)
                           .scale(curve: Curves.easeOutBack),

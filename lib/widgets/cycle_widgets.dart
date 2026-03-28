@@ -69,26 +69,25 @@ class CycleTimeline extends StatelessWidget {
                         border: Border.all(color: color, width: 2),
                       )
                     : null,
-                child:
-                    Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: color.withValues(alpha: isToday ? 1.0 : 0.4),
-                            shape: BoxShape.circle,
-                          ),
-                        )
-                        .animate(
-                          target: isToday ? 1 : 0,
-                          onPlay: (c) => c.repeat(reverse: true),
-                        )
-                        .scale(
-                          begin: const Offset(1, 1),
-                          end: const Offset(1.2, 1.2),
-                          duration: 1200.ms,
-                          curve: Curves.easeInOut,
-                        )
-                        .shimmer(color: color.withValues(alpha: 0.3)),
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: isToday ? 1.0 : 0.4),
+                    shape: BoxShape.circle,
+                  ),
+                )
+                    .animate(
+                      target: isToday ? 1 : 0,
+                      onPlay: (c) => c.repeat(reverse: true),
+                    )
+                    .scale(
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.2, 1.2),
+                      duration: 1200.ms,
+                      curve: Curves.easeInOut,
+                    )
+                    .shimmer(color: color.withValues(alpha: 0.3)),
               );
             }),
           ),
@@ -204,7 +203,8 @@ class _HormoneGraphState extends State<HormoneGraph> {
                           ),
                           children: [
                             TextSpan(
-                              text: '${biology['hormoneActivity']}\n\n${biology['energy']}',
+                              text:
+                                  '${biology['hormoneActivity']}\n\n${biology['energy']}',
                               style: GoogleFonts.inter(
                                 color: AppTheme.textSecondary,
                                 fontWeight: FontWeight.w500,
@@ -339,50 +339,50 @@ class HormoneFocusWidget extends StatelessWidget {
       if (highest == null || lowest == null) return const SizedBox.shrink();
 
       return NeuContainer(
-            padding: const EdgeInsets.all(28),
-            radius: 36,
-            style: NeuStyle.convex,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(28),
+        radius: 36,
+        style: NeuStyle.convex,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'DAILY FOCUS',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                        color: AppTheme.textSecondary,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    const Spacer(),
-                    Icon(
-                      Icons.lightbulb_rounded,
-                      color: AppTheme.accentPink.withValues(alpha: 0.4),
-                      size: 20,
-                    ),
-                  ],
+                Text(
+                  'DAILY FOCUS',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    color: AppTheme.textSecondary,
+                    letterSpacing: 1.5,
+                  ),
                 ),
-                const SizedBox(height: 24),
-                _focusRow(
-                  'Highest',
-                  highest['name'],
-                  highest['desc'],
-                  AppTheme.hormoneColors[highest['name']]!,
-                  Icons.trending_up_rounded,
-                ),
-                const SizedBox(height: 20),
-                _focusRow(
-                  'Lowest',
-                  lowest['name'],
-                  lowest['desc'],
-                  AppTheme.hormoneColors[lowest['name']] ?? AppTheme.accentPink,
-                  Icons.trending_down_rounded,
+                const Spacer(),
+                Icon(
+                  Icons.lightbulb_rounded,
+                  color: AppTheme.accentPink.withValues(alpha: 0.4),
+                  size: 20,
                 ),
               ],
             ),
-          )
+            const SizedBox(height: 24),
+            _focusRow(
+              'Highest',
+              highest['name'],
+              highest['desc'],
+              AppTheme.hormoneColors[highest['name']]!,
+              Icons.trending_up_rounded,
+            ),
+            const SizedBox(height: 20),
+            _focusRow(
+              'Lowest',
+              lowest['name'],
+              lowest['desc'],
+              AppTheme.hormoneColors[lowest['name']] ?? AppTheme.accentPink,
+              Icons.trending_down_rounded,
+            ),
+          ],
+        ),
+      )
           .animate(key: ValueKey(targetDay))
           .fadeIn()
           .slideX(begin: 0.1, curve: Curves.easeOutCubic);
