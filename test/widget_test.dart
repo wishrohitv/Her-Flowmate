@@ -44,8 +44,9 @@ void main() {
     );
 
     // Verify initial render state texts
-    expect(find.textContaining('HerFlowmate'), findsOneWidget);
-    expect(find.text('Guest Mode Privacy'), findsOneWidget);
+    expect(find.text('Her '), findsOneWidget);
+    expect(find.text('FlowMate'), findsOneWidget);
+    expect(find.text('Privacy First'), findsOneWidget);
 
     // Check for the login and guest buttons
     expect(find.text('Continue with Google'), findsOneWidget);
