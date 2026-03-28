@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final storage = context.read<StorageService>();
     await storage.completeLogin(isGoogle);
 
-    if (!mounted) return;
+    if (!context.mounted) return;
 
     if (storage.hasCompletedOnboarding) {
       Navigator.pushAndRemoveUntil(

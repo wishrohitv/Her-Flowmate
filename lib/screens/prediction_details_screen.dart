@@ -15,10 +15,10 @@ class PredictionDetailsScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: GlassContainer(
-            padding: const EdgeInsets.all(8),
+          icon: const GlassContainer(
+            padding: EdgeInsets.all(8),
             radius: 12,
-            child: const Icon(
+            child: Icon(
               Icons.arrow_back_rounded,
               color: AppTheme.textDark,
             ),

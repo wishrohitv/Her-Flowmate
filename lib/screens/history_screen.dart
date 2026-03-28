@@ -150,10 +150,10 @@ class HistoryScreen extends StatelessWidget {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                GlassContainer(
-                                  padding: const EdgeInsets.all(32),
+                                const GlassContainer(
+                                  padding: EdgeInsets.all(32),
                                   radius: 48,
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.history_toggle_off_rounded,
                                     color: AppTheme.accentPink,
                                     size: 64,
@@ -338,9 +338,9 @@ class HistoryScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) => Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppTheme.frameColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
         ),
         padding: const EdgeInsets.only(top: 16),
         child: ClipRRect(
@@ -356,19 +356,20 @@ class HistoryScreen extends StatelessWidget {
                     child: Container(
                       width: 48,
                       height: 6,
-                      decoration: BoxDecoration(
-                        color: AppTheme.textSecondary.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(3),
+                      decoration: const BoxDecoration(
+                        color:
+                            Color(0x339E9E9E), // Approximate textSecondary 0.2
+                        borderRadius: BorderRadius.all(Radius.circular(3)),
                       ),
                     ),
                   ),
                   const SizedBox(height: 32),
                   Row(
                     children: [
-                      NeuContainer(
-                        padding: const EdgeInsets.all(12),
+                      const NeuContainer(
+                        padding: EdgeInsets.all(12),
                         radius: 16,
-                        child: const Icon(
+                        child: Icon(
                           Icons.assignment_rounded,
                           color: AppTheme.accentPink,
                           size: 24,
@@ -494,9 +495,9 @@ class HistoryScreen extends StatelessWidget {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.5),
-                          borderRadius: BorderRadius.circular(24),
+                        decoration: const BoxDecoration(
+                          color: Color(0x80FFFFFF), // Approximate white 0.5
+                          borderRadius: BorderRadius.all(Radius.circular(24)),
                         ),
                         child: Text(
                           log.notes!,

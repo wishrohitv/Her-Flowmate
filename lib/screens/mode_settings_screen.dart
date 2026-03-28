@@ -36,10 +36,10 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: GlassContainer(
+            child: const GlassContainer(
               radius: 12,
               padding: EdgeInsets.zero,
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back_rounded,
                 color: AppTheme.textDark,
               ),
@@ -115,20 +115,21 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                         if (_selectedGoal == 'pregnant' &&
                             storage.dueDate == null &&
                             storage.pregnancyWeeks == null) {
-                          if (mounted)
+                          if (context.mounted) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => OnboardingScreen(
+                                builder: (_) => const OnboardingScreen(
                                   forceGoal: 'pregnant',
                                   initialPage: 2,
                                 ),
                               ),
                             );
+                          }
                         } else if ((_selectedGoal == 'track_cycle' ||
                                 _selectedGoal == 'conceive') &&
                             storage.getLogs().isEmpty) {
-                          if (mounted)
+                          if (context.mounted) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -138,9 +139,10 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                                 ),
                               ),
                             );
+                          }
                         } else {
                           await storage.updateUserGoal(_selectedGoal);
-                          if (mounted) {
+                          if (context.mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -180,7 +182,7 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                 TextButton(
                   onPressed: () async {
                     await context.read<StorageService>().logout();
-                    if (mounted) {
+                    if (context.mounted) {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (_) => const LoginScreen()),

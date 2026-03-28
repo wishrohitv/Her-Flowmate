@@ -594,9 +594,9 @@ class _DailyLogSheet extends StatelessWidget {
     final dailyLog = storage.getDailyLog(date);
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppTheme.frameColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
       ),
       padding: const EdgeInsets.only(top: 16),
       child: ClipRRect(

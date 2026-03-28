@@ -359,10 +359,11 @@ class PregnancyDashboard extends StatelessWidget {
         firstDate: DateTime.now().subtract(const Duration(days: 280)),
         lastDate: DateTime.now(),
         helpText: 'Select Start of Last Period (LMP)');
-    if (context.mounted && date != null)
+    if (context.mounted && date != null) {
       await context
           .read<StorageService>()
           .savePregnancyData(conceptionDate: date);
+    }
   }
 
   void _showEditDatesDialog(BuildContext context) {

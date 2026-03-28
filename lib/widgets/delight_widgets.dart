@@ -242,16 +242,10 @@ class AnimatedGlowBackground extends StatelessWidget {
 class _GlowBlob extends StatelessWidget {
   final Color color;
   final double size;
-  // Keep these for hot-reload compatibility even if unused
-  final double? top, bottom, left, right;
 
   const _GlowBlob({
     required this.color,
     required this.size,
-    this.top,
-    this.bottom,
-    this.left,
-    this.right,
   });
 
   @override

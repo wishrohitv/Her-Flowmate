@@ -33,10 +33,10 @@ class InsightsScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: NeuContainer(
+            child: const NeuContainer(
               radius: 12,
               padding: EdgeInsets.zero,
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back_rounded,
                 color: AppTheme.textDark,
               ),
@@ -263,8 +263,9 @@ class InsightsScreen extends StatelessWidget {
       final currentStart = logs[i].startDate;
       final previousStart = logs[i + 1].startDate;
       final diff = previousStart.difference(currentStart).inDays.abs();
-      if (diff > 15 && diff < 90)
+      if (diff > 15 && diff < 90) {
         cycleLengths.insert(0, diff); // Reverse for chronological order
+      }
     }
 
     return NeuContainer(
@@ -380,8 +381,8 @@ class InsightsScreen extends StatelessWidget {
                             );
                           }),
                         ),
-                        swapAnimationDuration: 800.ms,
-                        swapAnimationCurve: Curves.easeOutCubic,
+                        duration: 800.ms,
+                        curve: Curves.easeOutCubic,
                       );
                     },
                   ),

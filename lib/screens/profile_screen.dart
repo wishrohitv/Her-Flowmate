@@ -97,11 +97,11 @@ class ProfileScreen extends StatelessWidget {
                               right: 0,
                               child: GestureDetector(
                                 onTap: () => _pickImage(context, storage),
-                                child: NeuContainer(
-                                  padding: const EdgeInsets.all(8),
+                                child: const NeuContainer(
+                                  padding: EdgeInsets.all(8),
                                   radius: 12,
                                   style: NeuStyle.convex,
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.camera_alt_rounded,
                                     size: 18,
                                     color: AppTheme.accentPink,

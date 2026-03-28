@@ -107,11 +107,11 @@ class SharedDrawer extends StatelessWidget {
                       builder: (ctx) => AlertDialog(
                         backgroundColor: AppTheme.bgColor,
                         title: const Text('Help'),
-                        content: Text.rich(
+                        content: const Text.rich(
                           TextSpan(
                             children: [
-                              const WidgetSpan(child: BrandName(fontSize: 16)),
-                              const TextSpan(
+                              WidgetSpan(child: BrandName(fontSize: 16)),
+                              TextSpan(
                                 text:
                                     ' is your gentle cycle companion. Tap the ⓘ icons to learn more about each section.',
                               ),

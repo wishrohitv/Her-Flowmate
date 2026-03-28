@@ -9,9 +9,9 @@ class PeriodHealthModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppTheme.frameColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
       ),
       padding: const EdgeInsets.only(top: 16),
       child: NeuContainer(

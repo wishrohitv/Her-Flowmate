@@ -24,10 +24,10 @@ class TimelineScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: NeuContainer(
+            child: const NeuContainer(
               radius: 12,
               padding: EdgeInsets.zero,
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back_rounded,
                 color: AppTheme.textDark,
               ),

@@ -53,9 +53,9 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppTheme.frameColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
         ),
         padding: const EdgeInsets.only(top: 16),
         child: GlassContainer(
@@ -132,7 +132,6 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                               surface: AppTheme.frameColor,
                               onSurface: AppTheme.textDark,
                             ),
-                            dialogBackgroundColor: AppTheme.frameColor,
                           ),
                           child: child!,
                         ),
@@ -418,13 +417,12 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                             );
                             await storage.saveLog(log);
 
-                            if (mounted) {
-                              showPhaseDelight(
-                                context,
-                                predView.phaseDisplayName,
-                              );
-                              Navigator.pop(context);
-                            }
+                            if (!context.mounted) return;
+                            showPhaseDelight(
+                              context,
+                              predView.phaseDisplayName,
+                            );
+                            Navigator.pop(context);
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(

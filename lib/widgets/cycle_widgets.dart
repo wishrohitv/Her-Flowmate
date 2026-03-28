@@ -222,8 +222,9 @@ class _HormoneGraphState extends State<HormoneGraph> {
                         response.lineBarSpots!.isNotEmpty) {
                       final day = response.lineBarSpots![0].x.toInt();
                       setState(() => selectedDay = day);
-                      if (widget.onDaySelected != null)
+                      if (widget.onDaySelected != null) {
                         widget.onDaySelected!(day);
+                      }
                     }
                   },
                 ),

@@ -79,8 +79,9 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
       final existing = storage.getDailyLog(_selectedDate);
       if (existing != null) {
         setState(() {
-          if (existing.moods?.isNotEmpty == true)
+          if (existing.moods?.isNotEmpty == true) {
             _selectedMood = existing.moods!.first;
+          }
           _selectedSymptoms.addAll(existing.symptoms ?? []);
           _waterIntake = existing.waterIntake ?? 0;
           _notesController.text = existing.notes ?? '';
@@ -96,9 +97,9 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppTheme.frameColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
         ),
         padding: const EdgeInsets.only(top: 16),
         child: ClipRRect(
@@ -162,7 +163,6 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                               primary: AppTheme.accentPink,
                               surface: AppTheme.frameColor,
                             ),
-                            dialogBackgroundColor: AppTheme.frameColor,
                           ),
                           child: child!,
                         ),
@@ -177,12 +177,14 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                           _selectedFlow = null;
                           _selectedActivities.clear();
                         });
+                        if (!context.mounted) return;
                         final existing =
                             context.read<StorageService>().getDailyLog(date);
                         if (existing != null) {
                           setState(() {
-                            if (existing.moods?.isNotEmpty == true)
+                            if (existing.moods?.isNotEmpty == true) {
                               _selectedMood = existing.moods!.first;
+                            }
                             _selectedSymptoms.addAll(existing.symptoms ?? []);
                             _waterIntake = existing.waterIntake ?? 0;
                             _notesController.text = existing.notes ?? '';
@@ -568,33 +570,32 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                       );
 
                       await context.read<StorageService>().saveDailyLog(log);
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Row(
-                              children: [
-                                const Icon(Icons.check_circle_rounded,
-                                    color: Colors.white, size: 20),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'Check-in saved! 🌸',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const Icon(Icons.check_circle_rounded,
+                                  color: Colors.white, size: 20),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Check-in saved! 🌸',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
                                 ),
-                              ],
-                            ),
-                            backgroundColor: const Color(0xFF4CAF50),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
-                            margin: const EdgeInsets.all(16),
-                            duration: const Duration(seconds: 2),
+                              ),
+                            ],
                           ),
-                        );
-                        Navigator.pop(context);
-                      }
+                          backgroundColor: const Color(0xFF4CAF50),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          margin: const EdgeInsets.all(16),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                      Navigator.pop(context);
                     },
                     child: Container(
                       height: 60,

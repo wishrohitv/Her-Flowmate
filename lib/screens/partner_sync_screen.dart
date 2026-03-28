@@ -281,7 +281,7 @@ class _PartnerSyncScreenState extends State<PartnerSyncScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${name}'s Phase",
+                                  "$name's Phase",
                                   style: GoogleFonts.inter(
                                     fontSize: 13,
                                     color: AppTheme.textSecondary,

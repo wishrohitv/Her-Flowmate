@@ -70,10 +70,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: GlassContainer(
+            child: const GlassContainer(
               radius: 12,
               padding: EdgeInsets.zero,
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back_rounded,
                 color: AppTheme.textDark,
               ),
@@ -99,11 +99,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               children: [
                 // Icon Header
                 Center(
-                  child: GlassContainer(
+                  child: const GlassContainer(
                     radius: 40,
                     child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: const Icon(
+                      padding: EdgeInsets.all(32),
+                      child: Icon(
                         Icons.rate_review_rounded,
                         color: AppTheme.accentPink,
                         size: 56,
@@ -128,22 +128,22 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
                 const SizedBox(height: 12),
 
-                Text.rich(
+                const Text.rich(
                   TextSpan(
                     children: [
-                      const TextSpan(
+                      TextSpan(
                         text:
                             'Feature requests, bugs, or kindness — let us know how we can improve ',
                       ),
-                      const WidgetSpan(
+                      WidgetSpan(
                         alignment: PlaceholderAlignment.middle,
                         child: BrandName(fontSize: 16),
                       ),
-                      const TextSpan(text: '.'),
+                      TextSpan(text: '.'),
                     ],
-                    style: GoogleFonts.inter(
+                    style: TextStyle(
                       fontSize: 16,
-                      color: AppTheme.textDark.withValues(alpha: 0.6),
+                      color: Color(0x992E1E3C), // Approximate textDark 0.6
                       height: 1.5,
                     ),
                   ),

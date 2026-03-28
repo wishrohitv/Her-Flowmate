@@ -100,11 +100,11 @@ class BrandLogo extends StatelessWidget {
               // Bottom Glow Layer
               Animate(
                 onPlay: (c) => c.repeat(reverse: true),
-                effects: [
+                effects: const [
                   ScaleEffect(
-                    begin: const Offset(0.8, 0.8),
-                    end: const Offset(1.2, 1.2),
-                    duration: const Duration(seconds: 2),
+                    begin: Offset(0.8, 0.8),
+                    end: Offset(1.2, 1.2),
+                    duration: Duration(seconds: 2),
                     curve: Curves.easeInOut,
                   ),
                 ],
@@ -137,7 +137,7 @@ class BrandLogo extends StatelessWidget {
                         if (wasSynchronouslyLoaded || frame != null) {
                           return child;
                         }
-                        return Center(
+                        return const Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
@@ -171,11 +171,11 @@ class _BrandIconMark extends StatelessWidget {
   Widget build(BuildContext context) {
     return Animate(
       onPlay: (c) => c.repeat(reverse: true),
-      effects: [
+      effects: const [
         ScaleEffect(
-          begin: const Offset(1, 1),
-          end: const Offset(1.08, 1.08),
-          duration: const Duration(milliseconds: 2000),
+          begin: Offset(1, 1),
+          end: Offset(1.08, 1.08),
+          duration: Duration(milliseconds: 2000),
           curve: Curves.easeInOutSine,
         ),
       ],

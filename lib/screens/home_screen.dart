@@ -279,9 +279,9 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppTheme.bgColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: SingleChildScrollView(
           child: Column(
