@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
   test:
     name: Run Tests & Analyze
@@ -16,7 +19,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.0' # Matches the user's environment
+          flutter-version: '3.29.0'
           channel: 'stable'
           cache: true
 
@@ -33,7 +36,7 @@ jobs:
         run: flutter test
 
   build_web:
-    name: Verify Web Build
+    name: Build & Deploy Web
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -45,10 +48,17 @@ jobs:
           cache: true
       - run: flutter pub get
       - name: Build Web
-        run: flutter build web --release
+        run: flutter build web --release --base-href /Her-Flowmate/
+      
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
 
   build_android:
-    name: Verify Android Build
+    name: Build & Archive APK
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -60,4 +70,10 @@ jobs:
           cache: true
       - run: flutter pub get
       - name: Build APK
-        run: flutter build apk --debug # Debug build for faster verification in CI
+        run: flutter build apk --debug
+      
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: her-flowmate-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
