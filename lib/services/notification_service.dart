@@ -34,7 +34,7 @@ class NotificationService {
     );
 
     await _notifications.initialize(
-      settings: initializationSettings,
+      initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         // Handle notification tap if needed
       },
@@ -52,7 +52,7 @@ class NotificationService {
   Future<void> schedulePeriodReminder(DateTime nextPeriodDate) async {
     if (kIsWeb) return;
     // Cancel any existing reminders to avoid duplicates
-    await _notifications.cancel(id: 0);
+    await _notifications.cancel(0);
 
     // Schedule 1 day before at 9 AM
     final reminderDate = nextPeriodDate.subtract(const Duration(days: 1));
@@ -67,12 +67,11 @@ class NotificationService {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
     await _notifications.zonedSchedule(
-      id: 0,
-      title: 'Period Reminder ✨',
-      body:
-          'Your period is predicted to start tomorrow. Don\'t forget to stay hydrated!',
-      scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
-      notificationDetails: const NotificationDetails(
+      0,
+      'Period Reminder ✨',
+      'Your period is predicted to start tomorrow. Don\'t forget to stay hydrated!',
+      tz.TZDateTime.from(scheduledTime, tz.local),
+      const NotificationDetails(
         android: AndroidNotificationDetails(
           'period_cycle_reminders',
           'Period Reminders',
@@ -82,6 +81,8 @@ class NotificationService {
         ),
         iOS: DarwinNotificationDetails(),
       ),
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
