@@ -59,8 +59,8 @@ class StorageService extends ChangeNotifier {
     if (ms != null) return DateTime.fromMillisecondsSinceEpoch(ms);
     // Priority 2: Conception date + 266 days (38 weeks)
     final cDate = conceptionDate;
-    if (cDate != null) return cDate.add(const Duration(days: 266));
-    // Priority 3: Derive from weeks remaining (pregnancyWeeks stores weeks elapsed)
+    if (cDate != null) return cDate.add(const Duration(days: 280));
+    // Priority 3: Derive from weeks remaining
     final pWeeks = pregnancyWeeks;
     if (pWeeks != null) {
       // pWeeks = weeks already elapsed; remaining = 40 - pWeeks
