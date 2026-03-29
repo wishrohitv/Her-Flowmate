@@ -89,49 +89,45 @@ class FloatingSparkles extends StatelessWidget {
 
   const FloatingSparkles({
     super.key,
-    this.count = 12,
+    this.count = 6, // Reduced from 12
     this.color = Colors.white,
   });
 
   @override
   Widget build(BuildContext context) {
     final random = Random();
-    return IgnorePointer(
-      child: Stack(
-        children: List.generate(count, (index) {
-          final x = random.nextDouble();
-          final y = random.nextDouble();
-          final size = 4.0 + random.nextDouble() * 6.0;
-          final duration = 3 + random.nextInt(4);
+    return RepaintBoundary(
+      child: IgnorePointer(
+        child: Stack(
+          children: List.generate(count, (index) {
+            final x = random.nextDouble();
+            final y = random.nextDouble();
+            final size = 3.0 + random.nextDouble() * 4.0;
+            final duration = 4 + random.nextInt(4);
 
-          return Positioned(
-            left: MediaQuery.of(context).size.width * x,
-            top: MediaQuery.of(context).size.height * y,
-            child: Container(
-                  width: size,
-                  height: size,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.4),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: color.withValues(alpha: 0.5),
-                        blurRadius: 8,
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
-                )
-                .animate(onPlay: (c) => c.repeat(reverse: true))
-                .fadeIn(duration: duration.seconds)
-                .scale(
-                  begin: const Offset(0.5, 0.5),
-                  end: const Offset(1.2, 1.2),
-                  duration: duration.seconds,
-                )
-                .moveY(begin: 0, end: -30, duration: (duration + 2).seconds),
-          );
-        }),
+            return Positioned(
+              left: MediaQuery.of(context).size.width * x,
+              top: MediaQuery.of(context).size.height * y,
+              child: Container(
+                    width: size,
+                    height: size,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.3),
+                      shape: BoxShape.circle,
+                      // Removed BoxShadow for performance
+                    ),
+                  )
+                  .animate(onPlay: (c) => c.repeat(reverse: true))
+                  .fadeIn(duration: duration.seconds)
+                  .scale(
+                    begin: const Offset(0.6, 0.6),
+                    end: const Offset(1.1, 1.1),
+                    duration: duration.seconds,
+                  )
+                  .moveY(begin: 0, end: -20, duration: (duration + 1).seconds),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -216,41 +212,32 @@ class AnimatedGlowBackground extends StatelessWidget {
             ),
           ),
         ),
-        // Animated Blobs
+        // Animated Blobs - Optimized (3 blobs, smaller size, less blur)
         const Positioned(
-          top: -150,
-          left: -150,
+          top: -100,
+          left: -100,
           child: _GlowBlob(
             color: Color(0xFFFFD1DC),
-            size: 500,
+            size: 350,
             durationOffset: 0,
           ),
         ),
         const Positioned(
-          bottom: -100,
-          right: -100,
+          bottom: -50,
+          right: -50,
           child: _GlowBlob(
             color: Color(0xFFE6E6FA),
-            size: 450,
-            durationOffset: 2,
-          ),
-        ),
-        const Positioned(
-          top: 200,
-          right: -150,
-          child: _GlowBlob(
-            color: Color(0xFFF0F8FF),
-            size: 400,
+            size: 300,
             durationOffset: 4,
           ),
         ),
         const Positioned(
-          bottom: 300,
-          left: -100,
+          top: 300,
+          right: -100,
           child: _GlowBlob(
-            color: Color(0xFFFFFAD1),
-            size: 300,
-            durationOffset: 6,
+            color: Color(0xFFF0F8FF),
+            size: 250,
+            durationOffset: 8,
           ),
         ),
 
@@ -282,9 +269,9 @@ class _GlowBlob extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: color.withValues(alpha: 0.3),
-                  blurRadius: 120,
-                  spreadRadius: 60,
+                  color: color.withValues(alpha: 0.25),
+                  blurRadius: 80,
+                  spreadRadius: 40,
                 ),
               ],
             ),
@@ -292,9 +279,9 @@ class _GlowBlob extends StatelessWidget {
         )
         .animate(onPlay: (c) => c.repeat(reverse: true))
         .move(
-          begin: const Offset(-30, -30),
-          end: const Offset(30, 30),
-          duration: (10 + durationOffset).seconds,
+          begin: const Offset(-20, -20),
+          end: const Offset(20, 20),
+          duration: (15 + durationOffset).seconds,
           curve: Curves.easeInOutSine,
         );
   }
