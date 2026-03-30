@@ -249,7 +249,9 @@ class AuthWrapper extends StatelessWidget {
     }
 
     if (!storage.hasCompletedOnboarding) {
-      return const OnboardingScreen();
+      // Prefill name if we got it from Google during login
+      final prefillName = storage.userName != 'Guest' ? storage.userName : '';
+      return OnboardingScreen(prefillName: prefillName);
     }
 
     return const MainNavigationScreen();

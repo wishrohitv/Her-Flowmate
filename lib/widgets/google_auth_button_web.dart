@@ -44,19 +44,25 @@ class _GoogleWebButtonState extends State<_GoogleWebButton> {
         final idToken = auth.idToken;
 
         if (idToken != null) {
+          debugPrint('WebAuth: Sign-in captured. Sending token to backend...');
           final backendData = await GoogleAuthService.authenticateWithBackend(
             idToken,
           );
           if (backendData != null) {
+            debugPrint('WebAuth: Backend returned data: $backendData');
             final name = backendData['name'] ?? backendData['given_name'] ?? '';
 
             if (mounted) {
               final storage = context.read<StorageService>();
               await storage.completeLogin(true, name);
 
+              debugPrint('WebAuth: Login stored for $name');
+
               if (widget.onSignInComplete != null) widget.onSignInComplete!();
               if (widget.onNameFetched != null) widget.onNameFetched!(name);
             }
+          } else {
+            debugPrint('WebAuth: Backend authentication failed.');
           }
         }
       }

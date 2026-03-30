@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -211,6 +212,13 @@ class _LoginScreenState extends State<LoginScreen> {
     String? fetchedName;
 
     if (isGoogle) {
+      if (kIsWeb) {
+        // On Web, the plugin GSI button handles everything via the stream listener
+        // in google_auth_button_web.dart. We don't need to do anything here.
+        debugPrint('LoginScreen: GSI button clicked on Web.');
+        return;
+      }
+
       final token = await GoogleAuthService.signInAndGetToken();
 
       if (token == null) {
