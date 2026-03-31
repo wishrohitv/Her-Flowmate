@@ -25,6 +25,7 @@ class PregnancyDashboard extends StatelessWidget {
     final progress = (1 - (info.daysLeft / 280)).clamp(0.0, 1.0);
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildHeader(context, weekData, activeColor),

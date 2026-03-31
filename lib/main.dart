@@ -8,7 +8,11 @@ import 'services/notification_service.dart';
 import 'utils/app_theme.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/welcome_screen.dart';
+import 'screens/app_lock_screen.dart';
 import 'services/google_auth_services.dart';
+import 'providers/community_provider.dart';
+import 'domain/use_cases/get_community_feed.dart';
+import 'data/repositories/mock_community_repository.dart';
 
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -165,6 +169,11 @@ class _BootstrapScreenState extends State<BootstrapScreen> {
         ProxyProvider<StorageService, PredictionService>(
           update: (context, storage, previous) => PredictionService(storage),
         ),
+        ChangeNotifierProvider(
+          create: (_) => CommunityProvider(
+            getFeedUseCase: GetCommunityFeed(MockCommunityRepository()),
+          ),
+        ),
       ],
       child: const HerFlowmateApp(),
     );
@@ -228,12 +237,43 @@ class HerFlowmateApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final storage = context.watch<StorageService>();
     return MaterialApp(
       title: 'HerFlowmate',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const AuthWrapper(),
+      darkTheme: AppTheme.darkTheme,
+      themeMode: storage.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: const AppLockWrapper(),
     );
+  }
+}
+
+class AppLockWrapper extends StatefulWidget {
+  const AppLockWrapper({super.key});
+
+  @override
+  State<AppLockWrapper> createState() => _AppLockWrapperState();
+}
+
+class _AppLockWrapperState extends State<AppLockWrapper> {
+  bool _unlocked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final storage = context.watch<StorageService>();
+
+    if (storage.isPinLocked && !_unlocked) {
+      return AppLockScreen(
+        onUnlocked: () {
+          setState(() {
+            _unlocked = true;
+          });
+        },
+      );
+    }
+
+    return const AuthWrapper();
   }
 }
 

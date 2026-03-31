@@ -23,6 +23,26 @@ class DailyLog extends HiveObject {
   @HiveField(6)
   final List<String>? physicalActivity;
 
+  /// Hours of sleep (e.g. 7.5). Stored from daily check-in.
+  @HiveField(7)
+  final double? sleepHours;
+
+  /// Subjective energy level: 1 (exhausted) to 5 (very energetic).
+  @HiveField(8)
+  final int? energyLevel;
+
+  /// Subjective stress level: 1 (very calm) to 5 (very stressed).
+  @HiveField(9)
+  final int? stressLevel;
+
+  /// Basal body temperature in Celsius (useful for fertility tracking).
+  @HiveField(10)
+  final double? basalBodyTemperature;
+
+  /// Number of steps walked today.
+  @HiveField(11)
+  final int? stepsCount;
+
   DailyLog({
     required this.date,
     this.moods,
@@ -31,6 +51,11 @@ class DailyLog extends HiveObject {
     this.notes,
     this.flowIntensity,
     this.physicalActivity,
+    this.sleepHours,
+    this.energyLevel,
+    this.stressLevel,
+    this.basalBodyTemperature,
+    this.stepsCount,
   });
 }
 
@@ -52,13 +77,18 @@ class DailyLogAdapter extends TypeAdapter<DailyLog> {
       notes: fields[4] as String?,
       flowIntensity: fields[5] as String?,
       physicalActivity: (fields[6] as List?)?.cast<String>(),
+      sleepHours: fields[7] as double?,
+      energyLevel: fields[8] as int?,
+      stressLevel: fields[9] as int?,
+      basalBodyTemperature: fields[10] as double?,
+      stepsCount: fields[11] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DailyLog obj) {
     writer
-      ..writeByte(7) // Increased from 5
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.date)
       ..writeByte(1)
@@ -72,7 +102,17 @@ class DailyLogAdapter extends TypeAdapter<DailyLog> {
       ..writeByte(5)
       ..write(obj.flowIntensity)
       ..writeByte(6)
-      ..write(obj.physicalActivity);
+      ..write(obj.physicalActivity)
+      ..writeByte(7)
+      ..write(obj.sleepHours)
+      ..writeByte(8)
+      ..write(obj.energyLevel)
+      ..writeByte(9)
+      ..write(obj.stressLevel)
+      ..writeByte(10)
+      ..write(obj.basalBodyTemperature)
+      ..writeByte(11)
+      ..write(obj.stepsCount);
   }
 
   @override

@@ -271,4 +271,56 @@ abstract final class AppTheme {
       ),
     );
   }
+
+  // ── Dark Mode Colours ─────────────────────────────────────────────────────
+  static const Color darkBg = Color(0xFF1A0F22); // Deep midnight plum
+  static const Color darkSurface = Color(
+    0xFF241630,
+  ); // Slightly lighter surface
+  static const Color darkCard = Color(0xFF2E1C3E); // Card background
+  static const Color darkTextPrimary = Color(0xFFF3E0EC); // Creamy off-white
+  static const Color darkTextSecondary = Color(0xFFAA8FBB); // Muted lavender
+  static const Color darkNeuLight = Color(0xFF3A2450); // Light shadow
+  static const Color darkNeuDark = Color(0xFF100A18); // Dark shadow
+
+  static const LinearGradient darkBgGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFF1E1128), // Deep top-left
+      Color(0xFF1A0F22), // Main dark surface
+      Color(0xFF0F0814), // Bottom-right depth
+    ],
+  );
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: darkBg,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: roseGold,
+        brightness: Brightness.dark,
+        primary: roseGold,
+        surface: darkSurface,
+        onSurface: darkTextPrimary,
+      ),
+      textTheme: GoogleFonts.poppinsTextTheme().apply(
+        bodyColor: darkTextPrimary,
+        displayColor: darkTextPrimary,
+      ),
+      cardColor: darkCard,
+      dividerColor: darkNeuLight.withValues(alpha: 0.3),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: darkSurface,
+        foregroundColor: darkTextPrimary,
+        elevation: 0,
+      ),
+      dialogTheme: const DialogThemeData(backgroundColor: darkCard),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: darkCard,
+        contentTextStyle: GoogleFonts.inter(color: darkTextPrimary),
+      ),
+    );
+  }
 }

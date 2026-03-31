@@ -18,11 +18,18 @@ class DailyCheckinScreen extends StatefulWidget {
 class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
   DateTime _selectedDate = DateTime.now();
   final List<String> _selectedSymptoms = [];
-  String? _selectedMood;
+  final List<String> _selectedMoods = []; // Now supports multiple moods
   int _waterIntake = 0;
   String? _selectedFlow;
   final List<String> _selectedActivities = [];
   final TextEditingController _notesController = TextEditingController();
+
+  // New health fields
+  double _sleepHours = 7.0;
+  int? _energyLevel;
+  int? _stressLevel;
+  int _stepsCount = 0;
+  final TextEditingController _stepsController = TextEditingController();
 
   final List<String> _standardSymptoms = [
     'Cramps',
@@ -73,23 +80,36 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
   @override
   void initState() {
     super.initState();
+    _stepsController.text = '0';
     // Preload if exists
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final storage = context.read<StorageService>();
       final existing = storage.getDailyLog(_selectedDate);
       if (existing != null) {
         setState(() {
-          if (existing.moods?.isNotEmpty == true) {
-            _selectedMood = existing.moods!.first;
-          }
+          _selectedMoods
+            ..clear()
+            ..addAll(existing.moods ?? []);
           _selectedSymptoms.addAll(existing.symptoms ?? []);
           _waterIntake = existing.waterIntake ?? 0;
           _notesController.text = existing.notes ?? '';
           _selectedFlow = existing.flowIntensity;
           _selectedActivities.addAll(existing.physicalActivity ?? []);
+          _sleepHours = existing.sleepHours ?? 7.0;
+          _energyLevel = existing.energyLevel;
+          _stressLevel = existing.stressLevel;
+          _stepsCount = existing.stepsCount ?? 0;
+          _stepsController.text = '$_stepsCount';
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    _stepsController.dispose();
+    super.dispose();
   }
 
   @override
@@ -172,11 +192,16 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                         setState(() {
                           _selectedDate = date;
                           _selectedSymptoms.clear();
-                          _selectedMood = null;
+                          _selectedMoods.clear();
                           _waterIntake = 0;
                           _notesController.clear();
                           _selectedFlow = null;
                           _selectedActivities.clear();
+                          _sleepHours = 7.0;
+                          _energyLevel = null;
+                          _stressLevel = null;
+                          _stepsCount = 0;
+                          _stepsController.text = '0';
                         });
                         if (!context.mounted) return;
                         final existing = context
@@ -184,9 +209,9 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                             .getDailyLog(date);
                         if (existing != null) {
                           setState(() {
-                            if (existing.moods?.isNotEmpty == true) {
-                              _selectedMood = existing.moods!.first;
-                            }
+                            _selectedMoods
+                              ..clear()
+                              ..addAll(existing.moods ?? []);
                             _selectedSymptoms.addAll(existing.symptoms ?? []);
                             _waterIntake = existing.waterIntake ?? 0;
                             _notesController.text = existing.notes ?? '';
@@ -194,6 +219,11 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                             _selectedActivities.addAll(
                               existing.physicalActivity ?? [],
                             );
+                            _sleepHours = existing.sleepHours ?? 7.0;
+                            _energyLevel = existing.energyLevel;
+                            _stressLevel = existing.stressLevel;
+                            _stepsCount = existing.stepsCount ?? 0;
+                            _stepsController.text = '$_stepsCount';
                           });
                         }
                       }
@@ -232,16 +262,21 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                   const SizedBox(height: 32),
 
                   // ── Mood ────────────────────────────────────────────
-                  _stepLabel('🎭', 'Mood'),
+                  _stepLabel('🎭', 'Mood (pick all that apply)'),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
                     children:
                         _allMoods.entries.map((e) {
-                          final isSel = _selectedMood == e.key;
+                          final isSel = _selectedMoods.contains(e.key);
                           return GestureDetector(
-                            onTap: () => setState(() => _selectedMood = e.key),
+                            onTap:
+                                () => setState(() {
+                                  isSel
+                                      ? _selectedMoods.remove(e.key)
+                                      : _selectedMoods.add(e.key);
+                                }),
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
                               padding: const EdgeInsets.symmetric(
@@ -562,6 +597,125 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
 
                   const SizedBox(height: 32),
 
+                  // ── Sleep ─────────────────────────────────────────────────
+                  _stepLabel('🌙', 'Sleep Hours'),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Text(
+                        '${_sleepHours.toStringAsFixed(1)}h',
+                        style: GoogleFonts.poppins(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textDark,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _sleepHours < 6
+                            ? '😴 Rest more'
+                            : (_sleepHours >= 8 ? '✨ Well rested' : '😌 Ok'),
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: AppTheme.accentPink,
+                      inactiveTrackColor: AppTheme.accentPink.withValues(
+                        alpha: 0.2,
+                      ),
+                      thumbColor: AppTheme.accentPink,
+                      overlayColor: AppTheme.accentPink.withValues(alpha: 0.15),
+                    ),
+                    child: Slider(
+                      value: _sleepHours,
+                      min: 3.0,
+                      max: 12.0,
+                      divisions: 18,
+                      onChanged: (val) => setState(() => _sleepHours = val),
+                    ),
+                  ).animate().fadeIn(delay: 550.ms),
+
+                  const SizedBox(height: 32),
+
+                  // ── Energy Level ──────────────────────────────────────────
+                  _stepLabel('⚡', 'Energy Level'),
+                  const SizedBox(height: 4),
+                  Text(
+                    '1 = Exhausted  ·  5 = Super Energetic',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildLevelRow(
+                    current: _energyLevel,
+                    emojis: const ['😴', '🥱', '😐', '😊', '🤩'],
+                    onTap: (v) => setState(() => _energyLevel = v),
+                  ).animate().fadeIn(delay: 580.ms),
+
+                  const SizedBox(height: 32),
+
+                  // ── Stress Level ──────────────────────────────────────────
+                  _stepLabel('🧘', 'Stress Level'),
+                  const SizedBox(height: 4),
+                  Text(
+                    '1 = Very Calm  ·  5 = Very Stressed',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildLevelRow(
+                    current: _stressLevel,
+                    emojis: const ['😌', '🙂', '😐', '😟', '😰'],
+                    onTap: (v) => setState(() => _stressLevel = v),
+                  ).animate().fadeIn(delay: 610.ms),
+
+                  const SizedBox(height: 32),
+
+                  // ── Steps ─────────────────────────────────────────────────
+                  _stepLabel('👟', 'Steps Today'),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: TextField(
+                      controller: _stepsController,
+                      keyboardType: TextInputType.number,
+                      onChanged: (v) => _stepsCount = int.tryParse(v) ?? 0,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'e.g. 6500',
+                        hintStyle: GoogleFonts.inter(
+                          color: AppTheme.textSecondary.withValues(alpha: 0.5),
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.directions_walk_rounded,
+                          color: AppTheme.accentPink,
+                        ),
+                      ),
+                      style: GoogleFonts.inter(
+                        color: AppTheme.textDark,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ).animate().fadeIn(delay: 630.ms),
+
+                  const SizedBox(height: 32),
+
                   // ── Notes ─────────────────────────────────────────
                   _stepLabel('📝', 'Journal'),
                   const SizedBox(height: 16),
@@ -593,26 +747,33 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                   // ── Save Button ─────────────────────────────────────────────
                   GestureDetector(
                     onTap: () async {
-                      final log = DailyLog(
-                        date: _selectedDate,
-                        moods: _selectedMood != null ? [_selectedMood!] : null,
-                        symptoms:
-                            _selectedSymptoms.isNotEmpty
-                                ? List.from(_selectedSymptoms)
-                                : null,
-                        waterIntake: _waterIntake,
-                        notes:
-                            _notesController.text.isNotEmpty
-                                ? _notesController.text
-                                : null,
-                        flowIntensity: _selectedFlow,
-                        physicalActivity:
-                            _selectedActivities.isNotEmpty
-                                ? List.from(_selectedActivities)
-                                : null,
+                      await context.read<StorageService>().saveDailyLog(
+                        DailyLog(
+                          date: _selectedDate,
+                          moods:
+                              _selectedMoods.isNotEmpty
+                                  ? List.from(_selectedMoods)
+                                  : null,
+                          symptoms:
+                              _selectedSymptoms.isNotEmpty
+                                  ? List.from(_selectedSymptoms)
+                                  : null,
+                          waterIntake: _waterIntake,
+                          notes:
+                              _notesController.text.isNotEmpty
+                                  ? _notesController.text
+                                  : null,
+                          flowIntensity: _selectedFlow,
+                          physicalActivity:
+                              _selectedActivities.isNotEmpty
+                                  ? List.from(_selectedActivities)
+                                  : null,
+                          sleepHours: _sleepHours,
+                          energyLevel: _energyLevel,
+                          stressLevel: _stressLevel,
+                          stepsCount: _stepsCount,
+                        ),
                       );
-
-                      await context.read<StorageService>().saveDailyLog(log);
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -696,6 +857,60 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  /// A 1-5 emoji rating row for energy/stress level pickers.
+  Widget _buildLevelRow({
+    required int? current,
+    required List<String> emojis,
+    required void Function(int) onTap,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(5, (i) {
+        final level = i + 1;
+        final isSelected = current == level;
+        return GestureDetector(
+          onTap: () => onTap(level),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color:
+                  isSelected
+                      ? AppTheme.accentPink
+                      : Colors.white.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow:
+                  isSelected
+                      ? [
+                        BoxShadow(
+                          color: AppTheme.accentPink.withValues(alpha: 0.35),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                      : [],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(emojis[i], style: const TextStyle(fontSize: 20)),
+                Text(
+                  '$level',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: isSelected ? Colors.white : AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
     );
   }
 }

@@ -8,6 +8,7 @@ import 'log_period_screen.dart';
 import 'daily_checkin_screen.dart';
 import 'calendar_screen.dart';
 import 'profile_screen.dart';
+import 'wellness_reminders_screen.dart';
 import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
@@ -187,10 +188,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 ),
                 const SizedBox(height: 12),
                 _menuItem(
+                  '🧘',
+                  'Wellness Goals',
+                  'Manage your wellness',
+                  1,
+                  () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const WellnessRemindersScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                _menuItem(
                   '👣',
                   'Kick Counter',
                   'Track baby\'s movements',
-                  1,
+                  2,
                   () => _showComingSoon(context, 'Kick Counter'),
                 ),
                 const SizedBox(height: 12),

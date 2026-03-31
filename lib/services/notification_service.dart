@@ -88,6 +88,105 @@ class NotificationService {
     );
   }
 
+  Future<void> scheduleDailyCheckinReminder() async {
+    if (kIsWeb) return;
+    // Daily recurring at 8 AM
+    await _notifications.zonedSchedule(
+      id: 1,
+      title: 'Good Morning! 🌸',
+      body: 'Time for your daily check-in. How are you feeling today?',
+      scheduledDate: _nextInstanceOfTime(8, 0),
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_checkin',
+          'Daily Check-ins',
+          importance: Importance.low,
+          priority: Priority.low,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  Future<void> scheduleOvulationReminder(DateTime ovulationDate) async {
+    if (kIsWeb) return;
+    final scheduledTime = DateTime(
+      ovulationDate.year,
+      ovulationDate.month,
+      ovulationDate.day,
+      10,
+      0,
+    );
+    if (scheduledTime.isBefore(DateTime.now())) return;
+
+    await _notifications.zonedSchedule(
+      id: 2,
+      title: 'Fertile Window 🌸',
+      body: 'You are entering your peak fertile window. Take care of yourself!',
+      scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'fertility_reminders',
+          'Fertility Reminders',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
+
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
+  Future<void> scheduleWellnessReminder(
+    int id,
+    String title,
+    String category,
+    DateTime date,
+  ) async {
+    if (kIsWeb) return;
+    if (date.isBefore(DateTime.now())) return;
+
+    await _notifications.zonedSchedule(
+      id: 100 + id, // Offset for wellness goals
+      title: '$category Goal! 🧘',
+      body: 'Time for your wellness activity: $title',
+      scheduledDate: tz.TZDateTime.from(date, tz.local),
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'wellness_goals',
+          'Wellness Goals',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
+
+  Future<void> cancelNotification(int id) async {
+    if (kIsWeb) return;
+    await _notifications.cancel(id: id);
+  }
+
   Future<void> cancelAll() async {
     if (kIsWeb) return;
     await _notifications.cancelAll();

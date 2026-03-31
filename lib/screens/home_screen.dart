@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'wellness_reminders_screen.dart';
+import '../models/appointment.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../services/prediction_service.dart';
@@ -432,6 +434,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         _buildFloralRingDashboard(context, pred)
             .animate()
@@ -446,15 +449,266 @@ class _HomeScreenState extends State<HomeScreen> {
         _buildBentoWaterCard(
           storage,
         ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1),
+        const SizedBox(height: 12),
+        // ── Sleep & Streak row ─────────────────────────────────────────
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _buildSleepCard(
+                storage,
+                pred,
+              ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildStreakCard(
+                context,
+                storage,
+              ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
+            ),
+          ],
+        ),
         const SizedBox(height: 20),
         HormoneGraph(
           pred: pred,
-        ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1),
+        ).animate().fadeIn(delay: 700.ms, duration: 400.ms).slideY(begin: 0.1),
         const SizedBox(height: 24),
         PhaseHealthTipsWidget(
           pred: pred,
-        ).animate().fadeIn(delay: 800.ms, duration: 400.ms).slideY(begin: 0.1),
+        ).animate().fadeIn(delay: 900.ms, duration: 400.ms).slideY(begin: 0.1),
+        const SizedBox(height: 24),
+        _buildWellnessGoalsCard(
+          context,
+          storage,
+        ).animate().fadeIn(delay: 1000.ms, duration: 400.ms).slideY(begin: 0.1),
       ],
+    );
+  }
+
+  Widget _buildSleepCard(StorageService storage, PredictionService pred) {
+    final sleepHours = storage.getSleepHours();
+    final hasData = sleepHours != null;
+    final phase = pred.phaseDisplayName;
+
+    final sleepTips = {
+      'Menstrual': 'Rest extra — your body rebuilds tonight.',
+      'Follicular': 'Energy rising — 7–8h keeps you sharp.',
+      'Ovulation': 'You\'re peaking — protect quality sleep!',
+      'Luteal': 'Progesterone dips — magnesium helps.',
+    };
+    final tip = sleepTips[phase] ?? 'Aim for 7–9h for hormonal balance.';
+
+    String quality = '—';
+    Color qualityColor = AppTheme.textSecondary;
+    if (hasData) {
+      if (sleepHours >= 8) {
+        quality = 'Great';
+        qualityColor = const Color(0xFF66BB6A);
+      } else if (sleepHours >= 6) {
+        quality = 'Ok';
+        qualityColor = const Color(0xFFFFB347);
+      } else {
+        quality = 'Low';
+        qualityColor = const Color(0xFFFF686B);
+      }
+    }
+
+    return NeuContainer(
+      radius: 24,
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('🌙', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(
+                'Sleep',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.textDark,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: hasData ? sleepHours.toStringAsFixed(1) : '—',
+                  style: GoogleFonts.poppins(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textDark,
+                  ),
+                ),
+                if (hasData)
+                  TextSpan(
+                    text: 'h',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (hasData)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: qualityColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                quality,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: qualityColor,
+                ),
+              ),
+            ),
+          const SizedBox(height: 8),
+          Text(
+            tip,
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              color: AppTheme.textSecondary,
+              height: 1.4,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (!hasData) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Log in daily check-in ✏️',
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: AppTheme.accentPink,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStreakCard(BuildContext context, StorageService storage) {
+    final streak = storage.getCheckinStreak();
+    final isMilestone = streak > 0 && (streak % 7 == 0);
+
+    if (isMilestone && streak > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _confettiController.play();
+      });
+    }
+
+    String streakLabel;
+    Color streakColor;
+    String emoji;
+    if (streak >= 30) {
+      streakLabel = 'Legend!';
+      streakColor = const Color(0xFFD481FF);
+      emoji = '🏆';
+    } else if (streak >= 14) {
+      streakLabel = 'On fire!';
+      streakColor = const Color(0xFFFF9800);
+      emoji = '🔥';
+    } else if (streak >= 7) {
+      streakLabel = '1 week!';
+      streakColor = const Color(0xFF66BB6A);
+      emoji = '⭐';
+    } else if (streak >= 1) {
+      streakLabel = 'Keep it up';
+      streakColor = AppTheme.accentPink;
+      emoji = '✨';
+    } else {
+      streakLabel = 'Start today';
+      streakColor = AppTheme.textSecondary;
+      emoji = '📅';
+    }
+
+    return NeuContainer(
+      radius: 24,
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(
+                'Streak',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.textDark,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: '$streak',
+                  style: GoogleFonts.poppins(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: streakColor,
+                  ),
+                ),
+                TextSpan(
+                  text: ' days',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: streakColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              streakLabel,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: streakColor,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            streak == 0
+                ? 'Log your check-in daily to start a streak!'
+                : 'Next milestone: ${streak < 7
+                    ? 7 - streak
+                    : streak < 14
+                    ? 14 - streak
+                    : 30 - streak} days away',
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              color: AppTheme.textSecondary,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -890,14 +1144,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTTCDashboard(BuildContext context, StorageService storage) {
-    return TTCDashboard(storage: storage);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TTCDashboard(storage: storage),
+        const SizedBox(height: 24),
+        _buildWellnessGoalsCard(context, storage),
+      ],
+    );
   }
 
   Widget _buildPregnancyDashboard(
     BuildContext context,
     StorageService storage,
   ) {
-    return PregnancyDashboard(storage: storage);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PregnancyDashboard(storage: storage),
+        const SizedBox(height: 12),
+        _buildWellnessGoalsCard(context, storage),
+      ],
+    );
   }
 
   Widget _buildNewUserContent(BuildContext context, StorageService storage) {
@@ -1244,6 +1512,108 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Widget _buildWellnessGoalsCard(BuildContext context, StorageService storage) {
+    final upcoming = storage.getUpcomingAppointments();
+    final hasGoals = upcoming.isNotEmpty;
+
+    return NeuContainer(
+      padding: const EdgeInsets.all(24),
+      radius: 28,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const WellnessRemindersScreen()),
+        );
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.spa_rounded,
+                    color: AppTheme.accentPink,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'WELLNESS GOALS',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      color: AppTheme.textSecondary,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: AppTheme.textSecondary,
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          if (hasGoals) ...[
+            Text(
+              upcoming.first.title,
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: AppTheme.textDark,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentPink.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    upcoming.first.category.label,
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.accentPink,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Scheduled for ${DateFormat('MMM d').format(upcoming.first.date)}',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: AppTheme.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ] else
+            Text(
+              'No upcoming goals. Tap to set a wellness reminder!',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: AppTheme.textSecondary,
+                height: 1.4,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class _GreetingSection extends StatelessWidget {
@@ -1309,6 +1679,7 @@ class TTCDashboard extends StatelessWidget {
         DateTime.now();
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         _buildFertilityCard(pred, title: 'TTC Focus: Fertility Window'),
         const SizedBox(height: 24),
@@ -1362,6 +1733,7 @@ class TTCDashboard extends StatelessWidget {
       radius: 40,
       style: NeuStyle.convex,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(

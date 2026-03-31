@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/brand_widgets.dart';
@@ -13,6 +12,8 @@ import '../screens/partner_sync_screen.dart';
 import '../screens/mode_settings_screen.dart';
 import '../screens/feedback_screen.dart';
 import '../screens/login_screen.dart';
+import '../screens/wellness_reminders_screen.dart';
+import '../screens/community_screen.dart';
 
 class SharedDrawer extends StatelessWidget {
   const SharedDrawer({super.key});
@@ -72,6 +73,19 @@ class SharedDrawer extends StatelessWidget {
                         ),
                       );
                     },
+                  ),
+                  const SizedBox(height: 12),
+                  _actionDrawerItem(
+                    context: context,
+                    icon: Icons.spa_rounded,
+                    title: 'Wellness Goals',
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const WellnessRemindersScreen(),
+                          ),
+                        ),
                   ),
                   const SizedBox(height: 12),
                   _actionDrawerItem(
@@ -152,9 +166,15 @@ class SharedDrawer extends StatelessWidget {
                   const SizedBox(height: 12),
                   _actionDrawerItem(
                     context: context,
-                    icon: Icons.discord_rounded,
-                    title: 'Join Community',
-                    onTap: () => _launchDiscord(),
+                    icon: Icons.forum_rounded,
+                    title: 'Community Space',
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CommunityScreen(),
+                          ),
+                        ),
                   ),
                 ],
               ),
@@ -203,12 +223,6 @@ class SharedDrawer extends StatelessWidget {
     );
   }
 
-  void _launchDiscord() async {
-    final Uri url = Uri.parse('https://discord.gg/aehkEXj8q');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      debugPrint('Could not launch Discord URL');
-    }
-  }
 
   Widget _actionDrawerItem({
     required BuildContext context,

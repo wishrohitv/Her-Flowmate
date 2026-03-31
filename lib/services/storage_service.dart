@@ -1,9 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 import '../models/period_log.dart';
 import '../models/daily_log.dart';
+import '../models/appointment.dart';
 import 'notification_service.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class StorageService extends ChangeNotifier {
   StorageService();
@@ -12,6 +17,7 @@ class StorageService extends ChangeNotifier {
 
   static const String boxName = 'period_logs';
   static const String dailyBoxName = 'daily_logs';
+  static const String appointmentBoxName = 'appointments';
   late SharedPreferences _prefs;
 
   Future<void> init() async {
@@ -31,10 +37,18 @@ class StorageService extends ChangeNotifier {
         Hive.registerAdapter(DailyLogAdapter());
       }
 
+      if (!Hive.isAdapterRegistered(3)) {
+        debugPrint('StorageService: Registering AppointmentAdapter...');
+        Hive.registerAdapter(AppointmentAdapter());
+      }
+
       debugPrint('StorageService: Opening boxes...');
       await Hive.openBox<PeriodLog>(boxName);
       await Hive.openBox<DailyLog>(dailyBoxName);
+      await Hive.openBox<Appointment>(appointmentBoxName);
       debugPrint('StorageService: Initialization successful.');
+      // Schedule daily check-in reminder on init
+      NotificationService().scheduleDailyCheckinReminder();
     } catch (e) {
       debugPrint('ERROR IN StorageService.init: $e');
       rethrow;
@@ -52,6 +66,8 @@ class StorageService extends ChangeNotifier {
       _prefs.containsKey('userAge') ? _prefs.getInt('userAge') : null;
   String? get userImagePath => _prefs.getString('userImagePath');
   bool get isMinimalMode => _prefs.getBool('isMinimalMode') ?? false;
+  bool get isDarkMode => _prefs.getBool('isDarkMode') ?? false;
+
   // Pregnancy data
   DateTime? get dueDate {
     // Priority 1: Explicit due date set directly by user
@@ -103,6 +119,11 @@ class StorageService extends ChangeNotifier {
 
   Future<void> toggleMinimalMode() async {
     await _prefs.setBool('isMinimalMode', !isMinimalMode);
+    notifyListeners();
+  }
+
+  Future<void> toggleDarkMode() async {
+    await _prefs.setBool('isDarkMode', !isDarkMode);
     notifyListeners();
   }
 
@@ -205,6 +226,15 @@ class StorageService extends ChangeNotifier {
       Duration(days: averageCycleLength),
     );
     await NotificationService().schedulePeriodReminder(nextDate);
+
+    // Schedule ovulation reminder (approx 14 days before next period)
+    if (userGoal != 'pregnant') {
+      final ovulationDate = nextDate.subtract(const Duration(days: 14));
+      await NotificationService().scheduleOvulationReminder(ovulationDate);
+    }
+
+    // Ensure daily check-in is scheduled
+    await NotificationService().scheduleDailyCheckinReminder();
   }
 
   Future<void> deleteLog(int index) async {
@@ -248,11 +278,6 @@ class StorageService extends ChangeNotifier {
     return buffer.toString();
   }
 
-  Future<void> exportLogsToPdf() async {
-    // Placeholder for PDF generation logic (e.g. using 'pdf' package)
-    debugPrint('Exporting logs to PDF...');
-  }
-
   bool get hasSeenInfoPopup => _prefs.getBool('hasSeenInfoPopup') ?? false;
 
   Future<void> markInfoPopupAsSeen() async {
@@ -284,6 +309,13 @@ class StorageService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Returns all daily logs sorted newest first.
+  List<DailyLog> getDailyLogs() {
+    final all = _dailyBox.values.toList();
+    all.sort((a, b) => b.date.compareTo(a.date));
+    return all;
+  }
+
   DailyLog? getDailyLog(DateTime date) {
     try {
       return _dailyBox.values.firstWhere(
@@ -299,28 +331,41 @@ class StorageService extends ChangeNotifier {
 
   // --- Health Tracker & Dashboard Helpers ---
 
+  // ── Hydration goal (user-configurable) ──────────────────────────────────
+  int get hydrationGoal => _prefs.getInt('hydrationGoal') ?? 8;
+
+  Future<void> setHydrationGoal(int glasses) async {
+    await _prefs.setInt('hydrationGoal', glasses);
+    notifyListeners();
+  }
+
   int getHydrationToday() {
     final log = getDailyLog(DateTime.now());
     return log?.waterIntake ?? 0;
   }
 
+  /// Returns steps count from today's DailyLog (set during daily check-in).
   int getStepsToday() {
-    // This would normally come from a pedometer service, but we use daily log for now
     final log = getDailyLog(DateTime.now());
-    final activity = log?.physicalActivity?.firstWhere(
-      (a) => a.contains('steps'),
-      orElse: () => '',
-    );
-    if (activity != null && activity.isNotEmpty) {
-      final match = RegExp(r'\d+').firstMatch(activity);
-      if (match != null) return int.parse(match.group(0)!);
-    }
-    return 0;
+    return log?.stepsCount ?? 0;
   }
 
-  double getSleepHours() {
-    // Simple mock until we have a proper sleep tracker
-    return 7.5;
+  /// Returns sleep hours from today's DailyLog. Returns null if not logged yet.
+  double? getSleepHours() {
+    final log = getDailyLog(DateTime.now());
+    return log?.sleepHours;
+  }
+
+  /// Returns energy level (1–5) from today's DailyLog.
+  int? getEnergyLevel() {
+    final log = getDailyLog(DateTime.now());
+    return log?.energyLevel;
+  }
+
+  /// Returns stress level (1–5) from today's DailyLog.
+  int? getStressLevel() {
+    final log = getDailyLog(DateTime.now());
+    return log?.stressLevel;
   }
 
   String getMoodToday() {
@@ -328,8 +373,145 @@ class StorageService extends ChangeNotifier {
     return log?.moods?.isNotEmpty == true ? log!.moods!.first : 'Good';
   }
 
-  List<dynamic> getUpcomingAppointments() {
-    // Temporary stub – you can expand this to use a dedicated Box
-    return [];
+  // ── Check-in Streak ──────────────────────────────────────────────────────
+  /// Returns the current consecutive daily check-in streak.
+  int getCheckinStreak() {
+    int streak = 0;
+    DateTime day = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    while (true) {
+      final log = getDailyLog(day);
+      if (log == null) break;
+      streak++;
+      day = day.subtract(const Duration(days: 1));
+    }
+    return streak;
+  }
+
+  // ── PIN Lock ──────────────────────────────────────────────────────────────
+  bool get isPinLocked => _prefs.getBool('isPinLocked') ?? false;
+
+  Future<void> setPinLocked(bool value) async {
+    await _prefs.setBool('isPinLocked', value);
+    notifyListeners();
+  }
+
+  // ── Wellness Reminders ────────────────────────────────────────────────────
+  Box<Appointment> get _appointmentBox {
+    if (!Hive.isBoxOpen(appointmentBoxName)) {
+      return Hive.box<Appointment>(
+        appointmentBoxName,
+      ); // This will still throw if not opened, but Hive.openBox is async
+    }
+    return Hive.box<Appointment>(appointmentBoxName);
+  }
+
+  Future<void> saveAppointment(Appointment appt) async {
+    final key = await _appointmentBox.add(appt);
+    // Schedule notification using the Hive key as ID offset
+    await NotificationService().scheduleWellnessReminder(
+      key,
+      appt.title,
+      appt.category.label,
+      appt.date,
+    );
+    notifyListeners();
+  }
+
+  Future<void> deleteAppointment(Appointment appt) async {
+    final key = appt.key as int?;
+    if (key != null) {
+      await NotificationService().cancelNotification(100 + key);
+    }
+    await appt.delete();
+    notifyListeners();
+  }
+
+  Future<void> updateAppointment(Appointment appt) async {
+    await appt.save();
+    notifyListeners();
+  }
+
+  /// Returns appointments in the next 30 days, sorted by date.
+  List<Appointment> getUpcomingAppointments() {
+    final now = DateTime.now();
+    final limit = now.add(const Duration(days: 30));
+    final appts =
+        _appointmentBox.values
+            .where((a) => a.date.isAfter(now) && a.date.isBefore(limit))
+            .toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
+    return appts;
+  }
+
+  /// Returns all appointments sorted by date.
+  List<Appointment> getAllAppointments() {
+    final appts =
+        _appointmentBox.values.toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
+    return appts;
+  }
+
+  // ── PDF Export ────────────────────────────────────────────────────────────
+  Future<void> exportLogsToPdf() async {
+    final pdf = pw.Document();
+    final logs =
+        _box.values.toList()
+          ..sort((a, b) => b.startDate.compareTo(a.startDate));
+    final wellness = getAllAppointments();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build:
+            (context) => [
+              pw.Header(level: 0, child: pw.Text('Her-Flowmate Health Report')),
+              pw.Paragraph(
+                text:
+                    'Generated on: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}',
+              ),
+              pw.SizedBox(height: 20),
+              pw.Header(level: 1, child: pw.Text('Cycle History')),
+              pw.TableHelper.fromTextArray(
+                headers: ['Start Date', 'End Date', 'Duration'],
+                data:
+                    logs.map((l) {
+                      final duration =
+                          l.endDate != null
+                              ? l.endDate!.difference(l.startDate).inDays + 1
+                              : 'Ongoing';
+                      return [
+                        DateFormat('yyyy-MM-dd').format(l.startDate),
+                        l.endDate != null
+                            ? DateFormat('yyyy-MM-dd').format(l.endDate!)
+                            : '-',
+                        '$duration days',
+                      ];
+                    }).toList(),
+              ),
+              pw.SizedBox(height: 30),
+              pw.Header(level: 1, child: pw.Text('Wellness Goals & Reminders')),
+              pw.TableHelper.fromTextArray(
+                headers: ['Goal', 'Date', 'Category'],
+                data:
+                    wellness.map((w) {
+                      return [
+                        w.title,
+                        DateFormat('yyyy-MM-dd').format(w.date),
+                        w.category.label,
+                      ];
+                    }).toList(),
+              ),
+            ],
+      ),
+    );
+
+    await Printing.sharePdf(
+      bytes: await pdf.save(),
+      filename: 'her-flowmate-report.pdf',
+    );
   }
 }

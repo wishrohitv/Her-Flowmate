@@ -134,6 +134,29 @@ class InsightsScreen extends StatelessWidget {
                 logs,
               ).animate().fadeIn(delay: 750.ms).slideY(begin: 0.1),
 
+              const SizedBox(height: 32),
+
+              Text(
+                'Mood Analytics',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.textDark,
+                ),
+              ).animate().fadeIn(delay: 800.ms),
+              const SizedBox(height: 4),
+              Text(
+                'Last 30 days',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: AppTheme.textSecondary,
+                ),
+              ).animate().fadeIn(delay: 820.ms),
+              const SizedBox(height: 16),
+              _buildMoodChart(
+                storage,
+              ).animate().fadeIn(delay: 850.ms).slideY(begin: 0.1),
+
               const SizedBox(height: 120),
             ],
           ),
@@ -189,8 +212,9 @@ class InsightsScreen extends StatelessWidget {
   }
 
   Widget _buildFlowmateScore(PredictionService pred) {
+    // Compute a real score from available signals
     final isRegular = !pred.isIrregularCycle;
-    final score = isRegular ? 95 : 72;
+    int score = _computeFlowmateScore(pred);
 
     return NeuContainer(
       radius: 28,
@@ -485,6 +509,221 @@ class InsightsScreen extends StatelessWidget {
             }).toList(),
       ),
     );
+  }
+
+  /// Mood frequency bar chart for the last 30 days.
+  Widget _buildMoodChart(StorageService storage) {
+    // Collect mood counts from all daily logs
+    final cutoff = DateTime.now().subtract(const Duration(days: 30));
+    final moodCounts = <String, int>{};
+    for (final log in storage.getDailyLogs()) {
+      if (log.date.isBefore(cutoff)) continue;
+      for (final mood in (log.moods ?? [])) {
+        moodCounts[mood] = (moodCounts[mood] ?? 0) + 1;
+      }
+    }
+
+    if (moodCounts.isEmpty) {
+      return NeuContainer(
+        radius: 24,
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: Column(
+            children: [
+              const Text('🌸', style: TextStyle(fontSize: 32)),
+              const SizedBox(height: 12),
+              Text(
+                'No mood data yet.\nStart logging in daily check-in!',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Sort moods by frequency
+    final sorted =
+        moodCounts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+
+    final moodColors = {
+      'Happy': const Color(0xFF66BB6A),
+      'Excited': const Color(0xFFFF9800),
+      'Sad': const Color(0xFF42A5F5),
+      'Anxious': const Color(0xFFFF686B),
+      'Irritable': const Color(0xFFFF7043),
+      'Calm': const Color(0xFF26C6DA),
+      'Tired': const Color(0xFFAB8FC0),
+      'Energetic': const Color(0xFFFFD54F),
+      'Romantic': const Color(0xFFFFA4C8),
+    };
+
+    final maxVal = sorted.first.value.toDouble();
+
+    return NeuContainer(
+      radius: 24,
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 180,
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceAround,
+                maxY: maxVal * 1.3,
+                barTouchData: BarTouchData(
+                  enabled: true,
+                  touchTooltipData: BarTouchTooltipData(
+                    getTooltipColor: (_) => AppTheme.midnightPlum,
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      return BarTooltipItem(
+                        '${sorted[groupIndex].key}\n${rod.toY.toInt()} days',
+                        GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                titlesData: FlTitlesData(
+                  show: true,
+                  leftTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        final idx = value.toInt();
+                        if (idx < 0 || idx >= sorted.length) {
+                          return const SizedBox.shrink();
+                        }
+                        // Show just the emoji for space
+                        final moodEmojis = {
+                          'Happy': '😊',
+                          'Excited': '🤩',
+                          'Sad': '😢',
+                          'Anxious': '😰',
+                          'Irritable': '😠',
+                          'Calm': '😌',
+                          'Tired': '😴',
+                          'Energetic': '⚡',
+                          'Romantic': '💕',
+                        };
+                        final emoji =
+                            moodEmojis[sorted[idx].key] ??
+                            sorted[idx].key.substring(0, 1);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            emoji,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  getDrawingHorizontalLine:
+                      (_) => FlLine(
+                        color: AppTheme.textSecondary.withValues(alpha: 0.15),
+                        strokeWidth: 1,
+                      ),
+                ),
+                borderData: FlBorderData(show: false),
+                barGroups:
+                    sorted.asMap().entries.map((entry) {
+                      final idx = entry.key;
+                      final mood = entry.value;
+                      final color = moodColors[mood.key] ?? AppTheme.accentPink;
+                      return BarChartGroupData(
+                        x: idx,
+                        barRods: [
+                          BarChartRodData(
+                            toY: mood.value.toDouble(),
+                            color: color,
+                            width: 20,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(8),
+                            ),
+                            backDrawRodData: BackgroundBarChartRodData(
+                              show: true,
+                              toY: maxVal * 1.3,
+                              color: color.withValues(alpha: 0.08),
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Legend
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            children:
+                sorted.take(6).map((entry) {
+                  final color = moodColors[entry.key] ?? AppTheme.accentPink;
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${entry.key} (${entry.value})',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: AppTheme.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  /// Computes a Flowmate health score (0-100) from real usage data.
+  int _computeFlowmateScore(PredictionService pred) {
+    // PredictionService already has getHealthScore() based on regularity + log count,
+    // but we layer on additional signals here.
+    int base = pred.getHealthScore(); // 0–100 from PredictionService
+
+    // Bonus: cycle average in healthy range (21–35 days)
+    final avg = pred.averageCycleLength;
+    if (avg >= 21 && avg <= 35) base = (base + 10).clamp(0, 100);
+
+    return base;
   }
 }
 
