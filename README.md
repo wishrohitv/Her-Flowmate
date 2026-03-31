@@ -59,6 +59,7 @@ To ensure a crash-free experience on Flutter Web/Chrome, the app uses a propriet
 
 ## 🛠️ Technological Stack
 - **Core**: [Flutter](https://flutter.dev) & [Dart](https://dart.dev)
+- **Backend**: [Her-Flowmate Backend](https://github.com/saurabh-zz007/Her-Flowmate_Backend) (PostgreSQL & Node.js)
 - **State Management**: [Provider](https://pub.dev/packages/provider)
 - **Local Database**: [Hive_ce](https://pub.dev/packages/hive_ce) (Privacy-first encryption)
 - **Animations**: [flutter_animate](https://pub.dev/packages/flutter_animate)
@@ -79,6 +80,9 @@ To ensure a crash-free experience on Flutter Web/Chrome, the app uses a propriet
    ```bash
    flutter run -d chrome
    ```
+
+3. **Backend Service**:
+   Ensure you have the [Backend](https://github.com/saurabh-zz007/Her-Flowmate_Backend) running for features requiring cloud sync.
 
 ---
 

@@ -7,6 +7,7 @@ We're thrilled you're here! Her-Flowmate is a premium, privacy-first companion, 
 2. **Environment**: Ensure you're on the latest Flutter **Stable** channel (`flutter upgrade`).
 3. **Dependencies**: Run `flutter pub get`.
 4. **Run**: Use `flutter run -d chrome` to test Web-specific hit-testing.
+5. **Backend**: For backend-related contributions, please refer to the [Her-Flowmate Backend](https://github.com/saurabh-zz007/Her-Flowmate_Backend) repository.
 
 ## 🧱 Architectural Guardrails
 To prevent regressions in the Pregnancy Dashboard (especially MouseTracker crashes on Web), please follow these patterns:
