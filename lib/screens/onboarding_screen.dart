@@ -6,7 +6,7 @@ import 'main_navigation_screen.dart';
 import '../models/period_log.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
-import '../widgets/neu_container.dart';
+import '../widgets/themed_container.dart';
 import '../widgets/brand_widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -210,70 +210,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors:
-              isDark
-                  ? [
-                    AppTheme.darkBg,
-                    AppTheme.darkSurface.withValues(alpha: 0.9),
-                  ]
-                  : [
-                    AppTheme.accentPink.withValues(alpha: 0.1),
-                    AppTheme.accentPurple.withValues(alpha: 0.05),
-                    Colors.white,
-                  ],
-        ),
-      ),
+      decoration: AppTheme.getBackgroundDecoration(context),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: true,
         body: Stack(
           children: [
-            if (isDark) ...[
-              Positioned(
-                top: -80,
-                right: -60,
-                child: Container(
-                  width: 350,
-                  height: 350,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppTheme.accentPink.withValues(alpha: 0.15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.accentPink.withValues(alpha: 0.12),
-                        blurRadius: 120,
-                        spreadRadius: 40,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 50,
-                left: -120,
-                child: Container(
-                  width: 450,
-                  height: 450,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppTheme.accentPurple.withValues(alpha: 0.12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.accentPurple.withValues(alpha: 0.08),
-                        blurRadius: 150,
-                        spreadRadius: 50,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            // Unified Theme Background
             SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -289,7 +233,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Row(
                           children: [
                             const SizedBox(width: 12),
-                            NeuContainer(
+                            ThemedContainer(
+                              type: ContainerType.neu,
                               padding: const EdgeInsets.all(12),
                               radius: 16,
                               onTap: () {
@@ -522,7 +467,7 @@ class _GoalPage extends StatelessWidget {
           _goalCard(
             context,
             'conceive',
-            'Get pregnant',
+            'Conceive',
             'Pinpoint ovulation and maximize your chances.',
             Icons.favorite_rounded,
           ),
@@ -556,26 +501,11 @@ class _GoalPage extends StatelessWidget {
         scale: isSelected ? 1.04 : 1.0,
         duration: 300.ms,
         curve: Curves.easeOutBack,
-        child: Container(
+        child: ThemedContainer(
+          type: isSelected ? ContainerType.elevated : ContainerType.neu,
           padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color:
-                isSelected
-                    ? AppTheme.accentPink.withValues(alpha: 0.08)
-                    : Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: isSelected ? AppTheme.accentPink : Colors.transparent,
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isSelected ? 0.08 : 0.04),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
+          radius: 24,
+          border: isSelected ? Border.all(color: AppTheme.accentPink, width: 2) : null,
           child: Row(
             children: [
               Container(
@@ -821,18 +751,9 @@ class _PeriodPage extends StatelessWidget {
             ),
           ).animate().fadeIn(delay: 200.ms),
           const SizedBox(height: 32),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
+          ThemedContainer(
+            type: ContainerType.glass,
+            radius: 16,
             padding: const EdgeInsets.all(4),
             child: Row(
               children: [
@@ -974,19 +895,10 @@ class _PeriodPage extends StatelessWidget {
         );
         if (d != null) onDatePicked(d);
       },
-      child: Container(
+      child: ThemedContainer(
+        type: ContainerType.glass,
+        radius: 20,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
         child: Row(
           children: [
             const Icon(

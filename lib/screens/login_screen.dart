@@ -7,8 +7,7 @@ import '../utils/app_theme.dart';
 import '../services/storage_service.dart';
 import '../services/google_auth_services.dart';
 import '../widgets/delight_widgets.dart';
-import '../widgets/neu_container.dart';
-import '../widgets/common/themed_container.dart';
+import '../widgets/themed_container.dart';
 import 'onboarding_screen.dart';
 import 'main_navigation_screen.dart';
 import '../widgets/brand_widgets.dart';
@@ -54,8 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final bool isSmall = constraints.maxWidth < 360;
-                  final bool isDark =
-                      Theme.of(context).brightness == Brightness.dark;
                   final double horizontalPadding =
                       isSmall ? AppTheme.spacingMedium : AppTheme.spacingXlarge;
                   final double verticalPadding =
@@ -76,57 +73,45 @@ class _LoginScreenState extends State<LoginScreen> {
                                 maxWidth: 450,
                                 minHeight: constraints.maxHeight * 0.7,
                               ),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: isSmall ? 20 : 32,
-                                  vertical: isSmall ? 32 : 48,
-                                ),
-                                decoration: AppTheme.loginContainerDecoration(
-                                  isDark: isDark,
-                                ),
+                                child: ThemedContainer(
+                                  type: ContainerType.glass,
+                                  radius: 32,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isSmall ? 20 : 32,
+                                    vertical: isSmall ? 32 : 48,
+                                  ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     BrandLogo(
-                                          size: isSmall ? 80 : 100,
-                                          imagePath:
-                                              'assets/images/feature_graphic.png',
-                                          showName: true,
-                                          nameFontSize:
-                                              AppTheme.adaptiveFontSize(
-                                                context,
-                                                32,
-                                              ),
-                                        )
-                                        .animate()
-                                        .fadeIn(duration: 800.ms)
-                                        .scale(
-                                          begin: const Offset(0.9, 0.9),
-                                          curve: Curves.easeOutBack,
-                                        ),
-                                    const SizedBox(
-                                      height: AppTheme.spacingSmall,
+                                      size: isSmall ? 80 : 100,
+                                      imagePath:
+                                          'assets/images/feature_graphic.png',
+                                      showName: true,
+                                      nameFontSize: AppTheme.adaptiveFontSize(
+                                        context,
+                                        32,
+                                      ),
                                     ),
+                                    const SizedBox(height: AppTheme.spacingSm),
                                     Text(
                                       'Your Personal Health Sanctuary',
-                                      style: AppTheme.outfit(
-                                        context: context,
-                                        fontSize: AppTheme.adaptiveFontSize(
-                                          context,
-                                          14,
-                                        ),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withOpacity(0.7),
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.7),
+                                          ),
                                       textAlign: TextAlign.center,
-                                    ).animate().fadeIn(delay: 400.ms),
+                                    ),
                                     SizedBox(
                                       height:
                                           isSmall
-                                              ? AppTheme.spacingXlarge
-                                              : AppTheme.spacingXXlarge,
+                                              ? AppTheme.spacingLg
+                                              : AppTheme.spacingXl,
                                     ),
                                     Semantics(
                                       label: 'Sign in with Google',
@@ -395,18 +380,12 @@ class _AuthButton extends StatelessWidget {
     return ShimmerButton(
       onTap: onTap,
       radius: 24,
-      child: NeuContainer(
+      child: ThemedContainer(
+        type: isPrimary ? ContainerType.elevated : ContainerType.neu,
         radius: 24,
-        gradient:
+        color:
             isPrimary
-                ? LinearGradient(
-                  colors:
-                      AppTheme.brandGradient.colors
-                          .map((c) => c.withValues(alpha: 0.1))
-                          .toList(),
-                  begin: AppTheme.brandGradient.begin,
-                  end: AppTheme.brandGradient.end,
-                )
+                ? AppTheme.accentPink.withValues(alpha: 0.1)
                 : null,
         child: Padding(
           padding: EdgeInsets.symmetric(

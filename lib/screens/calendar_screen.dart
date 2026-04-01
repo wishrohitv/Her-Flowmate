@@ -106,7 +106,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           SizedBox(height: isSmallScreen ? 8 : 16),
                           Padding(
                                 padding: EdgeInsets.symmetric(horizontal: hPad),
-                                child: GlassContainer(
+                                child: ThemedContainer(
+                                  type: ContainerType.glass,
                                   radius: 32,
                                   padding: const EdgeInsets.all(16),
                                   child: TableCalendar(
@@ -237,7 +238,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: NeuContainer(
+                                    child: ThemedContainer(
+                                      type: ContainerType.neu,
                                       radius: 20,
                                       onTap: () {},
                                       child: Padding(
@@ -258,7 +260,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
-                                    child: NeuContainer(
+                                    child: ThemedContainer(
+                                      type: ContainerType.neu,
                                       radius: 20,
                                       onTap: () => Navigator.pop(context),
                                       child: Padding(
@@ -755,7 +758,8 @@ class _DailyLogSheet extends StatelessWidget {
                         ),
                       ],
                     ),
-                    NeuContainer(
+                    ThemedContainer(
+                      type: ContainerType.neu,
                       radius: 16,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -806,7 +810,8 @@ class _DailyLogSheet extends StatelessWidget {
               // Hormone Status Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: NeuContainer(
+                child: ThemedContainer(
+                  type: ContainerType.neu,
                   padding: const EdgeInsets.all(20),
                   radius: 24,
                   child: Column(
@@ -847,7 +852,8 @@ class _DailyLogSheet extends StatelessWidget {
                 const SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: NeuContainer(
+                  child: ThemedContainer(
+                    type: ContainerType.neu,
                     padding: const EdgeInsets.all(20),
                     radius: 24,
                     child: Column(
@@ -953,7 +959,8 @@ class _DailyLogSheet extends StatelessWidget {
               // Conception Chance Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: NeuContainer(
+                child: ThemedContainer(
+                  type: ContainerType.neu,
                   padding: const EdgeInsets.all(24),
                   radius: 28,
                   child: Column(
@@ -1041,7 +1048,8 @@ class _DailyLogSheet extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: NeuContainer(
+                      child: ThemedContainer(
+                        type: ContainerType.neu,
                         radius: 20,
                         onTap: () {
                           showPhaseDelight(context, 'Period Logged');
@@ -1073,7 +1081,8 @@ class _DailyLogSheet extends StatelessWidget {
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: NeuContainer(
+                      child: ThemedContainer(
+                        type: ContainerType.neu,
                         radius: 20,
                         onTap: () => Navigator.pop(context),
                         child: Padding(

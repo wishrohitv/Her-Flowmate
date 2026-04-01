@@ -6,7 +6,7 @@ import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 import 'login_screen.dart';
 import 'onboarding_screen.dart';
-import '../widgets/glass_container.dart';
+import '../widgets/themed_container.dart';
 
 /// Allows the user to change their tracking mode at any time.
 class ModeSettingsScreen extends StatefulWidget {
@@ -36,7 +36,8 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const GlassContainer(
+            child: const ThemedContainer(
+              type: ContainerType.glass,
               radius: 12,
               padding: EdgeInsets.zero,
               child: Icon(Icons.arrow_back_rounded, color: AppTheme.textDark),
@@ -87,7 +88,7 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                   onTap: () => setState(() => _selectedGoal = 'track_cycle'),
                 ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1),
                 _ModeCard(
-                  title: 'Trying to conceive',
+                  title: 'Conceive',
                   subtitle: 'Fertile window & ovulation tracking',
                   icon: Icons.favorite_rounded,
                   iconColor: AppTheme.phaseColors['Ovulation']!,
@@ -95,7 +96,7 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                   onTap: () => setState(() => _selectedGoal = 'conceive'),
                 ).animate().fadeIn(delay: 350.ms).slideX(begin: -0.1),
                 _ModeCard(
-                  title: 'Already pregnant',
+                  title: 'I am pregnant',
                   subtitle: 'Pregnancy week & baby development',
                   icon: Icons.pregnant_woman_rounded,
                   iconColor: AppTheme.phaseColors['Ovulation']!,
@@ -103,7 +104,8 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                   onTap: () => setState(() => _selectedGoal = 'pregnant'),
                 ).animate().fadeIn(delay: 500.ms).slideX(begin: 0.1),
                 const Spacer(),
-                GlassContainer(
+                ThemedContainer(
+                  type: ContainerType.glass,
                   radius: 20,
                   child: ElevatedButton.icon(
                     onPressed: () async {
@@ -233,12 +235,14 @@ class _ModeCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration:
             isSelected
-                ? AppTheme.glassDecoration(
-                  radius: 24,
-                  opacity: 0.2,
-                  borderColor: iconColor,
-                )
-                : AppTheme.glassDecoration(radius: 24, opacity: 0.05),
+                ? ThemedContainer(
+                    type: ContainerType.glass,
+                    radius: 24,
+                  )
+                : ThemedContainer(
+                    type: ContainerType.glass,
+                    radius: 24,
+                  ),
         child: Row(
           children: [
             Container(

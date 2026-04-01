@@ -6,7 +6,7 @@ import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 import 'login_screen.dart';
 import '../widgets/delight_widgets.dart';
-import '../widgets/neu_container.dart';
+import '../widgets/themed_container.dart';
 import '../widgets/brand_widgets.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -107,7 +107,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                     }
                                   });
                                 },
-                                child: NeuContainer(
+                                child: ThemedContainer(
+                                  type: ContainerType.neu,
                                   radius: 24,
                                   child: Container(
                                     width: double.infinity,
