@@ -70,15 +70,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       children: [
                         Builder(
                           builder:
-                              (context) => NeuContainer(
-                                padding: const EdgeInsets.all(10),
-                                radius: 18,
-                                style: NeuStyle.convex,
-                                onTap: () => Scaffold.of(context).openDrawer(),
-                                child: const Icon(
-                                  Icons.menu_rounded,
-                                  color: AppTheme.accentPink,
-                                  size: 26,
+                              (context) => Semantics(
+                                label: 'Open Sidebar Menu',
+                                button: true,
+                                child: NeuContainer(
+                                  padding: const EdgeInsets.all(10),
+                                  radius: 18,
+                                  style: NeuStyle.convex,
+                                  onTap:
+                                      () => Scaffold.of(context).openDrawer(),
+                                  child: const Icon(
+                                    Icons.menu_rounded,
+                                    color: AppTheme.accentPink,
+                                    size: 26,
+                                  ),
                                 ),
                               ),
                         ),
@@ -123,6 +128,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       });
                                       _showDailyLogSheet(context, selectedDay);
                                     },
+                                    onHeaderTapped: (focusedDay) {
+                                      _showMonthPicker(context);
+                                    },
                                     calendarFormat: CalendarFormat.month,
                                     headerStyle: HeaderStyle(
                                       formatButtonVisible: false,
@@ -132,15 +140,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                         fontWeight: FontWeight.w800,
                                         color: AppTheme.midnightPlum,
                                       ),
+                                      leftChevronPadding: const EdgeInsets.all(
+                                        12,
+                                      ),
+                                      rightChevronPadding: const EdgeInsets.all(
+                                        12,
+                                      ),
                                       leftChevronIcon: const Icon(
                                         Icons.chevron_left_rounded,
                                         color: AppTheme.accentPink,
-                                        size: 28,
+                                        size: 32,
                                       ),
                                       rightChevronIcon: const Icon(
                                         Icons.chevron_right_rounded,
                                         color: AppTheme.accentPink,
-                                        size: 28,
+                                        size: 32,
                                       ),
                                     ),
                                     daysOfWeekStyle: DaysOfWeekStyle(
@@ -299,7 +313,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final chance = pred.getConceptionChance(date);
 
     return GlassContainer(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       radius: 28,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,114 +342,143 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.phaseColor(
-                    phase.displayName,
-                  ).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.phaseColor(
-                      phase.displayName,
-                    ).withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Text(
-                  phase.displayName,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: AppTheme.phaseColor(phase.displayName),
-                  ),
-                ),
-              ),
+              _buildPhaseBadge(phase),
             ],
           ),
           const SizedBox(height: 20),
-          Text(
-            'What is happening today:',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppTheme.textDark,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            '${biology['hormoneActivity']}\n\n${biology['energy']}\n\n${biology['mood']}',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: AppTheme.textSecondary,
-              height: 1.4,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Hormone activity:',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppTheme.textDark,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            biology['hormoneActivity']!,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: AppTheme.accentPink,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Fertility status:',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: AppTheme.textDark,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            pred.getConceptionStatus(chance),
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: AppTheme.textDark,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 24),
+          // Icon-based status row
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              TextButton(
-                onPressed:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const PredictionDetailsScreen(),
-                      ),
-                    ),
+              _statusIconItem('⚡', 'Energy', biology['energy']!),
+              _statusIconItem('🎭', 'Mood', biology['mood']!),
+              _statusIconItem('🩸', 'Hormones', biology['hormoneActivity']!),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              const Icon(
+                Icons.star_rounded,
+                color: AppTheme.accentPink,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
                 child: Text(
-                  'Learn More →',
+                  pred.getConceptionStatus(chance),
                   style: GoogleFonts.inter(
                     fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: AppTheme.accentPink,
+                    color: AppTheme.textDark,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PredictionDetailsScreen(),
+                    ),
+                  ),
+              child: Text(
+                'Full Insights →',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.accentPink,
+                ),
+              ),
+            ),
           ),
         ],
       ),
     ).animate().fadeIn().slideY(begin: 0.05);
+  }
+
+  Widget _buildPhaseBadge(CyclePhase phase) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppTheme.phaseColor(phase.displayName).withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppTheme.phaseColor(phase.displayName).withValues(alpha: 0.3),
+        ),
+      ),
+      child: Text(
+        phase.displayName,
+        style: GoogleFonts.poppins(
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          color: AppTheme.phaseColor(phase.displayName),
+        ),
+      ),
+    );
+  }
+
+  Widget _statusIconItem(String emoji, String label, String value) {
+    return Column(
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 24)),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showMonthPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => GlassContainer(
+            radius: 32,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Select Date',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.midnightPlum,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 200,
+                  child: CalendarDatePicker(
+                    initialDate: _focusedDay,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2030),
+                    onDateChanged: (date) {
+                      setState(() {
+                        _focusedDay = date;
+                        _selectedDay = date;
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
   }
 
   Widget _buildLegend(PredictionService pred, {bool isSmallScreen = false}) {
@@ -476,24 +519,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildLegendItem(String label, Color color, bool isSmallScreen) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: isSmallScreen ? 10 : 12,
-          height: isSmallScreen ? 10 : 12,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        SizedBox(width: isSmallScreen ? 4 : 8),
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            color: AppTheme.midnightPlum,
-            fontSize: isSmallScreen ? 10 : 13,
-            fontWeight: FontWeight.w800,
+    return Semantics(
+      label: 'Phase $label indicated by color.',
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: isSmallScreen ? 10 : 12,
+            height: isSmallScreen ? 10 : 12,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-        ),
-      ],
+          SizedBox(width: isSmallScreen ? 4 : 8),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              color: AppTheme.midnightPlum,
+              fontSize: isSmallScreen ? 10 : 13,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -16,31 +16,40 @@ class StorageService extends ChangeNotifier {
   StorageService.internal();
   static final StorageService _instance = StorageService.internal();
   static StorageService get instance => _instance;
-
   static const String boxName = 'period_logs';
   static const String dailyBoxName = 'daily_logs';
   static const String appointmentBoxName = 'appointments';
+
   late SharedPreferences _prefs;
+  bool _isInitialized = false;
+  String? _initializationError;
+
+  bool get isInitialized => _isInitialized;
+  String? get initializationError => _initializationError;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool val) {
+    _isLoading = val;
+    notifyListeners();
+  }
 
   Future<void> init() async {
     try {
+      _initializationError = null;
       debugPrint('StorageService: Fetching SharedPreferences...');
       _prefs = await SharedPreferences.getInstance();
       debugPrint('StorageService: Initializing Hive...');
       await Hive.initFlutter();
 
       if (!Hive.isAdapterRegistered(0)) {
-        debugPrint('StorageService: Registering PeriodLogAdapter...');
         Hive.registerAdapter(PeriodLogAdapter());
       }
-
       if (!Hive.isAdapterRegistered(1)) {
-        debugPrint('StorageService: Registering DailyLogAdapter...');
         Hive.registerAdapter(DailyLogAdapter());
       }
-
       if (!Hive.isAdapterRegistered(3)) {
-        debugPrint('StorageService: Registering AppointmentAdapter...');
         Hive.registerAdapter(AppointmentAdapter());
       }
 
@@ -48,10 +57,12 @@ class StorageService extends ChangeNotifier {
       await Hive.openBox<PeriodLog>(boxName);
       await Hive.openBox<DailyLog>(dailyBoxName);
       await Hive.openBox<Appointment>(appointmentBoxName);
+
+      _isInitialized = true;
       debugPrint('StorageService: Initialization successful.');
-      // Schedule daily check-in reminder on init
       NotificationService().scheduleDailyCheckinReminder();
     } catch (e) {
+      _initializationError = e.toString();
       debugPrint('ERROR IN StorageService.init: $e');
       rethrow;
     }
@@ -255,32 +266,37 @@ class StorageService extends ChangeNotifier {
   }
 
   Future<String> exportLogsToJson() async {
-    final logs = getLogs();
-    final list =
-        logs
-            .map(
-              (l) => {
-                'startDate': l.startDate.toIso8601String(),
-                'endDate': l.endDate?.toIso8601String(),
-                'duration': l.duration,
-              },
-            )
-            .toList();
-    // Simple JSON serialisation without external package
-    final buffer = StringBuffer('[');
-    for (int i = 0; i < list.length; i++) {
-      final m = list[i];
-      buffer.write('{');
-      buffer.write('"startDate":"${m['startDate']}",');
-      buffer.write(
-        '"endDate":${m['endDate'] != null ? '"${m['endDate']}"' : 'null'},',
-      );
-      buffer.write('"duration":${m['duration']}');
-      buffer.write('}');
-      if (i < list.length - 1) buffer.write(',');
+    _setLoading(true);
+    try {
+      final logs = getLogs();
+      final list =
+          logs
+              .map(
+                (l) => {
+                  'startDate': l.startDate.toIso8601String(),
+                  'endDate': l.endDate?.toIso8601String(),
+                  'duration': l.duration,
+                },
+              )
+              .toList();
+      // Simple JSON serialisation without external package
+      final buffer = StringBuffer('[');
+      for (int i = 0; i < list.length; i++) {
+        final m = list[i];
+        buffer.write('{');
+        buffer.write('"startDate":"${m['startDate']}",');
+        buffer.write(
+          '"endDate":${m['endDate'] != null ? '"${m['endDate']}"' : 'null'},',
+        );
+        buffer.write('"duration":${m['duration']}');
+        buffer.write('}');
+        if (i < list.length - 1) buffer.write(',');
+      }
+      buffer.write(']');
+      return buffer.toString();
+    } finally {
+      _setLoading(false);
     }
-    buffer.write(']');
-    return buffer.toString();
   }
 
   bool get hasSeenInfoPopup => _prefs.getBool('hasSeenInfoPopup') ?? false;
@@ -465,61 +481,72 @@ class StorageService extends ChangeNotifier {
 
   // ── PDF Export ────────────────────────────────────────────────────────────
   Future<void> exportLogsToPdf() async {
-    final pdf = pw.Document();
-    final logs =
-        _box.values.toList()
-          ..sort((a, b) => b.startDate.compareTo(a.startDate));
-    final wellness = getAllAppointments();
+    _setLoading(true);
+    try {
+      final pdf = pw.Document();
+      final logs =
+          _box.values.toList()
+            ..sort((a, b) => b.startDate.compareTo(a.startDate));
+      final wellness = getAllAppointments();
 
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        build:
-            (context) => [
-              pw.Header(level: 0, child: pw.Text('Her-Flowmate Health Report')),
-              pw.Paragraph(
-                text:
-                    'Generated on: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}',
-              ),
-              pw.SizedBox(height: 20),
-              pw.Header(level: 1, child: pw.Text('Cycle History')),
-              pw.TableHelper.fromTextArray(
-                headers: ['Start Date', 'End Date', 'Duration'],
-                data:
-                    logs.map((l) {
-                      final duration =
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          build:
+              (context) => [
+                pw.Header(
+                  level: 0,
+                  child: pw.Text('Her-Flowmate Health Report'),
+                ),
+                pw.Paragraph(
+                  text:
+                      'Generated on: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}',
+                ),
+                pw.SizedBox(height: 20),
+                pw.Header(level: 1, child: pw.Text('Cycle History')),
+                pw.TableHelper.fromTextArray(
+                  headers: ['Start Date', 'End Date', 'Duration'],
+                  data:
+                      logs.map((l) {
+                        final duration =
+                            l.endDate != null
+                                ? l.endDate!.difference(l.startDate).inDays + 1
+                                : 'Ongoing';
+                        return [
+                          DateFormat('yyyy-MM-dd').format(l.startDate),
                           l.endDate != null
-                              ? l.endDate!.difference(l.startDate).inDays + 1
-                              : 'Ongoing';
-                      return [
-                        DateFormat('yyyy-MM-dd').format(l.startDate),
-                        l.endDate != null
-                            ? DateFormat('yyyy-MM-dd').format(l.endDate!)
-                            : '-',
-                        '$duration days',
-                      ];
-                    }).toList(),
-              ),
-              pw.SizedBox(height: 30),
-              pw.Header(level: 1, child: pw.Text('Wellness Goals & Reminders')),
-              pw.TableHelper.fromTextArray(
-                headers: ['Goal', 'Date', 'Category'],
-                data:
-                    wellness.map((w) {
-                      return [
-                        w.title,
-                        DateFormat('yyyy-MM-dd').format(w.date),
-                        w.category.label,
-                      ];
-                    }).toList(),
-              ),
-            ],
-      ),
-    );
+                              ? DateFormat('yyyy-MM-dd').format(l.endDate!)
+                              : '-',
+                          '$duration days',
+                        ];
+                      }).toList(),
+                ),
+                pw.SizedBox(height: 30),
+                pw.Header(
+                  level: 1,
+                  child: pw.Text('Wellness Goals & Reminders'),
+                ),
+                pw.TableHelper.fromTextArray(
+                  headers: ['Goal', 'Date', 'Category'],
+                  data:
+                      wellness.map((w) {
+                        return [
+                          w.title,
+                          DateFormat('yyyy-MM-dd').format(w.date),
+                          w.category.label,
+                        ];
+                      }).toList(),
+                ),
+              ],
+        ),
+      );
 
-    await Printing.sharePdf(
-      bytes: await pdf.save(),
-      filename: 'her-flowmate-report.pdf',
-    );
+      await Printing.sharePdf(
+        bytes: await pdf.save(),
+        filename: 'her-flowmate-report.pdf',
+      );
+    } finally {
+      _setLoading(false);
+    }
   }
 }

@@ -99,22 +99,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       },
       // Increased touch target to minimum 44x44
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: 48,
-        height: 48,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        decoration: BoxDecoration(
-          gradient: AppTheme.brandGradient,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.roseGold.withValues(alpha: 0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+      child: Semantics(
+        label: 'Log dynamic health data',
+        button: true,
+        child: Container(
+          width: 48,
+          height: 48,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            gradient: AppTheme.brandGradient,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.roseGold.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: const Icon(Icons.add_rounded, size: 28, color: Colors.white),
         ),
-        child: const Icon(Icons.add_rounded, size: 28, color: Colors.white),
       ),
     );
   }
@@ -124,34 +128,41 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => _onItemTapped(index),
-      child: SizedBox(
-        height: 60,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-                  icon,
-                  color:
-                      isSelected ? AppTheme.accentPink : AppTheme.textSecondary,
-                  size: 26,
-                )
-                .animate(target: isSelected ? 1 : 0)
-                .scale(
-                  begin: const Offset(1, 1),
-                  end: const Offset(1.2, 1.2),
-                  duration: 300.ms,
-                ),
-            const SizedBox(height: 4),
-            if (isSelected)
-              Container(
-                width: 4,
-                height: 4,
-                decoration: const BoxDecoration(
-                  color: AppTheme.accentPink,
-                  shape: BoxShape.circle,
-                ),
-              ).animate().scale(duration: 200.ms, curve: Curves.elasticOut),
-          ],
+      child: Semantics(
+        label: '$label Tab',
+        selected: isSelected,
+        button: true,
+        child: SizedBox(
+          height: 60,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                    icon,
+                    color:
+                        isSelected
+                            ? AppTheme.accentPink
+                            : AppTheme.textSecondary,
+                    size: 26,
+                  )
+                  .animate(target: isSelected ? 1 : 0)
+                  .scale(
+                    begin: const Offset(1, 1),
+                    end: const Offset(1.2, 1.2),
+                    duration: 300.ms,
+                  ),
+              const SizedBox(height: 4),
+              if (isSelected)
+                Container(
+                  width: 4,
+                  height: 4,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.accentPink,
+                    shape: BoxShape.circle,
+                  ),
+                ).animate().scale(duration: 200.ms, curve: Curves.elasticOut),
+            ],
+          ),
         ),
       ),
     );

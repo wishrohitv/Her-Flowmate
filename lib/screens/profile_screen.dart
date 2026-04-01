@@ -20,422 +20,524 @@ class ProfileScreen extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
-      child: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
-        child: SafeArea(
-          bottom: false,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final screenWidth = constraints.maxWidth;
-              final isSmallScreen = screenWidth < 360;
-              final hPad = isSmallScreen ? 16.0 : 24.0;
-              final bottomPad = isSmallScreen ? 90.0 : 120.0;
-              final avatarRadius = isSmallScreen ? 40.0 : 50.0;
-              final sectionSpacing = isSmallScreen ? 24.0 : 32.0;
-              final topBarTop = isSmallScreen ? 16.0 : 24.0;
-              final topBarBottom = isSmallScreen ? 12.0 : 16.0;
+      child: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+            child: SafeArea(
+              bottom: false,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final screenWidth = constraints.maxWidth;
+                  final isSmallScreen = screenWidth < 360;
+                  final hPad = isSmallScreen ? 16.0 : 24.0;
+                  final bottomPad = isSmallScreen ? 90.0 : 120.0;
+                  final avatarRadius = isSmallScreen ? 40.0 : 50.0;
+                  final sectionSpacing = isSmallScreen ? 24.0 : 32.0;
+                  final topBarTop = isSmallScreen ? 16.0 : 24.0;
+                  final topBarBottom = isSmallScreen ? 12.0 : 16.0;
 
-              return Column(
-                children: [
-                  // Custom Top Bar (replacing AppBar)
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: hPad,
-                      right: hPad,
-                      top: topBarTop,
-                      bottom: topBarBottom,
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Builder(
-                            builder:
-                                (context) => GlassContainer(
-                                  padding: const EdgeInsets.all(10),
-                                  radius: 18,
-                                  onTap:
-                                      () => Scaffold.of(context).openDrawer(),
-                                  child: const Icon(
-                                    Icons.menu_rounded,
-                                    color: AppTheme.accentPink,
-                                    size: 26,
-                                  ),
+                  return Column(
+                    children: [
+                      // Custom Top Bar (replacing AppBar)
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: hPad,
+                          right: hPad,
+                          top: topBarTop,
+                          bottom: topBarBottom,
+                        ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Builder(
+                                builder:
+                                    (context) => GlassContainer(
+                                      padding: const EdgeInsets.all(10),
+                                      radius: 18,
+                                      onTap:
+                                          () =>
+                                              Scaffold.of(context).openDrawer(),
+                                      child: const Icon(
+                                        Icons.menu_rounded,
+                                        color: AppTheme.accentPink,
+                                        size: 26,
+                                      ),
+                                    ),
+                              ),
+                            ),
+                            Text(
+                              'Profile',
+                              style: GoogleFonts.poppins(
+                                color: AppTheme.midnightPlum,
+                                fontWeight: FontWeight.w800,
+                                fontSize: isSmallScreen ? 18 : 22,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Expanded(
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          padding: EdgeInsets.fromLTRB(
+                            hPad,
+                            8,
+                            hPad,
+                            bottomPad,
+                          ),
+                          child: Column(
+                            children: [
+                              // ── Avatar ───────────────────────────────────────────────────
+                              Center(
+                                    child: Stack(
+                                      children: [
+                                        GlassContainer(
+                                          padding: const EdgeInsets.all(6),
+                                          radius: avatarRadius,
+                                          opacity: 0.1,
+                                          child: Semantics(
+                                            label: 'Profile Picture',
+                                            child: CircleAvatar(
+                                              radius: avatarRadius - 6,
+                                              backgroundColor:
+                                                  AppTheme.frameColor,
+                                              backgroundImage:
+                                                  storage.userImagePath != null
+                                                      ? (storage.userImagePath!
+                                                                  .startsWith(
+                                                                    'http',
+                                                                  )
+                                                              ? NetworkImage(
+                                                                storage
+                                                                    .userImagePath!,
+                                                              )
+                                                              : FileImage(
+                                                                File(
+                                                                  storage
+                                                                      .userImagePath!,
+                                                                ),
+                                                              ))
+                                                          as ImageProvider
+                                                      : null,
+                                              child:
+                                                  storage.userImagePath == null
+                                                      ? Icon(
+                                                        Icons.person_rounded,
+                                                        size:
+                                                            isSmallScreen
+                                                                ? 40
+                                                                : 52,
+                                                        color:
+                                                            AppTheme.accentPink,
+                                                      )
+                                                      : null,
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          bottom: 0,
+                                          right: 0,
+                                          child: GestureDetector(
+                                            onTap:
+                                                () => _pickImage(
+                                                  context,
+                                                  storage,
+                                                ),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: AppTheme.accentPink,
+                                                shape: BoxShape.circle,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: AppTheme.accentPink
+                                                        .withValues(alpha: 0.4),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: const Icon(
+                                                Icons.camera_alt_rounded,
+                                                size: 16,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                  .animate()
+                                  .fadeIn(duration: 600.ms)
+                                  .scale(curve: Curves.easeOutBack),
+
+                              SizedBox(height: isSmallScreen ? 16 : 24),
+                              Text(
+                                storage.userName.isNotEmpty
+                                    ? storage.userName
+                                    : 'Guest',
+                                style: GoogleFonts.poppins(
+                                  fontSize: isSmallScreen ? 22 : 26,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppTheme.textDark,
                                 ),
+                              ).animate().fadeIn(delay: 200.ms),
+
+                              SizedBox(height: isSmallScreen ? 28 : 40),
+                              _buildSectionTitle(
+                                'Personal Info',
+                                isSmallScreen: isSmallScreen,
+                              ),
+                              SizedBox(height: isSmallScreen ? 12 : 16),
+                              GlassContainer(
+                                width: double.infinity,
+                                radius: isSmallScreen ? 24 : 32,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: Column(
+                                  children: [
+                                    _buildSettingsTile(
+                                      Icons.edit_rounded,
+                                      'Name',
+                                      storage.userName,
+                                      () => _editName(context, storage),
+                                      isSmallScreen: isSmallScreen,
+                                    ),
+                                    _buildDivider(),
+                                    _buildSettingsTile(
+                                      Icons.cake_rounded,
+                                      'Age',
+                                      storage.userAge?.toString() ?? 'Set Age',
+                                      () => _editAge(context, storage),
+                                      isSmallScreen: isSmallScreen,
+                                    ),
+                                    _buildDivider(),
+                                    _buildSettingsTile(
+                                      Icons.track_changes_rounded,
+                                      'Goal',
+                                      storage.userGoal == 'pregnant'
+                                          ? 'Track Pregnancy'
+                                          : (storage.userGoal == 'conceive'
+                                              ? 'Conceive'
+                                              : 'Track Cycle'),
+                                      () =>
+                                          _showGoalSelection(context, storage),
+                                      isSmallScreen: isSmallScreen,
+                                    ),
+                                  ],
+                                ),
+                              ).animate().fadeIn(delay: 200.ms),
+
+                              SizedBox(height: sectionSpacing),
+                              _buildSectionTitle(
+                                'App Preferences',
+                                isSmallScreen: isSmallScreen,
+                              ),
+                              SizedBox(height: isSmallScreen ? 12 : 16),
+                              GlassContainer(
+                                width: double.infinity,
+                                radius: isSmallScreen ? 24 : 32,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: Column(
+                                  children: [
+                                    _buildSettingsTile(
+                                      Icons.notifications_active_rounded,
+                                      'Notifications',
+                                      'Enabled',
+                                      () {},
+                                      isSmallScreen: isSmallScreen,
+                                    ),
+                                    _buildDivider(),
+                                    // Dark Mode Toggle
+                                    Consumer<StorageService>(
+                                      builder:
+                                          (ctx, stor, _) => InkWell(
+                                            onTap: () => stor.toggleDarkMode(),
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal:
+                                                    isSmallScreen ? 12 : 16,
+                                                vertical: 8,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.all(
+                                                      isSmallScreen ? 8 : 10,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: AppTheme.accentPink
+                                                          .withValues(
+                                                            alpha: 0.1,
+                                                          ),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Icon(
+                                                      stor.isDarkMode
+                                                          ? Icons
+                                                              .dark_mode_rounded
+                                                          : Icons
+                                                              .light_mode_rounded,
+                                                      color:
+                                                          AppTheme.accentPink,
+                                                      size:
+                                                          isSmallScreen
+                                                              ? 18
+                                                              : 20,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 16),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Dark Mode',
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color:
+                                                                    AppTheme
+                                                                        .textDark,
+                                                              ),
+                                                        ),
+                                                        Text(
+                                                          stor.isDarkMode
+                                                              ? 'On'
+                                                              : 'Off',
+                                                          style: GoogleFonts.inter(
+                                                            fontSize: 12,
+                                                            color:
+                                                                AppTheme
+                                                                    .textSecondary,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Switch(
+                                                    value: stor.isDarkMode,
+                                                    activeThumbColor:
+                                                        AppTheme.accentPink,
+                                                    onChanged:
+                                                        (_) =>
+                                                            stor.toggleDarkMode(),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ).animate().fadeIn(delay: 300.ms),
+
+                              SizedBox(height: sectionSpacing),
+                              _buildSectionTitle(
+                                'Security & Data',
+                                isSmallScreen: isSmallScreen,
+                              ),
+                              SizedBox(height: isSmallScreen ? 12 : 16),
+                              GlassContainer(
+                                width: double.infinity,
+                                radius: isSmallScreen ? 24 : 32,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: Column(
+                                  children: [
+                                    // Biometric / PIN Lock Toggle
+                                    Consumer<StorageService>(
+                                      builder:
+                                          (ctx, stor, _) => InkWell(
+                                            onTap:
+                                                () => stor.setPinLocked(
+                                                  !stor.isPinLocked,
+                                                ),
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal:
+                                                    isSmallScreen ? 12 : 16,
+                                                vertical: 8,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.all(
+                                                      isSmallScreen ? 8 : 10,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: AppTheme.accentPink
+                                                          .withValues(
+                                                            alpha: 0.1,
+                                                          ),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.security_rounded,
+                                                      color:
+                                                          AppTheme.accentPink,
+                                                      size:
+                                                          isSmallScreen
+                                                              ? 18
+                                                              : 20,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 16),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Privacy & Security',
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color:
+                                                                    AppTheme
+                                                                        .textDark,
+                                                              ),
+                                                        ),
+                                                        Text(
+                                                          stor.isPinLocked
+                                                              ? 'Enabled'
+                                                              : 'Disabled',
+                                                          style: GoogleFonts.inter(
+                                                            fontSize: 12,
+                                                            color:
+                                                                AppTheme
+                                                                    .textSecondary,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Switch(
+                                                    value: stor.isPinLocked,
+                                                    activeThumbColor:
+                                                        AppTheme.accentPink,
+                                                    onChanged:
+                                                        (val) => stor
+                                                            .setPinLocked(val),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                    ),
+                                    _buildDivider(),
+                                    _buildSettingsTile(
+                                      Icons.cloud_upload_rounded,
+                                      'Export Data',
+                                      'CSV/PDF',
+                                      () =>
+                                          _showExportOptions(context, storage),
+                                      isSmallScreen: isSmallScreen,
+                                    ),
+                                    _buildDivider(),
+                                    _buildSettingsTile(
+                                      Icons.delete_sweep_rounded,
+                                      'Clear All Data',
+                                      'Permanently erase logs',
+                                      () => _confirmDelete(context, storage),
+                                      isSmallScreen: isSmallScreen,
+                                    ),
+                                  ],
+                                ),
+                              ).animate().fadeIn(delay: 400.ms),
+
+                              SizedBox(height: sectionSpacing),
+                              _buildSectionTitle(
+                                'About',
+                                isSmallScreen: isSmallScreen,
+                              ),
+                              SizedBox(height: isSmallScreen ? 12 : 16),
+                              GlassContainer(
+                                width: double.infinity,
+                                radius: isSmallScreen ? 24 : 32,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: Column(
+                                  children: [
+                                    _buildSettingsTile(
+                                      Icons.info_outline_rounded,
+                                      'Version',
+                                      '1.2.0 (Premium)',
+                                      () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => const AboutAppScreen(),
+                                        ),
+                                      ),
+                                      isSmallScreen: isSmallScreen,
+                                    ),
+                                  ],
+                                ),
+                              ).animate().fadeIn(delay: 500.ms),
+                            ],
                           ),
                         ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+          if (storage.isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.3),
+                child: Center(
+                  child: GlassContainer(
+                    radius: 24,
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppTheme.accentPink,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                         Text(
-                          'Profile',
-                          style: GoogleFonts.poppins(
-                            color: AppTheme.midnightPlum,
-                            fontWeight: FontWeight.w800,
-                            fontSize: isSmallScreen ? 18 : 22,
-                            letterSpacing: -0.5,
+                          'Processing...',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textDark,
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.fromLTRB(hPad, 8, hPad, bottomPad),
-                      child: Column(
-                        children: [
-                          // ── Avatar ───────────────────────────────────────────────────
-                          Center(
-                                child: Stack(
-                                  children: [
-                                    GlassContainer(
-                                      padding: const EdgeInsets.all(6),
-                                      radius: avatarRadius,
-                                      opacity: 0.1,
-                                      child: CircleAvatar(
-                                        radius: avatarRadius - 6,
-                                        backgroundColor: AppTheme.frameColor,
-                                        backgroundImage:
-                                            storage.userImagePath != null
-                                                ? (storage.userImagePath!
-                                                            .startsWith('http')
-                                                        ? NetworkImage(
-                                                          storage
-                                                              .userImagePath!,
-                                                        )
-                                                        : FileImage(
-                                                          File(
-                                                            storage
-                                                                .userImagePath!,
-                                                          ),
-                                                        ))
-                                                    as ImageProvider
-                                                : null,
-                                        child:
-                                            storage.userImagePath == null
-                                                ? Icon(
-                                                  Icons.person_rounded,
-                                                  size: isSmallScreen ? 40 : 52,
-                                                  color: AppTheme.accentPink,
-                                                )
-                                                : null,
-                                      ),
-                                    ),
-                                    Positioned(
-                                      bottom: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap:
-                                            () => _pickImage(context, storage),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.accentPink,
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: AppTheme.accentPink
-                                                    .withValues(alpha: 0.4),
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ],
-                                          ),
-                                          child: const Icon(
-                                            Icons.camera_alt_rounded,
-                                            size: 16,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                              .animate()
-                              .fadeIn(duration: 600.ms)
-                              .scale(curve: Curves.easeOutBack),
-
-                          SizedBox(height: isSmallScreen ? 16 : 24),
-                          Text(
-                            storage.userName.isNotEmpty
-                                ? storage.userName
-                                : 'Guest',
-                            style: GoogleFonts.poppins(
-                              fontSize: isSmallScreen ? 22 : 26,
-                              fontWeight: FontWeight.w800,
-                              color: AppTheme.textDark,
-                            ),
-                          ).animate().fadeIn(delay: 200.ms),
-
-                          SizedBox(height: isSmallScreen ? 28 : 40),
-                          _buildSectionTitle(
-                            'Personal Info',
-                            isSmallScreen: isSmallScreen,
-                          ),
-                          SizedBox(height: isSmallScreen ? 12 : 16),
-                          GlassContainer(
-                            width: double.infinity,
-                            radius: isSmallScreen ? 24 : 32,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Column(
-                              children: [
-                                _buildSettingsTile(
-                                  Icons.edit_rounded,
-                                  'Name',
-                                  storage.userName,
-                                  () => _editName(context, storage),
-                                  isSmallScreen: isSmallScreen,
-                                ),
-                                _buildDivider(),
-                                _buildSettingsTile(
-                                  Icons.cake_rounded,
-                                  'Age',
-                                  storage.userAge?.toString() ?? 'Set Age',
-                                  () => _editAge(context, storage),
-                                  isSmallScreen: isSmallScreen,
-                                ),
-                                _buildDivider(),
-                                _buildSettingsTile(
-                                  Icons.track_changes_rounded,
-                                  'Goal',
-                                  storage.userGoal == 'pregnant'
-                                      ? 'Track Pregnancy'
-                                      : (storage.userGoal == 'conceive'
-                                          ? 'Conceive'
-                                          : 'Track Cycle'),
-                                  () => _showGoalSelection(context, storage),
-                                  isSmallScreen: isSmallScreen,
-                                ),
-                              ],
-                            ),
-                          ).animate().fadeIn(delay: 200.ms),
-
-                          SizedBox(height: sectionSpacing),
-                          _buildSectionTitle(
-                            'Settings',
-                            isSmallScreen: isSmallScreen,
-                          ),
-                          SizedBox(height: isSmallScreen ? 12 : 16),
-                          GlassContainer(
-                            width: double.infinity,
-                            radius: isSmallScreen ? 24 : 32,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Column(
-                              children: [
-                                _buildSettingsTile(
-                                  Icons.notifications_active_rounded,
-                                  'Notifications',
-                                  'Enabled',
-                                  () {},
-                                  isSmallScreen: isSmallScreen,
-                                ),
-                                _buildDivider(),
-                                // Biometric / PIN Lock Toggle
-                                Consumer<StorageService>(
-                                  builder:
-                                      (ctx, stor, _) => InkWell(
-                                        onTap:
-                                            () => stor.setPinLocked(
-                                              !stor.isPinLocked,
-                                            ),
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: isSmallScreen ? 12 : 16,
-                                            vertical: 8,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.all(
-                                                  isSmallScreen ? 8 : 10,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: AppTheme.accentPink
-                                                      .withValues(alpha: 0.1),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(
-                                                  Icons.security_rounded,
-                                                  color: AppTheme.accentPink,
-                                                  size: isSmallScreen ? 18 : 20,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Privacy & Security',
-                                                      style: GoogleFonts.inter(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            AppTheme.textDark,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      stor.isPinLocked
-                                                          ? 'Enabled'
-                                                          : 'Disabled',
-                                                      style: GoogleFonts.inter(
-                                                        fontSize: 12,
-                                                        color:
-                                                            AppTheme
-                                                                .textSecondary,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Switch(
-                                                value: stor.isPinLocked,
-                                                activeThumbColor:
-                                                    AppTheme.accentPink,
-                                                onChanged:
-                                                    (val) =>
-                                                        stor.setPinLocked(val),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                ),
-                                _buildDivider(),
-                                // Dark Mode Toggle
-                                Consumer<StorageService>(
-                                  builder:
-                                      (ctx, stor, _) => InkWell(
-                                        onTap: () => stor.toggleDarkMode(),
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: isSmallScreen ? 12 : 16,
-                                            vertical: 8,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.all(
-                                                  isSmallScreen ? 8 : 10,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: AppTheme.accentPink
-                                                      .withValues(alpha: 0.1),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(
-                                                  stor.isDarkMode
-                                                      ? Icons.dark_mode_rounded
-                                                      : Icons
-                                                          .light_mode_rounded,
-                                                  color: AppTheme.accentPink,
-                                                  size: isSmallScreen ? 18 : 20,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Dark Mode',
-                                                      style: GoogleFonts.inter(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            AppTheme.textDark,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      stor.isDarkMode
-                                                          ? 'On'
-                                                          : 'Off',
-                                                      style: GoogleFonts.inter(
-                                                        fontSize: 12,
-                                                        color:
-                                                            AppTheme
-                                                                .textSecondary,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Switch(
-                                                value: stor.isDarkMode,
-                                                activeThumbColor:
-                                                    AppTheme.accentPink,
-                                                onChanged:
-                                                    (_) =>
-                                                        stor.toggleDarkMode(),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                ),
-                                _buildDivider(),
-                                _buildSettingsTile(
-                                  Icons.cloud_upload_rounded,
-                                  'Export Data',
-                                  'CSV/PDF',
-                                  () => _showExportOptions(context, storage),
-                                  isSmallScreen: isSmallScreen,
-                                ),
-                              ],
-                            ),
-                          ).animate().fadeIn(delay: 400.ms),
-
-                          SizedBox(height: sectionSpacing),
-                          _buildSectionTitle(
-                            'App Info',
-                            isSmallScreen: isSmallScreen,
-                          ),
-                          SizedBox(height: isSmallScreen ? 12 : 16),
-                          GlassContainer(
-                            width: double.infinity,
-                            radius: isSmallScreen ? 24 : 32,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Column(
-                              children: [
-                                _buildSettingsTile(
-                                  Icons.info_outline_rounded,
-                                  'Version',
-                                  '1.2.0 (Premium)',
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const AboutAppScreen(),
-                                    ),
-                                  ),
-                                  isSmallScreen: isSmallScreen,
-                                ),
-                                _buildDivider(),
-                                _buildSettingsTile(
-                                  Icons.delete_sweep_rounded,
-                                  'Clear All Data',
-                                  'Permanently erase logs',
-                                  () => _confirmDelete(context, storage),
-                                  isSmallScreen: isSmallScreen,
-                                ),
-                              ],
-                            ),
-                          ).animate().fadeIn(delay: 500.ms),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -466,74 +568,78 @@ class ProfileScreen extends StatelessWidget {
   }) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: isSmallScreen ? 12 : 16,
-            vertical: 12,
-          ),
-          child: Row(
-            children: [
-              // ── Leading Icon ──
-              Container(
-                padding: EdgeInsets.all(isSmallScreen ? 8 : 10),
-                decoration: BoxDecoration(
-                  color: AppTheme.accentPink.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  color: AppTheme.accentPink,
-                  size: isSmallScreen ? 18 : 20,
-                ),
-              ),
-              const SizedBox(width: 16),
-              // ── Title ──
-              Expanded(
-                flex: 2,
-                child: Text(
-                  title,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textDark,
+      child: Semantics(
+        label: '$title: $value',
+        button: true,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 12 : 16,
+              vertical: 12,
+            ),
+            child: Row(
+              children: [
+                // ── Leading Icon ──
+                Container(
+                  padding: EdgeInsets.all(isSmallScreen ? 8 : 10),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentPink.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: AppTheme.accentPink,
+                    size: isSmallScreen ? 18 : 20,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              // ── Trailing Value ──
-              Flexible(
-                flex: 3,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        value,
-                        textAlign: TextAlign.right,
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppTheme.textSecondary,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                const SizedBox(width: 16),
+                // ── Title ──
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textDark,
                     ),
-                    if (onTap != null) ...[
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.chevron_right_rounded,
-                        color: AppTheme.textSecondary,
-                        size: 20,
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                // ── Trailing Value ──
+                Flexible(
+                  flex: 3,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          value,
+                          textAlign: TextAlign.right,
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppTheme.textSecondary,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (onTap != null) ...[
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.chevron_right_rounded,
+                          color: AppTheme.textSecondary,
+                          size: 20,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -570,65 +676,89 @@ class ProfileScreen extends StatelessWidget {
               color: AppTheme.frameColor,
               borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildBottomSheetHeader('Edit Age'),
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    decoration: AppTheme.glassDecoration(
-                      radius: 20,
-                      opacity: 0.3,
-                    ),
-                    child: TextField(
-                      controller: controller,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter your age',
+            child: StatefulBuilder(
+              builder: (ctx, setModalState) {
+                String? errorText;
+
+                void validateAndSave() {
+                  final ageStr = controller.text.trim();
+                  if (ageStr.isEmpty) {
+                    setModalState(() => errorText = 'Please enter your age');
+                    return;
+                  }
+                  final age = int.tryParse(ageStr);
+                  if (age == null || age < 5 || age > 100) {
+                    setModalState(
+                      () => errorText = 'Please enter a valid age (5-100)',
+                    );
+                    return;
+                  }
+                  storage.updateUserAge(age);
+                  Navigator.pop(ctx);
+                }
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildBottomSheetHeader('Edit Age'),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
                       ),
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textDark,
+                      decoration: AppTheme.glassDecoration(
+                        radius: 20,
+                        opacity: 0.3,
+                        borderColor:
+                            errorText != null ? Colors.redAccent : null,
                       ),
-                      autofocus: true,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: () {
-                      final age = int.tryParse(controller.text.trim());
-                      if (age != null) {
-                        storage.updateUserAge(age);
-                        Navigator.pop(ctx);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.accentPink,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                      minimumSize: const Size(double.infinity, 54),
-                    ),
-                    child: Text(
-                      'Save Age',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 16,
+                      child: TextField(
+                        controller: controller,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter your age',
+                          errorText: errorText,
+                          errorStyle: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textDark,
+                        ),
+                        autofocus: true,
+                        onSubmitted: (_) => validateAndSave(),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-              ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: validateAndSave,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accentPink,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                        minimumSize: const Size(double.infinity, 54),
+                      ),
+                      child: Text(
+                        'Save Age',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                );
+              },
             ),
           ),
     );
@@ -824,13 +954,32 @@ class ProfileScreen extends StatelessWidget {
                       'Gallery',
                       () async {
                         Navigator.pop(ctx);
-                        final XFile? image = await picker.pickImage(
-                          source: ImageSource.gallery,
-                          maxWidth: 800,
-                          imageQuality: 85,
-                        );
-                        if (image != null) {
-                          storage.updateUserImagePath(image.path);
+                        try {
+                          final XFile? image = await picker.pickImage(
+                            source: ImageSource.gallery,
+                            maxWidth: 800,
+                            imageQuality: 85,
+                          );
+                          if (image != null) {
+                            storage.updateUserImagePath(image.path);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Profile picture updated!'),
+                                  backgroundColor: AppTheme.accentPink,
+                                ),
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Could not pick image: $e'),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                          }
                         }
                       },
                     ),
@@ -840,13 +989,32 @@ class ProfileScreen extends StatelessWidget {
                       'Camera',
                       () async {
                         Navigator.pop(ctx);
-                        final XFile? image = await picker.pickImage(
-                          source: ImageSource.camera,
-                          maxWidth: 800,
-                          imageQuality: 85,
-                        );
-                        if (image != null) {
-                          storage.updateUserImagePath(image.path);
+                        try {
+                          final XFile? image = await picker.pickImage(
+                            source: ImageSource.camera,
+                            maxWidth: 800,
+                            imageQuality: 85,
+                          );
+                          if (image != null) {
+                            storage.updateUserImagePath(image.path);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Profile picture updated!'),
+                                  backgroundColor: AppTheme.accentPink,
+                                ),
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Could not access camera: $e'),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                          }
                         }
                       },
                     ),
@@ -858,6 +1026,11 @@ class ProfileScreen extends StatelessWidget {
                     onPressed: () {
                       storage.updateUserImagePath(null);
                       Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Profile picture removed'),
+                        ),
+                      );
                     },
                     icon: const Icon(Icons.delete_rounded, color: Colors.red),
                     label: Text(
@@ -925,63 +1098,87 @@ class ProfileScreen extends StatelessWidget {
               color: AppTheme.frameColor,
               borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildBottomSheetHeader('Edit Name'),
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    decoration: AppTheme.glassDecoration(
-                      radius: 20,
-                      opacity: 0.3,
-                    ),
-                    child: TextField(
-                      controller: controller,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter your name',
+            child: StatefulBuilder(
+              builder: (ctx, setModalState) {
+                String? errorText;
+
+                void validateAndSave() {
+                  final name = controller.text.trim();
+                  if (name.isEmpty) {
+                    setModalState(() => errorText = 'Name cannot be empty');
+                    return;
+                  }
+                  if (name.length > 30) {
+                    setModalState(
+                      () => errorText = 'Name is too long (max 30)',
+                    );
+                    return;
+                  }
+                  storage.updateUserName(name);
+                  Navigator.pop(ctx);
+                }
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildBottomSheetHeader('Edit Name'),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
                       ),
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textDark,
+                      decoration: AppTheme.glassDecoration(
+                        radius: 20,
+                        opacity: 0.3,
+                        borderColor:
+                            errorText != null ? Colors.redAccent : null,
                       ),
-                      autofocus: true,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (controller.text.trim().isNotEmpty) {
-                        storage.updateUserName(controller.text.trim());
-                        Navigator.pop(ctx);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.accentPink,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                      minimumSize: const Size(double.infinity, 54),
-                    ),
-                    child: Text(
-                      'Save Name',
-                      style: GoogleFonts.inter(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 16,
+                      child: TextField(
+                        controller: controller,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter your name',
+                          errorText: errorText,
+                          errorStyle: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textDark,
+                        ),
+                        autofocus: true,
+                        onSubmitted: (_) => validateAndSave(),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-              ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: validateAndSave,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accentPink,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                        minimumSize: const Size(double.infinity, 54),
+                      ),
+                      child: Text(
+                        'Save Name',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                );
+              },
             ),
           ),
     );
@@ -1042,15 +1239,30 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          storage.clearAllData();
-                          Navigator.pop(ctx);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('All data successfully erased.'),
-                              backgroundColor: Colors.redAccent,
-                            ),
-                          );
+                        onPressed: () async {
+                          try {
+                            storage.clearAllData();
+                            Navigator.pop(ctx);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'All data successfully erased.',
+                                  ),
+                                  backgroundColor: Colors.redAccent,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to clear data: $e'),
+                                  backgroundColor: Colors.redAccent,
+                                ),
+                              );
+                            }
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,

@@ -18,6 +18,7 @@ import '../widgets/glass_container.dart';
 import '../widgets/pregnancy_dashboard.dart';
 import '../models/daily_log.dart';
 import 'log_period_screen.dart';
+import '../widgets/skeleton_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,6 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
   // to be a multiple of 7.  Once the confetti has been shown for the current
   // milestone it is suppressed until the streak value changes.
   int? _lastConfettiMilestone;
+  bool _isLocalLoading = true;
+
+  // ───── Under the Hood Expansion States ─────
+  bool _isHormonesExpanded = false;
+  bool _isWaterExpanded = false;
+  bool _isSleepExpanded = false;
+  bool _isStreakExpanded = false;
 
   @override
   void initState() {
@@ -43,6 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkFirstTimeInfo();
+      // Brief artificial delay to show off the skeletons (Phase 1 requirement)
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) {
+          setState(() => _isLocalLoading = false);
+        }
+      });
     });
   }
 
@@ -69,7 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Fires confetti *once* when the streak hits a 7‑day milestone and the
   /// milestone has not already been celebrated in the current session.
   void _maybeFireConfetti(int streak) {
-    if (streak <= 0) return;
+    if (streak <= 0) {
+      return;
+    }
     final isMilestone = streak % 7 == 0;
     if (!isMilestone) {
       // Streak is no longer a milestone — reset so confetti can fire again
@@ -78,7 +94,9 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
     // Already showed confetti for this milestone this session.
-    if (_lastConfettiMilestone == streak) return;
+    if (_lastConfettiMilestone == streak) {
+      return;
+    }
 
     _lastConfettiMilestone = streak;
     _confettiController.play();
@@ -127,7 +145,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               _GreetingSection(storage: storage),
                               const SizedBox(height: 12),
-                              if (storage.userGoal == 'pregnant')
+                              if (_isLocalLoading)
+                                _buildSkeletonDashboard()
+                              else if (storage.userGoal == 'pregnant')
                                 _buildPregnancyDashboard(context, storage)
                               else if (storage.userGoal == 'conceive')
                                 _buildTTCDashboard(context, storage)
@@ -184,17 +204,20 @@ class _HomeScreenState extends State<HomeScreen> {
         // Sidebar Menu Button
         Builder(
           builder:
-              (context) => NeuContainer(
-                radius: 18,
-                padding: const EdgeInsets.all(10),
-                style: NeuStyle.convex,
-                onTap: () {
-                  Scaffold.of(context).openDrawer();
-                },
-                child: const Icon(
-                  Icons.menu_rounded,
-                  color: AppTheme.textDark,
-                  size: 26,
+              (context) => Semantics(
+                label: 'Open Sidebar Menu',
+                button: true,
+                child: GlassContainer(
+                  radius: 18,
+                  padding: const EdgeInsets.all(10),
+                  onTap: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  child: const Icon(
+                    Icons.menu_rounded,
+                    color: AppTheme.textDark,
+                    size: 26,
+                  ),
                 ),
               ),
         ),
@@ -261,44 +284,52 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCurrentModeBadge(StorageService storage) {
     final mode = storage.userGoal;
     String modeLabel = 'Period Tracking';
-    if (mode == 'conceive') modeLabel = 'Conceive';
-    if (mode == 'pregnant') modeLabel = 'Pregnancy';
+    if (mode == 'conceive') {
+      modeLabel = 'Conceive';
+    }
+    if (mode == 'pregnant') {
+      modeLabel = 'Pregnancy';
+    }
 
-    return NeuContainer(
-      radius: 20,
-      onTap: () => _showModeSelectionSheet(context, storage),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: AppTheme.accentPink.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
+    return Semantics(
+      label: 'Current Mode: $modeLabel. Tap to change.',
+      button: true,
+      child: GlassContainer(
+        radius: 20,
+        onTap: () => _showModeSelectionSheet(context, storage),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: AppTheme.accentPink.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.favorite_rounded,
+                color: AppTheme.accentPink,
+                size: 16,
+              ),
             ),
-            child: const Icon(
-              Icons.favorite_rounded,
-              color: AppTheme.accentPink,
-              size: 16,
+            const SizedBox(width: 12),
+            Text(
+              modeLabel,
+              style: GoogleFonts.poppins(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textDark,
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            modeLabel,
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textDark,
+            const SizedBox(width: 8),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: AppTheme.textSecondary.withValues(alpha: 0.5),
+              size: 20,
             ),
-          ),
-          const SizedBox(width: 8),
-          Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: AppTheme.textSecondary.withValues(alpha: 0.5),
-            size: 20,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -384,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
     IconData icon,
     bool isSelected,
   ) {
-    return NeuContainer(
+    return GlassContainer(
       radius: 20,
       onTap: () {
         storage.updateUserGoal(goal);
@@ -460,52 +491,103 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // ── Phase 1: Focal 'Cycle Core' ───────────────────────────────
         _buildFloralRingDashboard(context, pred)
             .animate()
-            .fadeIn(duration: 400.ms)
+            .fadeIn(duration: 600.ms)
             .scale(begin: const Offset(0.9, 0.9)),
+
+        const SizedBox(height: 32),
+
+        // ── Phase 2: Under the Hood entry points ─────────────────────
+        _buildInsightBubbles(
+          context,
+        ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
+
         const SizedBox(height: 24),
+
+        // ── Phase 3: The Reveal (Expanded Sections) ──────────────────
+        if (_isHormonesExpanded)
+          Column(
+            children: [
+              HormoneGraph(pred: pred),
+              const SizedBox(height: 16),
+              PhaseHealthTipsWidget(pred: pred),
+              const SizedBox(height: 16),
+            ],
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.05),
+
+        if (_isWaterExpanded)
+          Column(
+            children: [
+              _buildBentoWaterCard(storage),
+              const SizedBox(height: 16),
+            ],
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.05),
+
+        if (_isSleepExpanded)
+          Column(
+            children: [
+              _buildSleepCard(storage, pred),
+              const SizedBox(height: 16),
+            ],
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.05),
+
+        if (_isStreakExpanded)
+          Column(
+            children: [
+              _buildStreakCard(context, storage),
+              const SizedBox(height: 16),
+            ],
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.05),
+
+        // ── Phase 4: Daily Deep Dives ─────────────────────────────────
         _buildYourBodyTodayCard(
           context,
           pred,
-        ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1),
-        const SizedBox(height: 16),
-        _buildBentoWaterCard(
-          storage,
-        ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1),
-        const SizedBox(height: 12),
-        // ── Sleep & Streak row ─────────────────────────────────────────
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _buildSleepCard(
-                storage,
-                pred,
-              ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildStreakCard(
-                context,
-                storage,
-              ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        HormoneGraph(
-          pred: pred,
-        ).animate().fadeIn(delay: 700.ms, duration: 400.ms).slideY(begin: 0.1),
-        const SizedBox(height: 24),
-        PhaseHealthTipsWidget(
-          pred: pred,
-        ).animate().fadeIn(delay: 900.ms, duration: 400.ms).slideY(begin: 0.1),
+        ).animate().fadeIn(delay: 400.ms, duration: 400.ms),
         const SizedBox(height: 24),
         _buildWellnessGoalsCard(
           context,
           storage,
-        ).animate().fadeIn(delay: 1000.ms, duration: 400.ms).slideY(begin: 0.1),
+        ).animate().fadeIn(delay: 600.ms, duration: 400.ms),
+      ],
+    );
+  }
+
+  Widget _buildInsightBubbles(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _InsightBubble(
+          icon: '🧪',
+          label: 'Hormones',
+          color: AppTheme.accentPurple,
+          isExpanded: _isHormonesExpanded,
+          onTap:
+              () => setState(() => _isHormonesExpanded = !_isHormonesExpanded),
+        ),
+        _InsightBubble(
+          icon: '💧',
+          label: 'Water',
+          color: Colors.blueAccent,
+          isExpanded: _isWaterExpanded,
+          onTap: () => setState(() => _isWaterExpanded = !_isWaterExpanded),
+        ),
+        _InsightBubble(
+          icon: '🌙',
+          label: 'Sleep',
+          color: const Color(0xFF66BB6A),
+          isExpanded: _isSleepExpanded,
+          onTap: () => setState(() => _isSleepExpanded = !_isSleepExpanded),
+        ),
+        _InsightBubble(
+          icon: '🔥',
+          label: 'Streak',
+          color: AppTheme.accentPink,
+          isExpanded: _isStreakExpanded,
+          onTap: () => setState(() => _isStreakExpanded = !_isStreakExpanded),
+        ),
       ],
     );
   }
@@ -538,7 +620,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    return NeuContainer(
+    return GlassContainer(
       radius: 24,
       padding: const EdgeInsets.all(18),
       child: Column(
@@ -655,7 +737,7 @@ class _HomeScreenState extends State<HomeScreen> {
       emoji = '📅';
     }
 
-    return NeuContainer(
+    return GlassContainer(
       radius: 24,
       padding: const EdgeInsets.all(18),
       child: Column(
@@ -739,19 +821,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final biology = pred.getPhaseBiology(day);
     final phaseColor = AppTheme.getPhaseColor(pred.currentPhase);
 
-    return Container(
+    return GlassContainer(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+      radius: 28,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -869,7 +941,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final water = log?.waterIntake ?? 0;
     final goal = storage.hydrationGoal;
 
-    return NeuContainer(
+    return GlassContainer(
       padding: const EdgeInsets.all(20),
       radius: 24,
       child: Column(
@@ -913,7 +985,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // Larger hit-targets (44×44) per accessibility guidelines
               Row(
                 children: [
-                  NeuContainer(
+                  GlassContainer(
                     onTap: () {
                       HapticFeedback.lightImpact();
                       _removeWater(storage);
@@ -929,7 +1001,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  NeuContainer(
+                  GlassContainer(
                     onTap: () {
                       HapticFeedback.lightImpact();
                       _addWater(storage);
@@ -979,7 +1051,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1);
+    );
   }
 
   Widget _buildInsightCarousel(BuildContext context) {
@@ -1220,7 +1292,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 32),
-          NeuContainer(
+          GlassContainer(
             onTap: () {
               showModalBottomSheet(
                 context: context,
@@ -1230,7 +1302,6 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
             radius: 20,
-            style: NeuStyle.convex,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Text(
@@ -1298,14 +1369,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
     debugPrint('HomeScreen: Saving waterIntake = ${updatedLog.waterIntake}');
     await storage.saveDailyLog(updatedLog);
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _removeWater(StorageService storage) async {
     debugPrint('HomeScreen: _removeWater called');
     final now = DateTime.now();
     final log = storage.getDailyLog(now);
-    if (log == null) return;
+    if (log == null) {
+      return;
+    }
 
     final goal = storage.hydrationGoal;
     final updatedLog = DailyLog(
@@ -1320,7 +1395,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     debugPrint('HomeScreen: Saving waterIntake = ${updatedLog.waterIntake}');
     await storage.saveDailyLog(updatedLog);
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Widget _buildFloralRingDashboard(
@@ -1375,7 +1452,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              NeuContainer(
+              GlassContainer(
                 onTap: () {
                   final biology = pred.getPhaseBiology(day);
                   final phase = pred.phaseDisplayName;
@@ -1392,7 +1469,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: innerSize,
                 height: innerSize,
                 radius: innerSize / 2,
-                style: NeuStyle.convex,
                 borderColor: Colors.white.withValues(alpha: 0.5),
                 child: Center(
                   child: Column(
@@ -1547,7 +1623,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final upcoming = storage.getUpcomingAppointments();
     final hasGoals = upcoming.isNotEmpty;
 
-    return NeuContainer(
+    return GlassContainer(
       padding: const EdgeInsets.all(24),
       radius: 28,
       onTap: () {
@@ -1644,6 +1720,32 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Widget _buildSkeletonDashboard() {
+    return const Column(
+      children: [
+        // Top Hero Card Skeleton
+        SkeletonCard(height: 180),
+        SizedBox(height: 12),
+        // Bento Grid Skeletons
+        Row(
+          children: [
+            Expanded(child: SkeletonCard(height: 140)),
+            SizedBox(width: 12),
+            Expanded(child: SkeletonCard(height: 140)),
+          ],
+        ),
+        SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(flex: 2, child: SkeletonCard(height: 120)),
+            SizedBox(width: 12),
+            Expanded(flex: 3, child: SkeletonCard(height: 120)),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
 class _GreetingSection extends StatelessWidget {
@@ -1713,8 +1815,9 @@ class TTCDashboard extends StatelessWidget {
       children: [
         _buildFertilityCard(pred, title: 'TTC Focus: Fertility Window'),
         const SizedBox(height: 24),
-        NeuContainer(
+        GlassContainer(
           padding: const EdgeInsets.all(28),
+          radius: 32,
           child: Row(
             children: [
               Expanded(
@@ -1758,10 +1861,9 @@ class TTCDashboard extends StatelessWidget {
     String title = 'FERTILITY STATUS',
   }) {
     final chance = pred.currentConceptionChance;
-    return NeuContainer(
+    return GlassContainer(
       padding: const EdgeInsets.all(32),
       radius: 40,
-      style: NeuStyle.convex,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1846,7 +1948,9 @@ class _CycleRingPainter extends CustomPainter {
           ..strokeCap = StrokeCap.round;
     canvas.drawCircle(center, radius, trackPaint);
 
-    if (progress <= 0) return;
+    if (progress <= 0) {
+      return;
+    }
 
     // 2. Prepare Gradient & Paint for Active Arc
     final sweepAngle = 2 * 3.14159265359 * progress;
@@ -1914,4 +2018,68 @@ class _ChipData {
     required this.explanation,
     required this.tip,
   });
+}
+
+class _InsightBubble extends StatelessWidget {
+  final String icon;
+  final String label;
+  final Color color;
+  final bool isExpanded;
+  final VoidCallback onTap;
+
+  const _InsightBubble({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.isExpanded,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onTap();
+          },
+          child: GlassContainer(
+            width: 68,
+            height: 68,
+            radius: 34,
+            padding: EdgeInsets.zero,
+            opacity: isExpanded ? 0.25 : 0.1,
+            borderColor:
+                isExpanded ? color.withValues(alpha: 0.5) : Colors.white24,
+            child: Center(
+              child: Text(
+                icon,
+                style: TextStyle(
+                  fontSize: 28,
+                  shadows: [
+                    if (isExpanded)
+                      Shadow(
+                        color: color.withValues(alpha: 0.5),
+                        blurRadius: 10,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 10,
+            fontWeight: isExpanded ? FontWeight.w900 : FontWeight.w700,
+            color: isExpanded ? AppTheme.textDark : AppTheme.textSecondary,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
+    );
+  }
 }
