@@ -10,6 +10,8 @@ import 'notification_service.dart';
 import '../models/period_log.dart';
 import '../models/daily_log.dart';
 import '../models/appointment.dart';
+import 'user_service.dart';
+import 'api_service.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -36,6 +38,7 @@ class StorageService extends ChangeNotifier {
   Future<void> init() async {
     try {
       await BaseStorageService.instance.init();
+      await onboarding.init();
       await periodLog.init();
       await healthTracker.init();
       await appointment.init();
@@ -77,9 +80,19 @@ class StorageService extends ChangeNotifier {
       pregnancy.savePregnancyData(conceptionDate: conceptionDate, weeks: weeks);
   Future<void> saveDueDate(DateTime date) => pregnancy.saveDueDate(date);
 
-  Future<void> updateUserName(String name) => onboarding.updateUserName(name);
+  Future<void> updateUserName(String name) async {
+    await onboarding.updateUserName(name);
+    if (onboarding.user != null) {
+      await UserService.updateUserProfile(onboarding.user!);
+    }
+  }
+
   Future<void> updateUserAge(int age) async {
     await BaseStorageService.instance.prefs.setInt('userAge', age);
+    if (onboarding.user != null) {
+      await onboarding.saveUser(onboarding.user!.copyWith(age: age));
+      await UserService.updateUserProfile(onboarding.user!);
+    }
     notifyListeners();
   }
 
@@ -89,19 +102,62 @@ class StorageService extends ChangeNotifier {
     } else {
       await BaseStorageService.instance.prefs.setString('userImagePath', path);
     }
+    if (onboarding.user != null) {
+      await onboarding.saveUser(onboarding.user!.copyWith(imagePath: path));
+      await UserService.updateUserProfile(onboarding.user!);
+    }
     notifyListeners();
   }
 
   Future<void> updateUserGoal(String goal) async {
     await BaseStorageService.instance.prefs.setString('userGoal', goal);
+    if (onboarding.user != null) {
+      await onboarding.saveUser(onboarding.user!.copyWith(goal: goal));
+      await UserService.updateUserProfile(onboarding.user!);
+    }
     notifyListeners();
   }
 
-  Future<void> completeLogin(bool loggedIn, [String name = '']) =>
-      onboarding.completeLogin(loggedIn, name);
-  Future<void> completeOnboarding(String goal, String name, {int? age}) =>
-      onboarding.completeOnboarding(goal, name, age: age);
-  Future<void> logout() => onboarding.logout();
+  Future<void> completeLogin(bool loggedIn, [String name = '']) async {
+    await onboarding.completeLogin(loggedIn, name);
+    if (loggedIn) {
+      await syncUserWithBackend();
+    }
+  }
+
+  Future<void> completeOnboarding(String goal, String name, {int? age}) async {
+    await onboarding.completeOnboarding(goal, name, age: age);
+    await syncUserWithBackend();
+  }
+
+  Future<void> syncUserWithBackend() async {
+    final token = ApiService.token;
+    if (token == null) return;
+
+    _setLoading(true);
+    try {
+      // 1. Try to fetch existing profile from backend
+      final remoteUser = await UserService.getUserProfile();
+      
+      if (remoteUser != null) {
+        // Sync remote to local
+        await onboarding.saveUser(remoteUser);
+      } else if (onboarding.user != null) {
+        // Local exists but remote doesn't (or error), try to push local to remote
+        await UserService.updateUserProfile(onboarding.user!);
+      }
+    } catch (e) {
+      debugPrint('Sync Error: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> logout() async {
+    await onboarding.logout();
+    await ApiService.saveToken(null);
+  }
+
   Future<void> toggleDarkMode() => onboarding.toggleDarkMode();
 
   Future<void> saveLog(PeriodLog log) => periodLog.saveLog(log);

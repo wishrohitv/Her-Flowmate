@@ -7,7 +7,7 @@ import '../services/storage_service.dart';
 import '../services/prediction_service.dart';
 import '../models/period_log.dart';
 import '../utils/app_theme.dart';
-import '../widgets/glass_container.dart';
+import '../widgets/themed_container.dart';
 import '../widgets/delight_widgets.dart';
 import '../widgets/brand_widgets.dart';
 
@@ -56,12 +56,12 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
       body: Container(
         decoration: BoxDecoration(
           color: isDark ? AppTheme.darkSurface : AppTheme.frameColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
         ),
         padding: const EdgeInsets.only(top: 16),
-        child: GlassContainer(
+        child: ThemedContainer(
+          type: ContainerType.glass,
           radius: 40,
-          opacity: 0.05,
           child: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(
@@ -118,7 +118,8 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                   // ── Step 1: Date ────────────────────────────────────────────
                   _stepLabel(context, '1', 'When did it start?'),
                   const SizedBox(height: 16),
-                  GlassContainer(
+                  ThemedContainer(
+                    type: ContainerType.glass,
                     radius: 24,
                     onTap: () async {
                       final date = await showDatePicker(
@@ -185,7 +186,8 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                   // ── Step 2: AM / PM ─────────────────────────────────────────
                   _stepLabel(context, '2', 'Select Start Time'),
                   const SizedBox(height: 16),
-                  GlassContainer(
+                  ThemedContainer(
+                    type: ContainerType.glass,
                     radius: 24,
                     padding: const EdgeInsets.all(8),
                     child: Row(
@@ -261,13 +263,12 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                               child: GestureDetector(
                                 onTap:
                                     () => setState(() => _flowIntensity = flow),
-                                child: GlassContainer(
+                                child: ThemedContainer(
+                                  type: ContainerType.glass,
                                   radius: 16,
-                                  opacity: isSelected ? 0.2 : 0.05,
-                                  borderColor:
-                                      isSelected
-                                          ? AppTheme.accentPink
-                                          : Colors.transparent,
+                                  border: isSelected
+                                      ? Border.all(color: AppTheme.accentPink)
+                                      : null,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 16,
@@ -319,13 +320,12 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                                 }
                               });
                             },
-                            child: GlassContainer(
+                            child: ThemedContainer(
+                              type: ContainerType.glass,
                               radius: 12,
-                              opacity: isSelected ? 0.2 : 0.05,
-                              borderColor:
-                                  isSelected
-                                      ? AppTheme.accentPink
-                                      : Colors.transparent,
+                              border: isSelected
+                                  ? Border.all(color: AppTheme.accentPink)
+                                  : null,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -373,14 +373,13 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                                     () => setState(
                                       () => _selectedMood = entry.key,
                                     ),
-                                child: GlassContainer(
+                                child: ThemedContainer(
+                                  type: ContainerType.glass,
                                   radius: 20,
                                   width: 64,
-                                  opacity: isSelected ? 0.2 : 0.05,
-                                  borderColor:
-                                      isSelected
-                                          ? AppTheme.accentPink
-                                          : Colors.transparent,
+                                  border: isSelected
+                                      ? Border.all(color: AppTheme.accentPink)
+                                      : null,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -412,13 +411,16 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                   const SizedBox(height: 48),
 
                   // ── Save Button ─────────────────────────────────────────────
-                  GlassContainer(
+                  ThemedContainer(
+                    type: ContainerType.glass,
                     radius: 24,
                     padding: EdgeInsets.zero,
-                    borderColor:
+                    border:
                         _selectedDate == null
-                            ? Colors.transparent
-                            : AppTheme.accentPink.withValues(alpha: 0.4),
+                            ? null
+                            : Border.all(
+                              color: AppTheme.accentPink.withValues(alpha: 0.4),
+                            ),
                     onTap:
                         _selectedDate == null
                             ? () {}
@@ -540,13 +542,12 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
   }
 
   Widget _amPmButton(String label, bool isActive, VoidCallback onTap) {
-    return GlassContainer(
+    return ThemedContainer(
+      type: ContainerType.glass,
       radius: 18,
-      opacity: isActive ? 0.15 : 0.05,
-      borderColor:
-          isActive
-              ? AppTheme.accentPink.withValues(alpha: 0.3)
-              : Colors.transparent,
+      border: isActive
+          ? Border.all(color: AppTheme.accentPink.withValues(alpha: 0.3))
+          : null,
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(12),

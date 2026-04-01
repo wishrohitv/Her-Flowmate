@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'api_service.dart';
 
 class GoogleAuthService {
   // 1. Initialize GoogleSignIn with your WEB CLIENT ID
@@ -81,15 +81,18 @@ class GoogleAuthService {
     String token,
   ) async {
     try {
-      final response = await http.post(
-        Uri.parse('https://her-flowmate-backend.onrender.com/auth'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'token': token}),
-      );
+      final response = await ApiService.post('/auth', {'token': token});
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         debugPrint('Backend Auth Success: $data');
+        
+        // Save the token if provided by backend (usually 'token' or 'access_token')
+        final String? backendToken = data['token'] ?? data['access_token'];
+        if (backendToken != null) {
+          await ApiService.saveToken(backendToken);
+        }
+        
         return data as Map<String, dynamic>;
       } else {
         debugPrint(

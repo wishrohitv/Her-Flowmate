@@ -34,6 +34,32 @@ class PeriodLog extends HiveObject {
     this.endDate,
     this.isAM = true,
   });
+
+  Map<String, dynamic> toJson() => {
+        'startDate': startDate.toIso8601String(),
+        'duration': duration,
+        'flowIntensity': flowIntensity,
+        'symptoms': symptoms,
+        'mood': mood,
+        'endDate': endDate?.toIso8601String(),
+        'isAM': isAM,
+      };
+
+  factory PeriodLog.fromJson(Map<String, dynamic> json) => PeriodLog(
+        startDate: DateTime.parse(json['startDate'] as String),
+        duration: json['duration'] as int,
+        flowIntensity: json['flowIntensity'] as String?,
+        symptoms: (json['symptoms'] as List?)?.cast<String>(),
+        mood: json['mood'] as String?,
+        endDate: json['endDate'] != null ? DateTime.parse(json['endDate'] as String) : null,
+        isAM: json['isAM'] as bool? ?? true,
+      );
+
+  bool validate() {
+    if (endDate != null && endDate!.isBefore(startDate)) return false;
+    if (duration <= 0) return false;
+    return true;
+  }
 }
 
 // Manual Adapter since build_runner might not be available

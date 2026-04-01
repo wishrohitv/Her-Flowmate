@@ -8,18 +8,42 @@ export 'constants.dart';
 abstract final class AppTheme {
   // ── Modern Pinkish Neumorphism Palette ─────────────────────────────────────
   // Primary Pink Shades
-  static const Color primaryPink50 = Color(0xFFFFF1F5); // Softest pink
-  static const Color primaryPink100 = Color(0xFFFFE0F0); // Very light pink
-  static const Color primaryPink200 = Color(0xFFFFC1D6); // Light pink
-  static const Color primaryPink300 = Color(0xFFFF9CBA); // Medium light pink
-  static const Color primaryPink400 = Color(0xFFFF7BA4); // Medium pink
-  static const Color primaryPink500 = Color(
-    0xFFFF5D8C,
-  ); // Vibrant pink (primary)
-  static const Color primaryPink600 = Color(0xFFE64980); // Dark pink
-  static const Color primaryPink700 = Color(0xFFC33774); // Very dark pink
-  static const Color primaryPink800 = Color(0xFFA13668); // Deep pink
-  static const Color primaryPink900 = Color(0xFF7D2B5C); // Deepest pink
+  static const Color primaryPink50 = Color(0xFFFFF1F5);
+  static const Color primaryPink100 = Color(0xFFFFE0F0);
+  static const Color primaryPink200 = Color(0xFFFFC1D6);
+  static const Color primaryPink300 = Color(0xFFFF9CBA);
+  static const Color primaryPink400 = Color(0xFFFF7BA4);
+  static const Color primaryPink500 = Color(0xFFFF5D8C); // Vibrant pink (primary)
+  static const Color primaryPink600 = Color(0xFFE64980);
+  static const Color primaryPink700 = Color(0xFFC33774);
+  static const Color primaryPink800 = Color(0xFFA13668);
+  static const Color primaryPink900 = Color(0xFF7D2B5C);
+
+  // Semantic Light Palette
+  static const Color lightPrimary = primaryPink500;
+  static const Color lightSecondary = primaryPink300;
+  static const Color lightSurface = Colors.white;
+  static const Color lightBackground = Color(0xFFFDF8FA);
+  static const Color lightError = Color(0xFFFF5252);
+  static const Color lightOnPrimary = Colors.white;
+  static const Color lightOnSurface = textDark;
+
+  // Semantic Dark Palette
+  static const Color darkPrimary = primaryPink300; // Softer pink for dark mode
+  static const Color darkSecondary = primaryPink700;
+  static const Color darkSurface = Color(0xFF1E1E2E);
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkError = Color(0xFFFF5252);
+  static const Color darkOnPrimary = Color(0xFF121212);
+  static const Color darkOnSurface = Color(0xFFE0E0E0);
+
+  // Legacy/Required Dark Colors
+  static const Color darkBg = darkBackground;
+  static const Color darkNeuLight = Color(0xFF2D2D3F);
+  static const Color darkNeuDark = Color(0xFF0F0F1A);
+  static const Color darkCard = Color(0xFF252538);
+  static const Color darkTextPrimary = darkOnSurface;
+  static const Color darkTextSecondary = Color(0xFFAA8FBB);
 
   // Text Colors
   static const Color textDark = Color(0xFF2D1B36); // Deep plum (unchanged)
@@ -144,13 +168,21 @@ abstract final class AppTheme {
     }
   }
 
-  // ── Spacing System (Consistent 8px Grid) ──────────────────────────────────
-  static const double spacingXsmall = 4.0;
-  static const double spacingSmall = 8.0;
-  static const double spacingMedium = 16.0;
-  static const double spacingLarge = 24.0;
-  static const double spacingXlarge = 32.0;
-  static const double spacingXXlarge = 48.0;
+  // ── Spacing System ────────────────────────────────────────────────────────
+  static const double spacingXs = 4.0;
+  static const double spacingSm = 8.0;
+  static const double spacingMd = 16.0;
+  static const double spacingLg = 24.0;
+  static const double spacingXl = 32.0;
+  static const double spacingXxl = 48.0;
+
+  // Backward compatibility aliases
+  static const double spacingXsmall = spacingXs;
+  static const double spacingSmall = spacingSm;
+  static const double spacingMedium = spacingMd;
+  static const double spacingLarge = spacingLg;
+  static const double spacingXlarge = spacingXl;
+  static const double spacingXXlarge = spacingXxl;
   static const double spacingHuge = 64.0;
 
   static BoxDecoration loginContainerDecoration({bool isDark = false}) {
@@ -315,114 +347,22 @@ abstract final class AppTheme {
     );
   }
 
-  static TextTheme textTheme(BuildContext context) =>
-      Theme.of(context).textTheme;
+  static TextTheme textTheme(BuildContext context) => Theme.of(context).textTheme;
 
-  // Optimized Heading sizes for mobile
-  static double h1(BuildContext context) => adaptiveFontSize(context, 26);
-  static double h2(BuildContext context) => adaptiveFontSize(context, 22);
-  static double h3(BuildContext context) => adaptiveFontSize(context, 18);
-  static double body(BuildContext context) => adaptiveFontSize(context, 16);
-  static double label(BuildContext context) => adaptiveFontSize(context, 12);
+  // ── Theme Definitions ──────────────────────────────────────────────────────
 
-  static ({String headline}) phaseTip(String phase) {
-    switch (phase) {
-      case 'Menstrual':
-        return (headline: 'Rest and Rejuvenate');
-      case 'Follicular':
-        return (headline: 'Plan and Initiate');
-      case 'Ovulation':
-        return (headline: 'Connect and Express');
-      case 'Luteal':
-        return (headline: 'Analyze and Complete');
-      default:
-        return (headline: 'Balance and Listen');
-    }
-  }
-
-  // ── Phase Health Support (Refined) ────────────────────────────────────────
-  static ({List<String> exercise, List<String> diet, List<String> nutrients})
-  getPhaseHealthTips(String phase) {
-    switch (phase) {
-      case 'Menstrual':
-        return (
-          exercise: [
-            'Gentle Yoga',
-            'Light Walking',
-            'Symptom Relief Stretches',
-          ],
-          diet: ['Warm Herbal Soups', 'Magnesium-Rich Oats', 'Ginger Tea'],
-          nutrients: ['Iron (rebuild)', 'Magnesium (cramps)', 'Vitamin C'],
-        );
-      case 'Follicular':
-        return (
-          exercise: ['Light Cardio', 'Creative Movement', 'Power Walking'],
-          diet: ['Fermented Salads', 'Sprouted Grains', 'Lean Proteins'],
-          nutrients: ['Zinc (hormone balance)', 'Vitamin B12', 'Vitamin E'],
-        );
-      case 'Ovulation':
-        return (
-          exercise: [
-            'HIIT Sessions',
-            'High Intensity Cardio',
-            'Social Workouts',
-          ],
-          diet: [
-            'Rainbow Salads',
-            'Cold Berries',
-            'Anti-inflammatory Crucifers',
-          ],
-          nutrients: ['Folate (cell health)', 'Amino Acids', 'Vitamin B'],
-        );
-      case 'Luteal':
-        return (
-          exercise: [
-            'Steady-state Pilates',
-            'Mindful Resistance',
-            'Long Stretches',
-          ],
-          diet: ['Complex Root Veggies', 'Dark Chocolate (70%+)', 'Omega Fats'],
-          nutrients: ['Vitamin B6 (mood)', 'Magnesium (sleep)', 'Omega-3'],
-        );
-      default:
-        return (
-          exercise: ['Listen to your pulse'],
-          diet: ['Mindful nutrition'],
-          nutrients: ['Essential Multivitamin'],
-        );
-    }
-  }
-
-  static List<String> getPhaseSymptoms(String phase) {
-    switch (phase) {
-      case 'Menstrual':
-        return ['Cramps', 'Fatigue', 'Low Back Pain'];
-      case 'Follicular':
-        return ['Rising Energy', 'Optimism', 'Focus'];
-      case 'Ovulation':
-        return ['High Libido', 'Mild Cramp', 'Energy↑'];
-      case 'Luteal':
-        return ['Bloating', 'Mood Swings', 'Sensitivity'];
-      default:
-        return ['Varies'];
-    }
-  }
-
-  // ── Modern Theme Definition ────────────────────────────────────────────────
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: bgColor,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: accentColor,
-        primary: accentColor,
-        secondary: primaryPink600,
-        surface: surfaceColor,
-        onSurface: textDark,
-        onPrimary: Colors.white,
-        background: bgColor,
-        onError: Colors.red,
-        brightness: Brightness.light,
+      scaffoldBackgroundColor: lightBackground,
+      colorScheme: ColorScheme.light(
+        primary: lightPrimary,
+        secondary: lightSecondary,
+        surface: lightSurface,
+        onSurface: lightOnSurface,
+        onPrimary: lightOnPrimary,
+        error: lightError,
+        background: lightBackground,
       ),
       textTheme: GoogleFonts.poppinsTextTheme().copyWith(
         headlineLarge: GoogleFonts.poppins(
@@ -455,260 +395,72 @@ abstract final class AppTheme {
           letterSpacing: 0.5,
         ),
       ),
-      // Enhanced theme colors
-      primaryColor: accentColor,
+      primaryColor: lightPrimary,
       primaryColorLight: primaryPink200,
       primaryColorDark: primaryPink700,
-      canvasColor: surfaceColor,
+      canvasColor: lightSurface,
       shadowColor: shadowDarkColor,
       indicatorColor: accentColor,
       splashFactory: InkRipple.splashFactory,
       unselectedWidgetColor: textSecondary,
       disabledColor: textSecondary.withOpacity(0.5),
-      dialogBackgroundColor: surfaceColor,
+      dialogBackgroundColor: lightSurface,
       dividerColor: shadowMidColor.withOpacity(0.2),
-      focusColor: accentColor.withOpacity(0.2),
-      hoverColor: accentColor.withOpacity(0.1),
-      highlightColor: accentColor.withOpacity(0.2),
-      splashColor: accentColor.withOpacity(0.2),
-      inputDecorationTheme: const InputDecorationTheme(
-        fillColor: surfaceColor,
-        filled: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: shadowMidColor, width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: shadowMidColor, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: accentColor, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: Colors.red, width: 2),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: Colors.red, width: 2),
-        ),
-        hintStyle: TextStyle(color: textSecondary),
-      ),
-      buttonTheme: ButtonThemeData(
-        buttonColor: accentColor,
-        disabledColor: textSecondary.withOpacity(0.5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        textTheme: ButtonTextTheme.primary,
-      ),
-      chipTheme: ChipThemeData(
-        backgroundColor: surfaceColor,
-        selectedColor: accentColor,
-        secondarySelectedColor: primaryPink200,
-        disabledColor: textSecondary.withOpacity(0.2),
-        labelStyle: TextStyle(color: textDark),
-        secondaryLabelStyle: TextStyle(color: textDark),
-        brightness: Brightness.light,
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        shape: StadiumBorder(),
-      ),
-      toggleButtonsTheme: ToggleButtonsThemeData(
-        color: textDark,
-        selectedColor: Colors.white,
-        fillColor: accentColor,
-        borderColor: shadowMidColor,
-        selectedBorderColor: accentColor,
-        disabledBorderColor: shadowMidColor,
-        borderRadius: BorderRadius.circular(8),
-        borderWidth: 1,
-      ),
-      sliderTheme: SliderThemeData(
-        activeTrackColor: accentColor,
-        inactiveTrackColor: shadowMidColor,
-        disabledActiveTrackColor: shadowMidColor,
-        disabledInactiveTrackColor: shadowMidColor,
-        activeTickMarkColor: accentColor,
-        inactiveTickMarkColor: shadowMidColor,
-        disabledActiveTickMarkColor: shadowMidColor,
-        disabledInactiveTickMarkColor: shadowMidColor,
-        thumbColor: accentColor,
-        overlappingShapeStrokeColor: Colors.white,
-        overlayColor: accentColor.withOpacity(0.2),
-        valueIndicatorColor: accentColor,
-        minThumbSeparation: 24,
-        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12),
-        overlayShape: RoundSliderOverlayShape(overlayRadius: 24),
-        tickMarkShape: RoundSliderTickMarkShape(),
-        valueIndicatorShape: PaddleSliderValueIndicatorShape(),
-        showValueIndicator: ShowValueIndicator.always,
-      ),
-      switchTheme: SwitchThemeData(
-        thumbColor: WidgetStateProperty.all(accentColor),
-        trackColor: WidgetStateProperty.all(primaryPink100),
-        overlayColor: WidgetStateProperty.all(accentColor.withOpacity(0.2)),
-      ),
-      radioTheme: RadioThemeData(
-        fillColor: MaterialStateProperty.all(accentColor),
-        overlayColor: MaterialStateProperty.all(accentColor.withOpacity(0.2)),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
-      checkboxTheme: CheckboxThemeData(
-        fillColor: WidgetStateProperty.all(accentColor),
-        checkColor: WidgetStateProperty.all(Colors.white),
-        overlayColor: WidgetStateProperty.all(accentColor.withOpacity(0.2)),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
-      bannerTheme: const MaterialBannerThemeData(
-        backgroundColor: surfaceColor,
-        contentTextStyle: TextStyle(color: textDark),
-      ),
-      navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: surfaceColor,
-        elevation: 8,
-        unselectedLabelTextStyle: TextStyle(color: textSecondary),
-        selectedLabelTextStyle: TextStyle(color: textDark),
-        groupAlignment: 0,
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: surfaceColor,
-        elevation: 8,
-        modalBackgroundColor: surfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-      ),
-      popupMenuTheme: const PopupMenuThemeData(
-        color: surfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-        ),
-        elevation: 8,
-      ),
-      tooltipTheme: TooltipThemeData(
-        height: 32,
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        margin: EdgeInsets.all(8),
-        verticalOffset: -8,
-        preferBelow: true,
-        excludeFromSemantics: false,
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: neuShadows(
-            isDark: false, // Tooltip in light theme context
-            offset: 4,
-            blur: 8,
-          ),
-        ),
-        textStyle: TextStyle(color: textDark),
-      ),
-      snackBarTheme: SnackBarThemeData(
-        backgroundColor: surfaceColor,
-        actionTextColor: accentColor,
-        disabledActionTextColor: textSecondary,
-        contentTextStyle: TextStyle(color: textDark),
-        elevation: 8,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      cardTheme: const CardThemeData(
-        color: cardColor,
-        shadowColor: shadowDarkColor,
+      cardTheme: CardThemeData(
+        color: lightSurface,
         elevation: 4,
-        margin: EdgeInsets.all(8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shadowColor: shadowDarkColor.withOpacity(0.2),
       ),
-      dialogTheme: const DialogThemeData(
-        backgroundColor: surfaceColor,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(24)),
-        ),
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: surfaceColor,
-        elevation: 8,
-        selectedIconTheme: IconThemeData(color: accentColor),
-        unselectedIconTheme: IconThemeData(color: textSecondary),
-        selectedItemColor: accentColor,
-        unselectedItemColor: textSecondary,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: surfaceColor,
-        foregroundColor: textDark,
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
+        titleTextStyle: GoogleFonts.poppins(
           color: textDark,
           fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
-        toolbarTextStyle: TextStyle(color: textDark, fontSize: 16),
-        iconTheme: IconThemeData(color: textDark),
-        actionsIconTheme: IconThemeData(color: textDark),
-        systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: surfaceColor,
-          systemNavigationBarDividerColor: shadowMidColor,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
-        ),
+        iconTheme: const IconThemeData(color: textDark),
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
     );
   }
 
-  // ── Dark Mode Colours ─────────────────────────────────────────────────────
-  static const Color darkBg = Color(0xFF281635); // Vibrant Dark Pink-Purple
-  static const Color darkSurface = Color(0xFF351C45); // Lighter Surface
-  static const Color darkCard = Color(0xFF2E1C3E); // Card background
-  static const Color darkTextPrimary = Color(0xFFF3E0EC); // Creamy off-white
-  static const Color darkTextSecondary = Color(0xFFAA8FBB); // Muted lavender
-  static const Color darkNeuLight = Color(0xFF452659); // Vibrant light shadow
-  static const Color darkNeuDark = Color(0xFF1B0E23); // Deep shadow
-
-  static const LinearGradient darkBgGradient = vibrantDarkGradient;
-
   static ThemeData get darkTheme {
-    return ThemeData(
+    return ThemeData.dark().copyWith(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: darkBg,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: accentColor,
-        brightness: Brightness.dark,
-        primary: accentColor,
+      scaffoldBackgroundColor: darkBackground,
+      colorScheme: ColorScheme.dark(
+        primary: darkPrimary,
+        secondary: darkSecondary,
         surface: darkSurface,
-        onSurface: darkTextPrimary,
+        onSurface: darkOnSurface,
+        onPrimary: darkOnPrimary,
+        error: darkError,
+        background: darkBackground,
       ),
       textTheme: GoogleFonts.poppinsTextTheme().copyWith(
         headlineLarge: GoogleFonts.poppins(
           fontSize: 26,
           fontWeight: FontWeight.w900,
-          color: darkTextPrimary,
+          color: darkOnSurface,
           letterSpacing: -0.5,
         ),
         headlineMedium: GoogleFonts.poppins(
           fontSize: 22,
           fontWeight: FontWeight.w800,
-          color: darkTextPrimary,
+          color: darkOnSurface,
         ),
         titleLarge: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          color: darkTextPrimary,
+          color: darkOnSurface,
         ),
         bodyLarge: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: darkTextPrimary,
+          color: darkOnSurface,
           height: 1.5,
         ),
         bodyMedium: GoogleFonts.inter(fontSize: 14, color: darkTextSecondary),
@@ -719,18 +471,140 @@ abstract final class AppTheme {
           letterSpacing: 0.5,
         ),
       ),
-      cardColor: darkCard,
-      dividerColor: darkNeuLight.withValues(alpha: 0.3),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: darkSurface,
-        foregroundColor: darkTextPrimary,
+      primaryColor: darkPrimary,
+      primaryColorLight: primaryPink600,
+      primaryColorDark: primaryPink900,
+      canvasColor: darkSurface,
+      shadowColor: darkNeuDark,
+      indicatorColor: darkPrimary,
+      dividerColor: darkNeuLight.withOpacity(0.2),
+      cardTheme: CardThemeData(
+        color: darkCard,
         elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
-      dialogTheme: const DialogThemeData(backgroundColor: darkCard),
-      snackBarTheme: SnackBarThemeData(
-        backgroundColor: darkCard,
-        contentTextStyle: GoogleFonts.inter(color: darkTextPrimary),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.poppins(
+          color: darkOnSurface,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+        iconTheme: const IconThemeData(color: darkOnSurface),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
     );
   }
+
+  // ── Helper Methods ─────────────────────────────────────────────────────────
+
+  static double h1(BuildContext context) => adaptiveFontSize(context, 26);
+  static double h2(BuildContext context) => adaptiveFontSize(context, 22);
+  static double h3(BuildContext context) => adaptiveFontSize(context, 18);
+  static double bodySize(BuildContext context) => adaptiveFontSize(context, 16);
+  static double labelSize(BuildContext context) => adaptiveFontSize(context, 12);
+
+  // Aliases for backward compatibility
+  static double body(BuildContext context) => bodySize(context);
+  static double label(BuildContext context) => labelSize(context);
+
+  static ({String headline}) phaseTip(String phase) {
+    switch (phase) {
+      case 'Menstrual':
+        return (headline: 'Rest and Rejuvenate');
+      case 'Follicular':
+        return (headline: 'Plan and Initiate');
+      case 'Ovulation':
+        return (headline: 'Connect and Express');
+      case 'Luteal':
+        return (headline: 'Analyze and Complete');
+      default:
+        return (headline: 'Balance and Listen');
+    }
+  }
+
+  static ({List<String> exercise, List<String> diet, List<String> nutrients})
+  getPhaseHealthTips(String phase) {
+    switch (phase) {
+      case 'Menstrual':
+        return (
+          exercise: ['Gentle Yoga', 'Light Walking', 'Symptom Relief Stretches'],
+          diet: ['Warm Herbal Soups', 'Magnesium-Rich Oats', 'Ginger Tea'],
+          nutrients: ['Iron (rebuild)', 'Magnesium (cramps)', 'Vitamin C'],
+        );
+      case 'Follicular':
+        return (
+          exercise: ['Light Cardio', 'Creative Movement', 'Power Walking'],
+          diet: ['Fermented Salads', 'Sprouted Grains', 'Lean Proteins'],
+          nutrients: ['Zinc (hormone balance)', 'Vitamin B12', 'Vitamin E'],
+        );
+      case 'Ovulation':
+        return (
+          exercise: ['HIIT Sessions', 'High Intensity Cardio', 'Social Workouts'],
+          diet: ['Rainbow Salads', 'Cold Berries', 'Anti-inflammatory Crucifers'],
+          nutrients: ['Folate (cell health)', 'Amino Acids', 'Vitamin B'],
+        );
+      case 'Luteal':
+        return (
+          exercise: ['Steady-state Pilates', 'Mindful Resistance', 'Long Stretches'],
+          diet: ['Complex Root Veggies', 'Dark Chocolate (70%+)', 'Omega Fats'],
+          nutrients: ['Vitamin B6 (mood)', 'Magnesium (sleep)', 'Omega-3'],
+        );
+      default:
+        return (
+          exercise: ['Listen to your pulse'],
+          diet: ['Mindful nutrition'],
+          nutrients: ['Essential Multivitamin'],
+        );
+    }
+  }
+
+  static List<String> getPhaseSymptoms(String phase) {
+    switch (phase) {
+      case 'Menstrual':
+        return ['Cramps', 'Fatigue', 'Low Back Pain'];
+      case 'Follicular':
+        return ['Rising Energy', 'Optimism', 'Focus'];
+      case 'Ovulation':
+        return ['High Libido', 'Mild Cramp', 'Energy↑'];
+      case 'Luteal':
+        return ['Bloating', 'Mood Swings', 'Sensitivity'];
+      default:
+        return ['Varies'];
+    }
+  }
 }
+
+extension CustomTextTheme on TextTheme {
+  TextStyle get headline => GoogleFonts.poppins(
+    fontSize: 32,
+    fontWeight: FontWeight.bold,
+    letterSpacing: -0.5,
+  );
+
+  TextStyle get subheadline => GoogleFonts.poppins(
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.2,
+  );
+
+  TextStyle get bodySemiBold => GoogleFonts.inter(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    height: 1.4,
+  );
+
+  TextStyle get body => GoogleFonts.inter(
+    fontSize: 14,
+    height: 1.5,
+  );
+
+  TextStyle get caption => GoogleFonts.inter(
+    fontSize: 12,
+    color: AppTheme.textSecondary,
+    letterSpacing: 0.2,
+  );
+}
+

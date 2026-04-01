@@ -8,11 +8,6 @@ import 'package:intl/intl.dart';
 import '../services/prediction_service.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
-import '../widgets/glass_container.dart';
-import '../widgets/info_widgets.dart';
-import '../widgets/neu_container.dart';
-import '../widgets/skeleton_widgets.dart';
-import '../widgets/cycle_widgets.dart';
 import '../widgets/home/cycle_core_ring.dart';
 import '../widgets/home/insight_bubble.dart';
 import '../widgets/home/water_intake_card.dart';
@@ -24,6 +19,10 @@ import '../widgets/pregnancy_dashboard.dart';
 import 'wellness_reminders_screen.dart';
 import 'log_period_screen.dart';
 import '../widgets/home/daily_insight_card.dart';
+import '../widgets/themed_container.dart';
+import '../widgets/info_widgets.dart';
+import '../widgets/skeleton_widgets.dart';
+import '../widgets/cycle_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late ConfettiController _confettiController;
   bool _isLocalLoading = true;
 
-  // ───── Under the Hood Expansion States ─────
+  // Expansion States
   bool _isHormonesExpanded = false;
   bool _isWaterExpanded = false;
   bool _isSleepExpanded = false;
@@ -87,10 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // Background Gradient
+          // Background Gradient (Unified Theme Background)
           Container(decoration: AppTheme.getBackgroundDecoration(context)),
-
-          _buildDreamyBackground(),
 
           RefreshIndicator(
             color: AppTheme.accentPink,
@@ -98,13 +95,18 @@ class _HomeScreenState extends State<HomeScreen> {
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 80, 24, 100),
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.spacingLg,
+                  80,
+                  AppTheme.spacingLg,
+                  100,
+                ),
                 child: Column(
                   children: [
                     _buildTopRow(context, storage),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppTheme.spacingXl),
                     GreetingSection(storage: storage),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppTheme.spacingXl),
                     if (_isLocalLoading)
                       _buildSkeletonDashboard()
                     else if (storage.userGoal == 'pregnant')
@@ -114,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     else
                       _buildModernBentoDashboard(context, storage, pred),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppTheme.spacingLg),
                     _buildMedicalDisclaimer(),
                   ],
                 ),
@@ -131,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
               shouldLoop: false,
               colors: const [
                 AppTheme.accentPink,
-                AppTheme.accentPurple,
+                AppTheme.primaryPink700,
                 Colors.blueAccent,
               ],
             ),
@@ -147,7 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Builder(
           builder:
-              (context) => GlassContainer(
+              (context) => ThemedContainer(
+                type: ContainerType.glass,
                 radius: 18,
                 padding: const EdgeInsets.all(10),
                 onTap: () => Scaffold.of(context).openDrawer(),
@@ -170,7 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ? 'Conceive'
             : (mode == 'pregnant' ? 'Pregnancy' : 'Period Tracking');
 
-    return GlassContainer(
+    return ThemedContainer(
+      type: ContainerType.glass,
       radius: 20,
       onTap: () => _showModeSelectionSheet(context, storage),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -206,12 +210,11 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder:
-          (context) => Container(
+          (context) => ThemedContainer(
+            type: ContainerType.simple,
+            radius: 32,
             padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: AppTheme.bgColor,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-            ),
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -255,7 +258,8 @@ class _HomeScreenState extends State<HomeScreen> {
     IconData icon,
     bool isSelected,
   ) {
-    return GlassContainer(
+    return ThemedContainer(
+      type: ContainerType.glass,
       radius: 16,
       onTap: () {
         storage.updateUserGoal(goal);
@@ -263,7 +267,9 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {});
       },
       padding: const EdgeInsets.all(16),
-      borderColor: isSelected ? AppTheme.accentPink : Colors.white24,
+      border: isSelected
+          ? Border.all(color: AppTheme.accentPink, width: 2)
+          : Border.all(color: Colors.white24),
       child: Row(
         children: [
           Icon(
@@ -360,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
         InsightBubble(
           icon: '🧪',
           label: 'Hormones',
-          color: AppTheme.accentPurple,
+          color: AppTheme.primaryPink700,
           isExpanded: _isHormonesExpanded,
           onTap:
               () => setState(() => _isHormonesExpanded = !_isHormonesExpanded),
@@ -394,7 +400,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final upcoming = storage.getUpcomingAppointments();
     final hasGoals = upcoming.isNotEmpty;
 
-    return GlassContainer(
+    return ThemedContainer(
+      type: ContainerType.glass,
       padding: const EdgeInsets.all(24),
       radius: 28,
       onTap:
@@ -462,7 +469,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNewUserContent(BuildContext context, StorageService storage) {
-    return NeuContainer(
+    return ThemedContainer(
+      type: ContainerType.neu,
       padding: const EdgeInsets.all(32),
       radius: 40,
       child: Column(
@@ -482,7 +490,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 32),
-          GlassContainer(
+          ThemedContainer(
+            type: ContainerType.glass,
             onTap:
                 () => showModalBottomSheet(
                   context: context,
@@ -528,51 +537,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildDreamyBackground() {
-    return Stack(
-      children: [
-        _buildGlowBlob(
-          top: -100,
-          right: -50,
-          size: 300,
-          color: AppTheme.accentPink.withValues(alpha: 0.12),
-        ),
-        _buildGlowBlob(
-          bottom: 200,
-          left: -100,
-          size: 400,
-          color: AppTheme.accentPurple.withValues(alpha: 0.08),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGlowBlob({
-    double? top,
-    double? bottom,
-    double? left,
-    double? right,
-    required double size,
-    required Color color,
-  }) {
-    return Positioned(
-      top: top,
-      bottom: bottom,
-      left: left,
-      right: right,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color, color.withValues(alpha: 0.0)],
-          ),
-        ),
-      ),
     );
   }
 

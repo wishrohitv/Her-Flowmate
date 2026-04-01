@@ -7,8 +7,7 @@ import 'package:intl/intl.dart';
 import '../services/storage_service.dart';
 import '../services/prediction_service.dart';
 import '../utils/app_theme.dart';
-import '../widgets/glass_container.dart';
-import '../widgets/neu_container.dart';
+import '../widgets/themed_container.dart';
 import '../widgets/delight_widgets.dart';
 import '../widgets/notification_widgets.dart';
 import 'prediction_details_screen.dart';
@@ -60,9 +59,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 children: [
                   // Custom Top Bar (replacing AppBar)
                   Padding(
-                    padding: EdgeInsets.only(
-                      left: isSmallScreen ? 16 : 24,
-                      right: isSmallScreen ? 16 : 24,
+                    padding: const EdgeInsets.only(
+                      left: AppTheme.spacingLg,
+                      right: AppTheme.spacingLg,
                       top: 24,
                       bottom: 16,
                     ),
@@ -73,15 +72,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               (context) => Semantics(
                                 label: 'Open Sidebar Menu',
                                 button: true,
-                                child: NeuContainer(
+                                child: ThemedContainer(
+                                  type: ContainerType.neu,
                                   padding: const EdgeInsets.all(10),
                                   radius: 18,
-                                  style: NeuStyle.convex,
                                   onTap:
                                       () => Scaffold.of(context).openDrawer(),
                                   child: const Icon(
                                     Icons.menu_rounded,
-                                    color: AppTheme.accentPink,
+                                    color: AppTheme.primaryPink700,
                                     size: 26,
                                   ),
                                 ),
@@ -91,16 +90,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           child: Center(
                             child: Text(
                               'Cycle Calendar',
-                              style: GoogleFonts.poppins(
-                                color:
-                                    Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppTheme.darkTextPrimary
-                                        : AppTheme.textDark,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 22,
-                                letterSpacing: -0.5,
-                              ),
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
                           ),
                         ),
@@ -316,7 +306,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final biology = pred.getPhaseBiology(cycleDay);
     final chance = pred.getConceptionChance(date);
 
-    return GlassContainer(
+    return ThemedContainer(
+      type: ContainerType.glass,
       padding: const EdgeInsets.all(20),
       radius: 28,
       child: Column(
@@ -449,7 +440,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder:
-          (context) => GlassContainer(
+          (context) => ThemedContainer(
+            type: ContainerType.glass,
             radius: 32,
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -486,7 +478,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildLegend(PredictionService pred, {bool isSmallScreen = false}) {
-    return NeuContainer(
+    return ThemedContainer(
+      type: ContainerType.neu,
       padding: EdgeInsets.symmetric(
         vertical: isSmallScreen ? 16 : 24,
         horizontal: isSmallScreen ? 8 : 16,
