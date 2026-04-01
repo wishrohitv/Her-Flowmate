@@ -268,7 +268,7 @@ class ProfileScreen extends StatelessWidget {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      'PIN / Biometric Lock',
+                                                      'Privacy & Security',
                                                       style: GoogleFonts.inter(
                                                         fontSize: 16,
                                                         fontWeight:
@@ -383,8 +383,8 @@ class ProfileScreen extends StatelessWidget {
                                 _buildDivider(),
                                 _buildSettingsTile(
                                   Icons.cloud_upload_rounded,
-                                  'Export Health Report',
-                                  'JSON / PDF Health Summary',
+                                  'Export Data',
+                                  'CSV/PDF',
                                   () => _showExportOptions(context, storage),
                                   isSmallScreen: isSmallScreen,
                                 ),
@@ -406,8 +406,8 @@ class ProfileScreen extends StatelessWidget {
                               children: [
                                 _buildSettingsTile(
                                   Icons.info_outline_rounded,
-                                  'About Her-Flowmate',
-                                  'Version 1.0.1',
+                                  'Version',
+                                  '1.2.0 (Premium)',
                                   () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
