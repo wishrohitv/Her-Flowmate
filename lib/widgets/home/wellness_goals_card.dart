@@ -8,7 +8,8 @@ import '../themed_container.dart';
 
 class WellnessGoalsCard extends StatelessWidget {
   final StorageService storage;
-  const WellnessGoalsCard({super.key, required this.storage});
+  final String heroTag;
+  const WellnessGoalsCard({super.key, required this.storage, this.heroTag = 'wellness_goals'});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class WellnessGoalsCard extends StatelessWidget {
     final nextGoal = reminders.isNotEmpty ? reminders.first : null;
 
     return Hero(
-      tag: 'wellness_goals',
+      tag: heroTag,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -24,7 +25,7 @@ class WellnessGoalsCard extends StatelessWidget {
               () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const WellnessRemindersScreen(),
+                  builder: (_) => WellnessRemindersScreen(heroTag: heroTag),
                 ),
               ),
           borderRadius: BorderRadius.circular(28),

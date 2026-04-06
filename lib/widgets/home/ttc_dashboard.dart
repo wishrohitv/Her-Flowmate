@@ -33,7 +33,7 @@ class TTCDashboard extends StatelessWidget {
         const SizedBox(height: 24),
         _buildConceptionTipsCard(context, pred),
         const SizedBox(height: 24),
-        WellnessGoalsCard(storage: storage),
+        WellnessGoalsCard(storage: storage, heroTag: 'wellness_goals_ttc'),
       ],
     );
   }

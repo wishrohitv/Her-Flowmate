@@ -74,6 +74,21 @@ class ApiService {
     }
   }
 
+  static Future<http.Response> delete(String endpoint) async {
+    final url = Uri.parse('$baseUrl$endpoint');
+    debugPrint('API DELETE: $url');
+    try {
+      final response = await http
+          .delete(url, headers: headers)
+          .timeout(const Duration(minutes: 3));
+      _logResponse(response);
+      return response;
+    } catch (e) {
+      debugPrint('API DELETE Exception: $e');
+      rethrow;
+    }
+  }
+
   static void _logResponse(http.Response response) {
     debugPrint('API Response [${response.statusCode}]: ${response.body}');
   }

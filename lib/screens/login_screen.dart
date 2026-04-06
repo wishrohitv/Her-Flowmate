@@ -287,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         final userData = await GoogleAuthService.authenticateWithBackend(token);
-        name = userData?['name'] ?? userData?['given_name'];
+        name = userData?['display_name'] ?? userData?['name'] ?? userData?['given_name'];
       }
 
       if (!context.mounted) return;

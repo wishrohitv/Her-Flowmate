@@ -138,7 +138,12 @@ class PeriodLogService extends ChangeNotifier {
       final response = await ApiService.get('/logs/periods');
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
-        final List<dynamic> data = decoded is List ? decoded : [];
+        List<dynamic> data = [];
+        if (decoded is List) {
+          data = decoded;
+        } else if (decoded is Map && decoded['logs'] is List) {
+          data = decoded['logs'];
+        }
         final remoteLogs =
             data.map((json) => PeriodLog.fromJson(json)).toList();
 

@@ -30,19 +30,20 @@ class User extends HiveObject {
   });
 
   Map<String, dynamic> toJson() => {
-    'name': name,
+    'display_name': name,  // backend field name
     'age': age,
     'goal': goal,
-    'imagePath': imagePath,
+    'photo_url': imagePath, // backend field name
     'weight': weight,
     'height': height,
   };
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    name: json['name'] as String,
-    age: json['age'] as int,
-    goal: json['goal'] as String,
-    imagePath: json['imagePath'] as String?,
+    // Backend uses 'display_name'; local JSON uses 'name' as fallback
+    name: (json['display_name'] ?? json['name'] ?? '') as String,
+    age: (json['age'] as int?) ?? 0,
+    goal: (json['goal'] ?? 'track_cycle') as String,
+    imagePath: (json['photo_url'] ?? json['imagePath']) as String?,
     weight: (json['weight'] as num?)?.toDouble(),
     height: (json['height'] as num?)?.toDouble(),
   );

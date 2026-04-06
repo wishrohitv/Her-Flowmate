@@ -9,7 +9,8 @@ import '../utils/app_theme.dart';
 import '../widgets/themed_container.dart';
 
 class WellnessRemindersScreen extends StatefulWidget {
-  const WellnessRemindersScreen({super.key});
+  final String heroTag;
+  const WellnessRemindersScreen({super.key, this.heroTag = 'wellness_goals'});
 
   @override
   State<WellnessRemindersScreen> createState() =>
@@ -35,7 +36,7 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
         ),
       ),
       body: Hero(
-        tag: 'wellness_goals',
+        tag: widget.heroTag,
         child: Material(
           color: Colors.transparent,
           child:

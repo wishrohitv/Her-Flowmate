@@ -86,7 +86,7 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
             const SizedBox(height: 16),
             BodyInsightCard(pred: widget.pred),
             const SizedBox(height: 24),
-            WellnessGoalsCard(storage: widget.storage),
+            WellnessGoalsCard(storage: widget.storage, heroTag: 'wellness_goals_bento'),
           ],
         );
       },

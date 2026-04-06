@@ -2,14 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import '../models/appointment.dart';
 import 'notification_service.dart';
-import 'base_storage_service.dart';
+
 import '../utils/constants.dart';
 
 
 class AppointmentService extends ChangeNotifier {
   static const String appointmentBoxName = 'appointments';
-  // ignore: unused_field
-  final BaseStorageService _base = BaseStorageService.instance;
+
 
   Box<Appointment> get _appointmentBox =>
       Hive.box<Appointment>(appointmentBoxName);
