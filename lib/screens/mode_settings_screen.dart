@@ -52,7 +52,8 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -115,7 +116,7 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                     setState(() => _selectedGoal = 'pregnant');
                   },
                 ).animate().fadeIn(delay: 500.ms).slideX(begin: 0.1),
-                const Spacer(),
+                const SizedBox(height: 32),
                 PrimaryButton(
                   label: _isProcessing ? 'Updating...' : 'Confirm Change',
                   icon: _isProcessing ? null : Icons.check_circle_rounded,
@@ -303,6 +304,7 @@ class _ModeSettingsScreenState extends State<ModeSettingsScreen> {
                     ),
                   ),
                 ).animate().fadeIn(delay: 800.ms),
+                const SizedBox(height: 24),
               ],
             ),
           ),
