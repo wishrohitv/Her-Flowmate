@@ -130,8 +130,12 @@ class _BootstrapScreenState extends State<BootstrapScreen> {
 
   String _getHumanReadableError(dynamic e) {
     final errStr = e.toString().toLowerCase();
-    if (errStr.contains('hive')) return 'Database initialization failed. Please try restarting.';
-    if (errStr.contains('firebase')) return 'Cloud sync setup failed. Check your connection.';
+    if (errStr.contains('hive')) {
+      return 'Database initialization failed. Please try restarting.';
+    }
+    if (errStr.contains('firebase')) {
+      return 'Cloud sync setup failed. Check your connection.';
+    }
     return 'Something went wrong during startup: $e';
   }
 
@@ -175,10 +179,18 @@ class _BootstrapScreenState extends State<BootstrapScreen> {
                         backgroundColor: AppTheme.accentPink,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
                       onPressed: _initServices,
-                      child: Text("Retry Initialization", style: AppTheme.outfit(fontWeight: FontWeight.w700, color: Colors.white)),
+                      child: Text(
+                        "Retry Initialization",
+                        style: AppTheme.outfit(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -201,38 +213,44 @@ class _BootstrapScreenState extends State<BootstrapScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.accentPink.withValues(alpha: 0.2),
-                          blurRadius: 30,
-                          spreadRadius: 5,
-                        )
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Image.asset(
-                        'assets/icons/app_icon.png',
-                        errorBuilder: (ctx, _, __) => const Icon(
-                          Icons.favorite_rounded,
-                          size: 60,
-                          color: AppTheme.accentPink,
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.accentPink.withValues(alpha: 0.2),
+                              blurRadius: 30,
+                              spreadRadius: 5,
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                  ).animate().scale(duration: 800.ms, curve: Curves.easeOutBack).fadeIn(),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Image.asset(
+                            'assets/icons/app_icon.png',
+                            errorBuilder:
+                                (ctx, _, __) => const Icon(
+                                  Icons.favorite_rounded,
+                                  size: 60,
+                                  color: AppTheme.accentPink,
+                                ),
+                          ),
+                        ),
+                      )
+                      .animate()
+                      .scale(duration: 800.ms, curve: Curves.easeOutBack)
+                      .fadeIn(),
                   const SizedBox(height: 48),
                   const SizedBox(
                     width: 40,
                     height: 40,
                     child: CircularProgressIndicator(
                       strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentPink),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppTheme.accentPink,
+                      ),
                     ),
                   ).animate().fadeIn(delay: 600.ms),
                 ],

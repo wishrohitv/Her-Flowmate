@@ -181,9 +181,10 @@ class StorageService extends ChangeNotifier {
   int get avgCycleLength => onboarding.avgCycleLength;
 
   // ── Daily Vitals Getters (Convenience) ────────────────────────────────────
-  
+
   int get waterIntake => getHydrationToday();
-  String? get todayMood => healthTracker.getDailyLog(DateTime.now())?.moods?.firstOrNull;
+  String? get todayMood =>
+      healthTracker.getDailyLog(DateTime.now())?.moods?.firstOrNull;
 
   Future<void> updateWaterIntake(int ml) async {
     final today = DateTime.now();

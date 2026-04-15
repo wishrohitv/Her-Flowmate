@@ -34,7 +34,9 @@ class NeumorphicCard extends StatelessWidget {
       margin: margin,
       decoration: BoxDecoration(
         color: isDark ? AppTheme.darkCard : AppTheme.bgColor,
-        borderRadius: BorderRadius.circular(borderRadius ?? AppDesignTokens.radiusMD),
+        borderRadius: BorderRadius.circular(
+          borderRadius ?? AppDesignTokens.radiusMD,
+        ),
         boxShadow: AppDesignTokens.neuShadow(context),
       ),
       child: child,

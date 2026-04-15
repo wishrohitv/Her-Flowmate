@@ -98,10 +98,7 @@ class PhaseDelightOverlay extends StatelessWidget {
 class FloatingFlowers extends StatelessWidget {
   final int count;
 
-  const FloatingFlowers({
-    super.key,
-    this.count = 12,
-  });
+  const FloatingFlowers({super.key, this.count = 12});
 
   @override
   Widget build(BuildContext context) {
@@ -112,51 +109,48 @@ class FloatingFlowers extends StatelessWidget {
 
     return IgnorePointer(
       child: Stack(
-          children: List.generate(count, (index) {
-            final x = random.nextDouble();
-            final y = random.nextDouble();
-            final size = 12.0 + random.nextDouble() * 10.0;
-            final duration = 15 + random.nextInt(15);
-            final rotation = random.nextDouble() * pi * 2;
+        children: List.generate(count, (index) {
+          final x = random.nextDouble();
+          final y = random.nextDouble();
+          final size = 12.0 + random.nextDouble() * 10.0;
+          final duration = 15 + random.nextInt(15);
+          final rotation = random.nextDouble() * pi * 2;
 
-            final flower = Opacity(
-              opacity: 0.4,
-              child: Text(
-                '🌸',
-                style: TextStyle(fontSize: size),
-              ),
-            );
+          final flower = Opacity(
+            opacity: 0.4,
+            child: Text('🌸', style: TextStyle(fontSize: size)),
+          );
 
-            if (kIsWeb || reduceMotion) {
-              return Positioned(
-                left: MediaQuery.of(context).size.width * x,
-                top: MediaQuery.of(context).size.height * y,
-                child: flower,
-              );
-            }
-
+          if (kIsWeb || reduceMotion) {
             return Positioned(
               left: MediaQuery.of(context).size.width * x,
               top: MediaQuery.of(context).size.height * y,
-              child: flower
-                  .animate(onPlay: (c) => c.repeat(reverse: true))
-                  .rotate(
-                    begin: rotation,
-                    end: rotation + pi / 4,
-                    duration: duration.seconds,
-                    curve: Curves.easeInOutSine,
-                  )
-                  .move(
-                    begin: const Offset(-20, -20),
-                    end: const Offset(20, 20),
-                    duration: (duration + 5).seconds,
-                    curve: Curves.easeInOutSine,
-                  )
-                  .fadeIn(duration: 2.seconds),
+              child: flower,
             );
-          }),
-        ),
-      );
+          }
+
+          return Positioned(
+            left: MediaQuery.of(context).size.width * x,
+            top: MediaQuery.of(context).size.height * y,
+            child: flower
+                .animate(onPlay: (c) => c.repeat(reverse: true))
+                .rotate(
+                  begin: rotation,
+                  end: rotation + pi / 4,
+                  duration: duration.seconds,
+                  curve: Curves.easeInOutSine,
+                )
+                .move(
+                  begin: const Offset(-20, -20),
+                  end: const Offset(20, 20),
+                  duration: (duration + 5).seconds,
+                  curve: Curves.easeInOutSine,
+                )
+                .fadeIn(duration: 2.seconds),
+          );
+        }),
+      ),
+    );
   }
 }
 
@@ -179,48 +173,48 @@ class FloatingSparkles extends StatelessWidget {
 
     return IgnorePointer(
       child: Stack(
-          children: List.generate(count, (index) {
-            final x = random.nextDouble();
-            final y = random.nextDouble();
-            final size = 6.0 + random.nextDouble() * 4.0;
-            final duration = 4 + random.nextInt(4);
+        children: List.generate(count, (index) {
+          final x = random.nextDouble();
+          final y = random.nextDouble();
+          final size = 6.0 + random.nextDouble() * 4.0;
+          final duration = 4 + random.nextInt(4);
 
-            final sparkle = Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.3),
-                shape: BoxShape.circle,
-              ),
-            );
+          final sparkle = Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.3),
+              shape: BoxShape.circle,
+            ),
+          );
 
-            if (kIsWeb) {
-              return Positioned(
-                left: MediaQuery.of(context).size.width * x,
-                top: MediaQuery.of(context).size.height * y,
-                child: sparkle,
-              );
-            }
-
+          if (kIsWeb) {
             return Positioned(
               left: MediaQuery.of(context).size.width * x,
               top: MediaQuery.of(context).size.height * y,
-              child: sparkle
-                  .animate(
-                    target: reduceMotion ? 0 : null,
-                    onPlay: (c) => c.repeat(reverse: true),
-                  )
-                  .fadeIn(duration: duration.seconds)
-                  .scale(
-                    begin: const Offset(0.6, 0.6),
-                    end: const Offset(1.1, 1.1),
-                    duration: duration.seconds,
-                  )
-                  .moveY(begin: 0, end: -20, duration: (duration + 1).seconds),
+              child: sparkle,
             );
-          }),
-        ),
-      );
+          }
+
+          return Positioned(
+            left: MediaQuery.of(context).size.width * x,
+            top: MediaQuery.of(context).size.height * y,
+            child: sparkle
+                .animate(
+                  target: reduceMotion ? 0 : null,
+                  onPlay: (c) => c.repeat(reverse: true),
+                )
+                .fadeIn(duration: duration.seconds)
+                .scale(
+                  begin: const Offset(0.6, 0.6),
+                  end: const Offset(1.1, 1.1),
+                  duration: duration.seconds,
+                )
+                .moveY(begin: 0, end: -20, duration: (duration + 1).seconds),
+          );
+        }),
+      ),
+    );
   }
 }
 
@@ -274,38 +268,38 @@ class NeonChimeBurst extends StatelessWidget {
           children: List.generate(3, (index) {
             final delay = (index * 150).ms;
             return Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: index % 2 == 0 ? colorScheme.primary : colorScheme.secondary,
-                  width: 3,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: (index % 2 == 0 ? colorScheme.primary : colorScheme.secondary)
-                        .withValues(alpha: 0.8),
-                    blurRadius: 20,
-                    spreadRadius: 10,
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color:
+                          index % 2 == 0
+                              ? colorScheme.primary
+                              : colorScheme.secondary,
+                      width: 3,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (index % 2 == 0
+                                ? colorScheme.primary
+                                : colorScheme.secondary)
+                            .withValues(alpha: 0.8),
+                        blurRadius: 20,
+                        spreadRadius: 10,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            )
-            .animate(
-              onComplete: index == 2 ? (_) => onComplete() : null,
-            )
-            .scale(
-              begin: const Offset(1, 1),
-              end: const Offset(40, 40),
-              duration: 800.ms,
-              delay: delay,
-              curve: Curves.easeOutCubic,
-            )
-            .fadeOut(
-              duration: 600.ms,
-              delay: delay + 200.ms,
-            );
+                )
+                .animate(onComplete: index == 2 ? (_) => onComplete() : null)
+                .scale(
+                  begin: const Offset(1, 1),
+                  end: const Offset(40, 40),
+                  duration: 800.ms,
+                  delay: delay,
+                  curve: Curves.easeOutCubic,
+                )
+                .fadeOut(duration: 600.ms, delay: delay + 200.ms);
           }),
         ),
       ),
@@ -316,12 +310,13 @@ class NeonChimeBurst extends StatelessWidget {
 void showNeonChime(BuildContext context) {
   OverlayEntry? entry;
   entry = OverlayEntry(
-    builder: (context) => NeonChimeBurst(
-      onComplete: () {
-        entry?.remove();
-        entry = null;
-      },
-    ),
+    builder:
+        (context) => NeonChimeBurst(
+          onComplete: () {
+            entry?.remove();
+            entry = null;
+          },
+        ),
   );
   Overlay.of(context).insert(entry!);
 }
@@ -370,7 +365,7 @@ class AnimatedGlowBackground extends StatelessWidget {
       children: [
         // Background Gradient
         Container(decoration: AppTheme.getBackgroundDecoration(context)),
-        
+
         // Animated Blobs
         Positioned(
           top: -100,
@@ -404,15 +399,9 @@ class AnimatedGlowBackground extends StatelessWidget {
         ),
 
         if (showSparkles)
-          const FloatingSparkles(
-            count: 8,
-            color: Colors.white70,
-          ),
+          const FloatingSparkles(count: 8, color: Colors.white70),
 
-        if (showFlowers)
-          const FloatingFlowers(
-            count: 10,
-          ),
+        if (showFlowers) const FloatingFlowers(count: 10),
 
         // Content
         child,
@@ -420,8 +409,6 @@ class AnimatedGlowBackground extends StatelessWidget {
     );
   }
 }
-
-
 
 class _GlowBlob extends StatelessWidget {
   final Color color;
@@ -444,16 +431,16 @@ class _GlowBlob extends StatelessWidget {
 
     final blob = Container(
       width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: opacity),
-              blurRadius: kIsWeb ? 50 : 100,
-              spreadRadius: kIsWeb ? 25 : 50,
-            ),
-          ],
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: opacity),
+            blurRadius: kIsWeb ? 50 : 100,
+            spreadRadius: kIsWeb ? 25 : 50,
+          ),
+        ],
       ),
     );
 

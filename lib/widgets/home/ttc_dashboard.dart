@@ -48,7 +48,7 @@ class TTCDashboard extends StatelessWidget {
           onDateSelected: (date) {
             // Future: Open fertility details for that date
           },
-        ).animate().fadeIn(duration: 400.ms),
+        ).animate().slideY(begin: 0.1, duration: 400.ms),
         const SizedBox(height: AppDesignTokens.space24),
 
         _buildPrimaryInsight(context),
@@ -106,7 +106,7 @@ class TTCDashboard extends StatelessWidget {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1);
+    ).animate().slideY(begin: 0.1, delay: 300.ms);
   }
 
   Widget _buildFertileBar(BuildContext context) {
@@ -170,7 +170,7 @@ class TTCDashboard extends StatelessWidget {
               ),
         );
       },
-    ).animate().fadeIn(delay: 400.ms).scale();
+    ).animate().scale(delay: 400.ms);
   }
 
   Widget _buildRecentActivity(BuildContext context) {
@@ -228,7 +228,7 @@ class TTCDashboard extends StatelessWidget {
           ),
         ),
       ],
-    ).animate().fadeIn(delay: 500.ms);
+    ).animate().slideY(begin: 0.1, delay: 500.ms);
   }
 
   Widget _buildConceptionTipsCard(
@@ -287,7 +287,7 @@ class TTCDashboard extends StatelessWidget {
           },
         ),
       ),
-    ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1);
+    ).animate().slideY(begin: 0.1, delay: 400.ms);
   }
 }
 

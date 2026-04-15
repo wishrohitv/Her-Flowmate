@@ -30,18 +30,18 @@ class PregnancyDashboard extends StatelessWidget {
       children: [
         _buildHeader(context, pregnancy.trimester, activeColor, pregnancy),
         const SizedBox(height: AppDesignTokens.space16),
-        
+
         PregnancyTimelineStrip(
           currentWeek: week,
           onWeekSelected: (w) {
             // Future: Show info for selected week
           },
-        ).animate().fadeIn(duration: 400.ms),
+        ).animate().slideY(begin: 0.1, duration: 400.ms),
         const SizedBox(height: AppDesignTokens.space24),
 
         if (info != null)
           _buildPrimaryInsight(context, progress, activeColor, info),
-        
+
         const SizedBox(height: AppDesignTokens.space24),
         _buildCallToAction(context, activeColor),
         const SizedBox(height: AppDesignTokens.space24),
@@ -165,7 +165,7 @@ class PregnancyDashboard extends StatelessWidget {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1);
+    ).animate().slideY(begin: 0.1, delay: 300.ms);
   }
 
   Widget _buildCallToAction(BuildContext context, Color color) {
@@ -203,7 +203,7 @@ class PregnancyDashboard extends StatelessWidget {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 400.ms).scale();
+    ).animate().scale(delay: 400.ms);
   }
 
   Widget _buildRecentActivity(BuildContext context, StorageService storage) {
@@ -255,7 +255,7 @@ class PregnancyDashboard extends StatelessWidget {
           ),
         ),
       ],
-    ).animate().fadeIn(delay: 500.ms);
+    ).animate().slideY(begin: 0.1, delay: 500.ms);
   }
 
   Color _trimesterColor(BuildContext context, int week) {

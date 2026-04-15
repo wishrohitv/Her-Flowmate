@@ -57,7 +57,11 @@ class _DashboardCalendarStripState extends State<DashboardCalendarStrip> {
   Widget build(BuildContext context) {
     // Generate 60 days of calendar (30 before, 30 after today)
     final days = List.generate(61, (index) {
-      return DateTime(_today.year, _today.month, _today.day).add(Duration(days: index - 30));
+      return DateTime(
+        _today.year,
+        _today.month,
+        _today.day,
+      ).add(Duration(days: index - 30));
     });
 
     return Column(
@@ -70,7 +74,9 @@ class _DashboardCalendarStripState extends State<DashboardCalendarStrip> {
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ),
@@ -86,11 +92,11 @@ class _DashboardCalendarStripState extends State<DashboardCalendarStrip> {
               final day = days[index];
               final isSelected = DateUtils.isSameDay(day, _selectedDay);
               final isToday = DateUtils.isSameDay(day, _today);
-              
+
               final phase = widget.pred.getPhaseForDay(day);
               final phaseColor = AppTheme.phaseColor(phase.displayName);
               final isPeriod = phase == CyclePhase.menstrual;
-              
+
               return GestureDetector(
                 onTap: () {
                   setState(() => _selectedDay = day);
@@ -101,14 +107,20 @@ class _DashboardCalendarStripState extends State<DashboardCalendarStrip> {
                   width: 60,
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
-                    color: isSelected 
-                        ? phaseColor.withValues(alpha: 0.2)
-                        : (isToday ? phaseColor.withValues(alpha: 0.05) : Colors.transparent),
+                    color:
+                        isSelected
+                            ? phaseColor.withValues(alpha: 0.2)
+                            : (isToday
+                                ? phaseColor.withValues(alpha: 0.05)
+                                : Colors.transparent),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: isSelected 
-                          ? phaseColor 
-                          : (isToday ? phaseColor.withValues(alpha: 0.3) : Colors.transparent),
+                      color:
+                          isSelected
+                              ? phaseColor
+                              : (isToday
+                                  ? phaseColor.withValues(alpha: 0.3)
+                                  : Colors.transparent),
                       width: 2,
                     ),
                   ),
@@ -120,7 +132,8 @@ class _DashboardCalendarStripState extends State<DashboardCalendarStrip> {
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: isSelected ? phaseColor : AppTheme.textSecondary,
+                          color:
+                              isSelected ? phaseColor : AppTheme.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -129,7 +142,10 @@ class _DashboardCalendarStripState extends State<DashboardCalendarStrip> {
                         style: GoogleFonts.poppins(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: isSelected ? phaseColor : Theme.of(context).colorScheme.onSurface,
+                          color:
+                              isSelected
+                                  ? phaseColor
+                                  : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       if (isPeriod)

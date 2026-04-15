@@ -81,7 +81,9 @@ class ThemedContainer extends StatelessWidget {
                 (borderColor != null
                     ? Border.all(color: borderColor!, width: 1)
                     : Border.all(
-                      color: (context.isDarkMode ? Colors.white : context.primary)
+                      color: (context.isDarkMode
+                              ? Colors.white
+                              : context.primary)
                           .withValues(alpha: 0.15),
                       width: 1,
                     )),
@@ -95,14 +97,16 @@ class ThemedContainer extends StatelessWidget {
             child: glassContent,
           );
         } else {
-          container = ClipRRect(
-            borderRadius: borderRadius,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: effectiveBlur,
-                sigmaY: effectiveBlur,
+          container = RepaintBoundary(
+            child: ClipRRect(
+              borderRadius: borderRadius,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: effectiveBlur,
+                  sigmaY: effectiveBlur,
+                ),
+                child: glassContent,
               ),
-              child: glassContent,
             ),
           );
         }
@@ -115,15 +119,15 @@ class ThemedContainer extends StatelessWidget {
           padding: padding ?? const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: borderRadius,
-            color:
-                gradient != null ? null : (color ?? context.surface),
+            color: gradient != null ? null : (color ?? context.surface),
             gradient: gradient,
             border:
                 border ??
                 (borderColor != null
                     ? Border.all(color: borderColor!, width: 1.5)
                     : null),
-            boxShadow: boxShadow ?? AppTheme.neuShadows(isDark: context.isDarkMode),
+            boxShadow:
+                boxShadow ?? AppTheme.neuShadows(isDark: context.isDarkMode),
           ),
           child: child,
         );
@@ -142,9 +146,9 @@ class ThemedContainer extends StatelessWidget {
                 boxShadow ??
                 [
                   BoxShadow(
-                    color: Theme.of(context).shadowColor.withValues(
-                      alpha: isHighPerf ? 0.08 : 0.05,
-                    ),
+                    color: Theme.of(
+                      context,
+                    ).shadowColor.withValues(alpha: isHighPerf ? 0.08 : 0.05),
                     blurRadius: isHighPerf ? 15 : 4,
                     offset: Offset(0, isHighPerf ? 8 : 2),
                   ),

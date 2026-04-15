@@ -24,7 +24,8 @@ class CycleCoreRing extends StatelessWidget {
     final innerSize = ringSize * 0.72;
 
     return Semantics(
-      label: 'Cycle summary ring showing $phaseName phase at day $day of $cycleLen',
+      label:
+          'Cycle summary ring showing $phaseName phase at day $day of $cycleLen',
       child: SizedBox(
         width: ringSize + 60, // Added space for labels
         height: ringSize + 60,
@@ -70,7 +71,9 @@ class CycleCoreRing extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -85,13 +88,15 @@ class CycleCoreRing extends StatelessWidget {
                         color: AppTheme.getPhaseColor(pred.currentPhase),
                       ),
                     ),
-                    
+
                     Text(
                       'Phase',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                         letterSpacing: 2,
                       ),
                     ),
@@ -146,11 +151,7 @@ class _StatusBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 14,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          Icon(icon, size: 14, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 8),
           Text(
             label,

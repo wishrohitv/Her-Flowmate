@@ -79,14 +79,10 @@ class OnboardingService extends ChangeNotifier {
     if (avgCycleLength != null) {
       await _base.prefs.setInt('avgCycleLength', avgCycleLength);
     }
-    
+
     // Create a base user if not exists
     if (user == null) {
-      final newUser = User(
-        name: 'Friend',
-        age: 25,
-        goal: goal,
-      );
+      final newUser = User(name: 'Friend', age: 25, goal: goal);
       await saveUser(newUser);
     } else {
       await saveUser(user!.copyWith(goal: goal));

@@ -12,14 +12,9 @@ class BodyInsightsCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: TodayGuidanceCard(pred: pred)),
-            const SizedBox(width: 12),
-            Expanded(child: YourBodyCard(pred: pred)),
-          ],
-        ),
+        YourBodyCard(pred: pred),
+        const SizedBox(height: AppDesignTokens.space16),
+        TodayGuidanceCard(pred: pred),
       ],
     );
   }
@@ -33,10 +28,13 @@ class TodayGuidanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final phase = pred.phaseDisplayName;
     final healthTips = AppTheme.getPhaseHealthTips(phase);
-    
+
     // Fallback data if list is empty
-    final exerciseTip = healthTips.exercise.isNotEmpty ? healthTips.exercise.first : 'Gentle activity';
-    
+    final exerciseTip =
+        healthTips.exercise.isNotEmpty
+            ? healthTips.exercise.first
+            : 'Gentle activity';
+
     return NeumorphicCard(
       borderRadius: AppDesignTokens.radiusLG,
       padding: const EdgeInsets.all(AppDesignTokens.space16),
@@ -45,7 +43,11 @@ class TodayGuidanceCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.auto_awesome_rounded, size: 18, color: context.primary),
+              Icon(
+                Icons.auto_awesome_rounded,
+                size: 18,
+                color: context.primary,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -84,7 +86,11 @@ class TodayGuidanceCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               children: [
-                const Icon(Icons.lightbulb_rounded, size: 16, color: Colors.amber),
+                const Icon(
+                  Icons.lightbulb_rounded,
+                  size: 16,
+                  color: Colors.amber,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -112,7 +118,7 @@ class YourBodyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bio = pred.getPhaseBiology(pred.currentCycleDay);
-    
+
     return NeumorphicCard(
       borderRadius: AppDesignTokens.radiusLG,
       padding: const EdgeInsets.all(AppDesignTokens.space16),
@@ -121,7 +127,11 @@ class YourBodyCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.accessibility_new_rounded, size: 18, color: context.primary),
+              Icon(
+                Icons.accessibility_new_rounded,
+                size: 18,
+                color: context.primary,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(

@@ -45,19 +45,12 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
         return Column(
           children: [
             // ── 1. Cycle Core Ring (primary progress gauge) ────────────
-            CycleCoreRing(pred: widget.pred)
-                .animate()
-                .fadeIn(duration: 600.ms)
-                .scale(begin: const Offset(0.9, 0.9)),
+            CycleCoreRing(
+              pred: widget.pred,
+            ).animate().scale(begin: const Offset(0.9, 0.9), duration: 600.ms),
             const SizedBox(height: AppDesignTokens.space24),
             _buildActiveGoalPill(context),
             const SizedBox(height: AppDesignTokens.space12),
-
-            // ── 3. Body Status & Guidance Cards ──────────────────────────
-            BodyInsightsCards(
-              pred: widget.pred,
-            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
-            const SizedBox(height: AppDesignTokens.space32),
 
             // ── 4. Expandable Quick-access Insight Bubbles ──────────────
             _buildInsightBubbles(isWide),
@@ -65,31 +58,37 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
 
             // ── 5. Expanded detail panels ───────────────────────────────
             if (_isWaterExpanded)
-            WaterIntakeCard(
-              storage: widget.storage,
-              onGoalReached: () {
-                if (mounted) widget.confettiController.play();
-              },
-            ).animate().fadeIn().slideY(begin: -0.05),
+              WaterIntakeCard(
+                storage: widget.storage,
+                onGoalReached: () {
+                  if (mounted) widget.confettiController.play();
+                },
+              ).animate().slideY(begin: -0.05),
 
             if (_isSleepExpanded)
               SleepCard(
                 storage: widget.storage,
                 pred: widget.pred,
-              ).animate().fadeIn().slideY(begin: -0.05),
+              ).animate().slideY(begin: -0.05),
 
             if (_isStreakExpanded)
-            StreakCard(
-              storage: widget.storage,
-              onMilestoneReached: () {
-                if (mounted) widget.confettiController.play();
-              },
-            ).animate().fadeIn().slideY(begin: -0.05),
+              StreakCard(
+                storage: widget.storage,
+                onMilestoneReached: () {
+                  if (mounted) widget.confettiController.play();
+                },
+              ).animate().slideY(begin: -0.05),
 
             if (_isHormoneExpanded)
-            HormoneGraph(
+              HormoneGraph(pred: widget.pred).animate().slideY(begin: -0.05),
+
+            const SizedBox(height: AppDesignTokens.space12),
+
+            // ── 3. Body Status & Guidance Cards ──────────────────────────
+            BodyInsightsCards(
               pred: widget.pred,
-            ).animate().fadeIn().slideY(begin: -0.05),
+            ).animate().slideY(begin: 0.1, delay: 200.ms),
+            const SizedBox(height: AppDesignTokens.space32),
 
             // ── 6. Wellness Goals / upcoming reminders ──────────────────
             const SizedBox(height: AppDesignTokens.space24),
@@ -103,7 +102,6 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
     );
   }
 
-
   Widget _buildActiveGoalPill(BuildContext context) {
     final goals = widget.storage.getAllAppointments();
     if (goals.isEmpty) return const SizedBox.shrink();
@@ -115,7 +113,8 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
           () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => const WellnessRemindersScreen(heroTag: 'goal_pill'),
+              builder:
+                  (_) => const WellnessRemindersScreen(heroTag: 'goal_pill'),
             ),
           ),
       child: Hero(
@@ -156,7 +155,7 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
           ),
         ),
       ),
-    ).animate().fadeIn().slideY(begin: 0.2);
+    ).animate().slideY(begin: 0.2);
   }
 
   // ── Insight Bubbles ────────────────────────────────────────────────────────

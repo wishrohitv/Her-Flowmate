@@ -43,7 +43,9 @@ class SharedDrawer extends StatelessWidget {
                   onTap:
                       () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const HistoryScreen(),
+                        ),
                       ),
                 ),
                 _menuItem(
@@ -68,7 +70,9 @@ class SharedDrawer extends StatelessWidget {
                   onTap:
                       () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const EducationHubScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const EducationHubScreen(),
+                        ),
                       ),
                 ),
                 _menuItem(
@@ -78,7 +82,9 @@ class SharedDrawer extends StatelessWidget {
                   onTap:
                       () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const CommunityScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const CommunityScreen(),
+                        ),
                       ),
                 ),
                 _menuItem(
@@ -88,7 +94,9 @@ class SharedDrawer extends StatelessWidget {
                   onTap:
                       () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const PartnerSyncScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const PartnerSyncScreen(),
+                        ),
                       ),
                 ),
                 const SizedBox(height: AppDesignTokens.space24),
@@ -112,7 +120,9 @@ class SharedDrawer extends StatelessWidget {
                   onTap:
                       () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const FeedbackScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const FeedbackScreen(),
+                        ),
                       ),
                 ),
               ],
@@ -132,10 +142,7 @@ class SharedDrawer extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            context.primary.withValues(alpha: 0.12),
-            context.surface,
-          ],
+          colors: [context.primary.withValues(alpha: 0.12), context.surface],
         ),
       ),
       child: Column(
@@ -155,7 +162,11 @@ class SharedDrawer extends StatelessWidget {
                     gradient: AppTheme.brandGradient,
                   ),
                   child: const Center(
-                    child: Icon(Icons.person_rounded, color: Colors.white, size: 30),
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                   ),
                 ),
               ),
@@ -176,7 +187,10 @@ class SharedDrawer extends StatelessWidget {
                     const SizedBox(height: 4),
                     ThemedContainer(
                       type: ContainerType.simple,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       radius: 10,
                       color: avatarColor.withValues(alpha: 0.1),
                       child: Text(
@@ -231,7 +245,11 @@ class SharedDrawer extends StatelessWidget {
         Navigator.pop(context);
         onTap();
       },
-      leading: Icon(icon, color: context.primary.withValues(alpha: 0.8), size: 24),
+      leading: Icon(
+        icon,
+        color: context.primary.withValues(alpha: 0.8),
+        size: 24,
+      ),
       title: Text(
         title,
         style: GoogleFonts.outfit(
@@ -333,4 +351,3 @@ class SharedDrawer extends StatelessWidget {
     );
   }
 }
-

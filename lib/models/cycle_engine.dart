@@ -121,10 +121,17 @@ class CycleEngine {
     // Bound ovulation day for extremely irregular or short cycles
     if (ovulationDay < 1) ovulationDay = 1;
 
-    if (daysSinceStart >= avgCycleLen) return CyclePhase.luteal;
-    if (daysSinceStart < ovulationDay - 5) return CyclePhase.follicular;
-    if (daysSinceStart <= ovulationDay) return CyclePhase.ovulation;
-    return CyclePhase.luteal;
+    // Convert daysSinceStart (0-based) to cycleDay (1-based)
+    int cycleDay = daysSinceStart + 1;
+
+    if (cycleDay >= avgCycleLen) return CyclePhase.luteal;
+    if (cycleDay < ovulationDay) {
+      return CyclePhase.follicular; // Before ovulation
+    }
+    if (cycleDay == ovulationDay) {
+      return CyclePhase.ovulation; // Exactly ovulation day
+    }
+    return CyclePhase.luteal; // After ovulation
   }
 
   /// Calculates simplified hormone levels (0.0 to 1.0) based on cycle day.

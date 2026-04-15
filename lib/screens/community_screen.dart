@@ -65,7 +65,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
             return RefreshIndicator(
               onRefresh: provider.loadFeed,
               color: AppTheme.accentPink,
-              edgeOffset: kToolbarHeight + MediaQuery.of(context).padding.top + 20,
+              edgeOffset:
+                  kToolbarHeight + MediaQuery.of(context).padding.top + 20,
               child: ListView.builder(
                 padding: EdgeInsets.fromLTRB(
                   24,
@@ -241,7 +242,9 @@ class _CommunityScreenState extends State<CommunityScreen> {
                           style: GoogleFonts.inter(color: context.onSurface),
                           decoration: InputDecoration(
                             labelText: 'Category',
-                            labelStyle: TextStyle(color: context.onSurface.withValues(alpha: 0.6)),
+                            labelStyle: TextStyle(
+                              color: context.onSurface.withValues(alpha: 0.6),
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -251,7 +254,12 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                   .map(
                                     (c) => DropdownMenuItem(
                                       value: c,
-                                      child: Text(c, style: TextStyle(color: context.onSurface)),
+                                      child: Text(
+                                        c,
+                                        style: TextStyle(
+                                          color: context.onSurface,
+                                        ),
+                                      ),
                                     ),
                                   )
                                   .toList(),
@@ -265,7 +273,9 @@ class _CommunityScreenState extends State<CommunityScreen> {
                           style: TextStyle(color: context.onSurface),
                           decoration: InputDecoration(
                             hintText: "What's on your mind? 🌸",
-                            hintStyle: TextStyle(color: context.onSurface.withValues(alpha: 0.4)),
+                            hintStyle: TextStyle(
+                              color: context.onSurface.withValues(alpha: 0.4),
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),

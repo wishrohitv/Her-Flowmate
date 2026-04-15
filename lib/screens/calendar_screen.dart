@@ -62,9 +62,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               edgeOffset: kToolbarHeight + MediaQuery.of(context).padding.top,
               onRefresh: () async {
                 HapticFeedback.mediumImpact();
-                await Future.delayed(
-                  const Duration(milliseconds: 1500),
-                );
+                await Future.delayed(const Duration(milliseconds: 1500));
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -86,9 +84,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         children: [
                           SizedBox(height: isSmallScreen ? 8 : 16),
                           Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: hPad,
-                            ),
+                            padding: EdgeInsets.symmetric(horizontal: hPad),
                             child: ThemedContainer(
                               type: ContainerType.glass,
                               radius: 32,
@@ -104,26 +100,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       sInstance,
                                       _,
                                     ) => TableCalendar(
-                                      firstDay: DateTime.utc(
-                                        2020,
-                                        1,
-                                        1,
-                                      ),
-                                      lastDay: DateTime.utc(
-                                        2030,
-                                        12,
-                                        31,
-                                      ),
+                                      firstDay: DateTime.utc(2020, 1, 1),
+                                      lastDay: DateTime.utc(2030, 12, 31),
                                       focusedDay: _focusedDay,
                                       selectedDayPredicate:
-                                          (day) => isSameDay(
-                                            _selectedDay,
-                                            day,
-                                          ),
-                                      onDaySelected: (
-                                        selectedDay,
-                                        focusedDay,
-                                      ) {
+                                          (day) => isSameDay(_selectedDay, day),
+                                      onDaySelected: (selectedDay, focusedDay) {
                                         setState(() {
                                           _selectedDay = selectedDay;
                                           _focusedDay = focusedDay;
@@ -136,18 +118,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       onHeaderTapped: (focusedDay) {
                                         _showMonthPicker(context);
                                       },
-                                      calendarFormat:
-                                          CalendarFormat.month,
+                                      calendarFormat: CalendarFormat.month,
                                       headerStyle: HeaderStyle(
                                         formatButtonVisible: false,
                                         titleCentered: true,
-                                        titleTextStyle:
-                                            GoogleFonts.poppins(
-                                              fontSize: 18,
-                                              fontWeight:
-                                                  FontWeight.w800,
-                                              color: context.onSurface,
-                                            ),
+                                        titleTextStyle: GoogleFonts.poppins(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w800,
+                                          color: context.onSurface,
+                                        ),
                                         leftChevronPadding:
                                             const EdgeInsets.all(12),
                                         rightChevronPadding:
@@ -173,78 +152,68 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
-                                      calendarBuilders:
-                                          CalendarBuilders(
-                                            defaultBuilder: (
-                                              context,
-                                              day,
-                                              focusedDay,
-                                            ) {
-                                              return _buildCalendarCell(
-                                                day,
-                                                pInstance,
-                                                sInstance,
-                                                isSelected: false,
-                                              );
-                                            },
-                                            selectedBuilder: (
-                                              context,
-                                              day,
-                                              focusedDay,
-                                            ) {
-                                              return _buildCalendarCell(
-                                                day,
-                                                pInstance,
-                                                sInstance,
-                                                isSelected: true,
-                                              );
-                                            },
-                                            todayBuilder: (
-                                              context,
-                                              day,
-                                              focusedDay,
-                                            ) {
-                                              return _buildCalendarCell(
-                                                day,
-                                                pInstance,
-                                                sInstance,
-                                                isSelected: false,
-                                                isToday: true,
-                                              );
-                                            },
-                                          ),
+                                      calendarBuilders: CalendarBuilders(
+                                        defaultBuilder: (
+                                          context,
+                                          day,
+                                          focusedDay,
+                                        ) {
+                                          return _buildCalendarCell(
+                                            day,
+                                            pInstance,
+                                            sInstance,
+                                            isSelected: false,
+                                          );
+                                        },
+                                        selectedBuilder: (
+                                          context,
+                                          day,
+                                          focusedDay,
+                                        ) {
+                                          return _buildCalendarCell(
+                                            day,
+                                            pInstance,
+                                            sInstance,
+                                            isSelected: true,
+                                          );
+                                        },
+                                        todayBuilder: (
+                                          context,
+                                          day,
+                                          focusedDay,
+                                        ) {
+                                          return _buildCalendarCell(
+                                            day,
+                                            pInstance,
+                                            sInstance,
+                                            isSelected: false,
+                                            isToday: true,
+                                          );
+                                        },
+                                      ),
                                     ),
                               ),
                             ),
-                          ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
+                          ).animate().slideY(begin: 0.1, duration: 400.ms),
 
                           SizedBox(height: isSmallScreen ? 16 : 32),
 
                           Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: hPad,
-                                ),
-                                child: Consumer<PredictionService>(
-                                  builder:
-                                      (context, pred, _) =>
-                                          _buildLegend(
-                                            pred,
-                                            isSmallScreen:
-                                                isSmallScreen,
-                                          ),
-                                ),
-                              )
-                              .animate()
-                              .fadeIn(delay: 300.ms)
-                              .slideY(begin: 0.1),
+                            padding: EdgeInsets.symmetric(horizontal: hPad),
+                            child: Consumer<PredictionService>(
+                              builder:
+                                  (context, pred, _) => _buildLegend(
+                                    pred,
+                                    isSmallScreen: isSmallScreen,
+                                  ),
+                            ),
+                          ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
 
                           SizedBox(height: isSmallScreen ? 16 : 24),
 
                           if (_selectedDay != null)
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: hPad,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: hPad),
                               child: Consumer<PredictionService>(
                                 builder:
                                     (context, pred, _) =>
@@ -261,9 +230,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                           if (!isSmallScreen)
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: hPad,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: hPad),
                               child: Row(
                                 children: [
                                   Expanded(
@@ -278,23 +245,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                             content: Text(
                                               'Note taking is coming soon!',
                                             ),
-                                            behavior:
-                                                SnackBarBehavior
-                                                    .floating,
+                                            behavior: SnackBarBehavior.floating,
                                           ),
                                         );
                                       },
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              vertical: 16,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
                                         child: Center(
                                           child: Text(
                                             'Add Note',
                                             style: GoogleFonts.inter(
-                                              fontWeight:
-                                                  FontWeight.w700,
+                                              fontWeight: FontWeight.w700,
                                               color: context.onSurface,
                                             ),
                                           ),
@@ -307,19 +270,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                     child: ThemedContainer(
                                       type: ContainerType.neu,
                                       radius: 20,
-                                      onTap:
-                                          () => Navigator.pop(context),
+                                      onTap: () => Navigator.pop(context),
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              vertical: 16,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
                                         child: Center(
                                           child: Text(
                                             'View Insights',
                                             style: GoogleFonts.inter(
-                                              fontWeight:
-                                                  FontWeight.w700,
+                                              fontWeight: FontWeight.w700,
                                               color: context.onSurface,
                                             ),
                                           ),
@@ -329,7 +289,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   ),
                                 ],
                               ),
-                            ).animate().fadeIn(delay: 400.ms),
+                            ).animate().slideY(begin: 0.1),
                           const SizedBox(height: 80),
                         ],
                       ),
@@ -437,7 +397,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn().slideY(begin: 0.05);
+    ).animate().slideY(begin: 0.05);
   }
 
   Widget _buildPhaseBadge(CyclePhase phase) {
@@ -655,25 +615,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
         gradient: gradient,
         shape: BoxShape.circle,
         border: border,
-        boxShadow: isOvulation
-            ? [
-                BoxShadow(
-                  color: AppTheme.phaseColors['Ovulation']!.withValues(
-                    alpha: 0.4,
-                  ),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                ),
-              ]
-            : (isSelected
+        boxShadow:
+            isOvulation
                 ? [
-                    BoxShadow(
-                      color: AppTheme.accentPink.withValues(alpha: 0.4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
+                  BoxShadow(
+                    color: AppTheme.phaseColors['Ovulation']!.withValues(
+                      alpha: 0.4,
                     ),
-                  ]
-                : null),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ]
+                : (isSelected
+                    ? [
+                      BoxShadow(
+                        color: AppTheme.accentPink.withValues(alpha: 0.4),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ]
+                    : null),
       ),
       alignment: Alignment.center,
       child: Stack(
@@ -682,14 +643,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
           Text(
             '${day.day}',
             style: GoogleFonts.inter(
-              color: isSelected || isPeriod
-                  ? Colors.white
-                  : (isOvulation
-                      ? AppTheme.phaseColors['Ovulation']
-                      : context.onSurface),
-              fontWeight: isSelected || isToday || isPeriod || isOvulation
-                  ? FontWeight.w900
-                  : FontWeight.w600,
+              color:
+                  isSelected || isPeriod
+                      ? Colors.white
+                      : (isOvulation
+                          ? AppTheme.phaseColors['Ovulation']
+                          : context.onSurface),
+              fontWeight:
+                  isSelected || isToday || isPeriod || isOvulation
+                      ? FontWeight.w900
+                      : FontWeight.w600,
               fontSize: 14,
             ),
           ),

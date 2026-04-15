@@ -54,7 +54,9 @@ class TimelineScreen extends StatelessWidget {
                   const SizedBox(height: AppDesignTokens.space24),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: AppDesignTokens.space24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDesignTokens.space24,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -187,7 +189,9 @@ class TimelineScreen extends StatelessWidget {
               context: context,
               fontSize: AppDesignTokens.labelSize,
               fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -263,7 +267,9 @@ class _TimelineRow extends StatelessWidget {
                   Container(
                     width: 2,
                     height: AppDesignTokens.space48,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.15),
                   ),
               ],
             ),
@@ -302,7 +308,9 @@ class _TimelineRow extends StatelessWidget {
   Widget _rowContent(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final contrastColor =
-        HSLColor.fromColor(phaseColor).withLightness(isDark ? 0.8 : 0.35).toColor();
+        HSLColor.fromColor(
+          phaseColor,
+        ).withLightness(isDark ? 0.8 : 0.35).toColor();
 
     return Row(
       children: [

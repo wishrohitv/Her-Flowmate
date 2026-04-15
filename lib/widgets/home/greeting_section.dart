@@ -41,23 +41,23 @@ class GreetingSection extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         AppTheme.isSmallScreen(context)
-        ? Text(
-          '$name!',
-          style: AppTheme.playfair(
-            fontSize: 32,
-            fontWeight: FontWeight.w900,
-            color: context.onSurface,
-          ),
-        )
-        : Text(
-          '$name, welcome back',
-          style: AppTheme.playfair(
-            fontSize: 32,
-            fontWeight: FontWeight.w900,
-            color: context.onSurface,
-          ),
-        ),
+            ? Text(
+              '$name!',
+              style: AppTheme.playfair(
+                fontSize: 32,
+                fontWeight: FontWeight.w900,
+                color: context.onSurface,
+              ),
+            )
+            : Text(
+              '$name, welcome back',
+              style: AppTheme.playfair(
+                fontSize: 32,
+                fontWeight: FontWeight.w900,
+                color: context.onSurface,
+              ),
+            ),
       ],
-    ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.05);
+    ).animate().slideX(begin: -0.05, duration: 600.ms);
   }
 }

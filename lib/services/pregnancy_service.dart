@@ -65,7 +65,8 @@ class PregnancyService extends ChangeNotifier {
 
   /// Trimester name
   String get trimester {
-    return currentWeekData?.trimester ?? (currentWeek < 13 ? '1st Trimester' : 'Unknown');
+    return currentWeekData?.trimester ??
+        (currentWeek < 13 ? '1st Trimester' : 'Unknown');
   }
 
   Future<void> savePregnancyData({DateTime? conceptionDate, int? weeks}) async {

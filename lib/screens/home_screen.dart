@@ -75,10 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: 'Flowmate',
         subtitle: DateFormat('EEEE, d MMMM').format(DateTime.now()),
         onMenuPressed: widget.onMenuPressed,
-        actions: [
-          _buildCurrentModeBadge(storage),
-          const SizedBox(width: 8),
-        ],
+        actions: [_buildCurrentModeBadge(storage), const SizedBox(width: 8)],
       ),
       body: Stack(
         children: [
@@ -96,7 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   AppResponsive.pad(context),
                   kToolbarHeight + MediaQuery.of(context).padding.top + 32,
                   AppResponsive.pad(context),
-                  MediaQuery.of(context).padding.bottom + AppDesignTokens.space64,
+                  MediaQuery.of(context).padding.bottom +
+                      AppDesignTokens.space64,
                 ),
                 child: Column(
                   children: [
@@ -108,9 +106,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     // is safe because it sizes to the child, not infinity.
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 350),
-                      child: storage.isLoading
-                          ? _buildSkeletonDashboard()
-                          : _getDashboard(context, storage, pred),
+                      child:
+                          storage.isLoading
+                              ? _buildSkeletonDashboard()
+                              : _getDashboard(context, storage, pred),
                     ),
                   ],
                 ),
@@ -180,10 +179,13 @@ class _HomeScreenState extends State<HomeScreen> {
         mode == 'conceive'
             ? 'Conceive'
             : (mode == 'pregnant' ? 'Pregnancy' : 'Period Tracking');
-    
-    IconData modeIcon = mode == 'pregnant' 
-        ? Icons.pregnant_woman_rounded 
-        : (mode == 'conceive' ? Icons.favorite_rounded : Icons.calendar_today_rounded);
+
+    IconData modeIcon =
+        mode == 'pregnant'
+            ? Icons.pregnant_woman_rounded
+            : (mode == 'conceive'
+                ? Icons.favorite_rounded
+                : Icons.calendar_today_rounded);
 
     return Semantics(
       label: 'Selected mode: $modeLabel. Tap to change.',
@@ -199,11 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              modeIcon,
-              color: context.primary,
-              size: 20,
-            ),
+            Icon(modeIcon, color: context.primary, size: 20),
             const SizedBox(width: 4),
             Icon(
               Icons.keyboard_arrow_down_rounded,
@@ -285,21 +283,13 @@ class _HomeScreenState extends State<HomeScreen> {
               : Colors.transparent,
       border:
           isSelected
-              ? Border.all(
-                color: context.primary,
-                width: 2,
-              )
-              : Border.all(
-                color: context.secondaryText.withValues(alpha: 0.2),
-              ),
+              ? Border.all(color: context.primary, width: 2)
+              : Border.all(color: context.secondaryText.withValues(alpha: 0.2)),
       child: Row(
         children: [
           Icon(
             icon,
-            color:
-                isSelected
-                    ? context.primary
-                    : context.secondaryText,
+            color: isSelected ? context.primary : context.secondaryText,
           ),
           const SizedBox(width: 16),
           Text(
@@ -311,10 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const Spacer(),
           if (isSelected)
-            Icon(
-              Icons.check_circle_rounded,
-              color: context.primary,
-            ),
+            Icon(Icons.check_circle_rounded, color: context.primary),
         ],
       ),
     );
@@ -343,11 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
       radius: 32,
       child: Column(
         children: [
-          Icon(
-                Icons.auto_awesome_rounded,
-                color: context.primary,
-                size: 64,
-              )
+          Icon(Icons.auto_awesome_rounded, color: context.primary, size: 64)
               .animate(onPlay: (controller) => controller.repeat(reverse: true))
               .scaleXY(
                 begin: 1.0,
@@ -471,6 +454,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-
-
 }

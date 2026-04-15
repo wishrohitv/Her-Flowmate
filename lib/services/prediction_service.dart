@@ -11,8 +11,9 @@ class PredictionService {
   String get phaseDisplayName => currentPhase.displayName;
 
   int get averageCycleLength {
-    final computedLength =
-        CycleEngine.calculateAverageCycleLength(storageService.getLogs());
+    final computedLength = CycleEngine.calculateAverageCycleLength(
+      storageService.getLogs(),
+    );
     // CycleEngine returns 28 as a default when < 2 logs exist.
     // Instead, prefer the user's self-reported cycle length from onboarding
     // until we have enough data to compute a reliable average.

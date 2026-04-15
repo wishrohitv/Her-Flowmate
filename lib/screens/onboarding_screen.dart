@@ -13,7 +13,7 @@ import '../widgets/common/neu_card.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final bool isEmailUser;
-  final String prefillName; 
+  final String prefillName;
   final String? forceGoal;
   final int initialPage;
 
@@ -32,8 +32,12 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   late final PageController _pageController;
   final TextEditingController _weeksController = TextEditingController();
-  final TextEditingController _avgCycleController = TextEditingController(text: '28');
-  final TextEditingController _durationController = TextEditingController(text: '5');
+  final TextEditingController _avgCycleController = TextEditingController(
+    text: '28',
+  );
+  final TextEditingController _durationController = TextEditingController(
+    text: '5',
+  );
   DateTime? _conceptionDate;
 
   String? _weeksError;
@@ -44,7 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   late String _selectedGoal;
   DateTime? _lastPeriodStart;
   bool _isAM = true;
-  String _pregnancyInputMode = 'weeks'; 
+  String _pregnancyInputMode = 'weeks';
 
   @override
   void initState() {
@@ -70,11 +74,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     });
 
     if (_currentPage == 0 && _selectedGoal.isEmpty) return;
-    
+
     if (_currentPage == 1) {
       if (_selectedGoal == 'pregnant') {
-        if (_pregnancyInputMode == 'weeks' && _weeksController.text.trim().isEmpty) {
-          setState(() => _weeksError = 'Please enter how many weeks pregnant you are.');
+        if (_pregnancyInputMode == 'weeks' &&
+            _weeksController.text.trim().isEmpty) {
+          setState(
+            () => _weeksError = 'Please enter how many weeks pregnant you are.',
+          );
           return;
         }
         if (_pregnancyInputMode == 'date' && _conceptionDate == null) {
@@ -82,7 +89,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           return;
         }
       } else if (_lastPeriodStart == null) {
-        setState(() => _dateError = 'Please select your last period start date.');
+        setState(
+          () => _dateError = 'Please select your last period start date.',
+        );
         return;
       }
     }
@@ -186,11 +195,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   padding: const EdgeInsets.all(12),
                                   radius: 16,
                                   onTap: () {
-                                    _pageController.previousPage(duration: 400.ms, curve: Curves.easeOutCubic);
+                                    _pageController.previousPage(
+                                      duration: 400.ms,
+                                      curve: Curves.easeOutCubic,
+                                    );
                                   },
                                   child: Icon(
                                     Icons.arrow_back_ios_new_rounded,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
                                     size: 18,
                                   ),
                                 )
@@ -230,11 +243,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             child: PageView(
                               controller: _pageController,
                               physics: const NeverScrollableScrollPhysics(),
-                              onPageChanged: (i) => setState(() => _currentPage = i),
+                              onPageChanged:
+                                  (i) => setState(() => _currentPage = i),
                               children: [
                                 _GoalPage(
                                   selectedGoal: _selectedGoal,
-                                  onGoalSelected: (goal) => setState(() => _selectedGoal = goal),
+                                  onGoalSelected:
+                                      (goal) =>
+                                          setState(() => _selectedGoal = goal),
                                   isSmall: isSmall,
                                   horizontalPadding: horizontalPadding,
                                 ).animate().fadeIn(duration: 400.ms),
@@ -248,10 +264,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   weeksError: _weeksError,
                                   dateError: _dateError,
                                   onWeeksChanged: () => setState(() {}),
-                                  onDateChanged: (d) => setState(() => _lastPeriodStart = d),
-                                  onConceptionDateChanged: (d) => setState(() => _conceptionDate = d),
-                                  onAMPMChanged: (val) => setState(() => _isAM = val),
-                                  onInputModeChanged: (mode) => setState(() => _pregnancyInputMode = mode),
+                                  onDateChanged:
+                                      (d) =>
+                                          setState(() => _lastPeriodStart = d),
+                                  onConceptionDateChanged:
+                                      (d) =>
+                                          setState(() => _conceptionDate = d),
+                                  onAMPMChanged:
+                                      (val) => setState(() => _isAM = val),
+                                  onInputModeChanged:
+                                      (mode) => setState(
+                                        () => _pregnancyInputMode = mode,
+                                      ),
                                   isSmall: isSmall,
                                   horizontalPadding: horizontalPadding,
                                 ).animate().fadeIn(duration: 400.ms),
@@ -268,7 +292,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(horizontalPadding, 4, horizontalPadding, 24),
+                          padding: EdgeInsets.fromLTRB(
+                            horizontalPadding,
+                            4,
+                            horizontalPadding,
+                            24,
+                          ),
                           child: AnimatedOpacity(
                             duration: 300.ms,
                             opacity: isValid ? 1.0 : 0.5,
@@ -283,7 +312,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 boxShadow: [
                                   if (isValid)
                                     BoxShadow(
-                                      color: AppTheme.accentPink.withValues(alpha: 0.3),
+                                      color: AppTheme.accentPink.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       blurRadius: 16,
                                       offset: const Offset(0, 6),
                                     ),
@@ -293,7 +324,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        _currentPage == _totalPages - 1 ? "Start Your Journey" : "Continue",
+                                        _currentPage == _totalPages - 1
+                                            ? "Start Your Journey"
+                                            : "Continue",
                                         style: GoogleFonts.poppins(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -302,7 +335,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Icon(
-                                        _currentPage == _totalPages - 1 ? Icons.auto_awesome_rounded : Icons.arrow_forward_rounded,
+                                        _currentPage == _totalPages - 1
+                                            ? Icons.auto_awesome_rounded
+                                            : Icons.arrow_forward_rounded,
                                         color: Colors.white,
                                         size: 20,
                                       ),
@@ -312,7 +347,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                           ),
-                        ).animate().fadeIn().slideY(begin: 0.2, end: 0, curve: Curves.easeOutBack),
+                        ).animate().fadeIn().slideY(
+                          begin: 0.2,
+                          end: 0,
+                          curve: Curves.easeOutBack,
+                        ),
                       ],
                     );
                   },
@@ -357,73 +396,129 @@ class _GoalPage extends StatelessWidget {
             style: AppTheme.outfit(color: AppTheme.textSecondary),
           ).animate().fadeIn(delay: 400.ms),
           const SizedBox(height: 40),
-          _goalCard(context, 'track_cycle', 'Track my cycle', 'Log periods and symptoms.', Icons.calendar_today_rounded),
+          _goalCard(
+            context,
+            'track_cycle',
+            'Track my cycle',
+            'Log periods and symptoms.',
+            Icons.calendar_today_rounded,
+          ),
           const SizedBox(height: 16),
-          _goalCard(context, 'conceive', 'I want to conceive', 'Pinpoint your fertile window.', Icons.favorite_rounded),
+          _goalCard(
+            context,
+            'conceive',
+            'I want to conceive',
+            'Pinpoint your fertile window.',
+            Icons.favorite_rounded,
+          ),
           const SizedBox(height: 16),
-          _goalCard(context, 'pregnant', 'I am pregnant', 'Track milestones and growth.', Icons.child_care_rounded),
+          _goalCard(
+            context,
+            'pregnant',
+            'I am pregnant',
+            'Track milestones and growth.',
+            Icons.child_care_rounded,
+          ),
         ],
       ),
     );
   }
 
-  Widget _goalCard(BuildContext context, String id, String title, String subtitle, IconData icon) {
+  Widget _goalCard(
+    BuildContext context,
+    String id,
+    String title,
+    String subtitle,
+    IconData icon,
+  ) {
     final isSelected = selectedGoal == id;
     return GestureDetector(
       onTap: () => onGoalSelected(id),
       child: AnimatedScale(
         scale: isSelected ? 1.02 : 1.0,
         duration: 300.ms,
-        child: isSelected ? NeumorphicCard(
-          padding: const EdgeInsets.all(AppDesignTokens.space20),
-          borderRadius: AppDesignTokens.radiusLG,
-          child: Row(
-            children: [
-              ThemedContainer(
-                type: ContainerType.simple,
-                padding: const EdgeInsets.all(12),
-                radius: 40,
-                color: AppTheme.accentPink,
-                child: Icon(icon, color: Colors.white, size: 24),
-              ),
-              const SizedBox(width: AppDesignTokens.space20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: AppTheme.outfit(context: context, fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.accentPink)),
-                    Text(subtitle, style: AppTheme.outfit(context: context, fontSize: 14, color: AppTheme.textSecondary)),
-                  ],
+        child:
+            isSelected
+                ? NeumorphicCard(
+                  padding: const EdgeInsets.all(AppDesignTokens.space20),
+                  borderRadius: AppDesignTokens.radiusLG,
+                  child: Row(
+                    children: [
+                      ThemedContainer(
+                        type: ContainerType.simple,
+                        padding: const EdgeInsets.all(12),
+                        radius: 40,
+                        color: AppTheme.accentPink,
+                        child: Icon(icon, color: Colors.white, size: 24),
+                      ),
+                      const SizedBox(width: AppDesignTokens.space20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: AppTheme.outfit(
+                                context: context,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: AppTheme.accentPink,
+                              ),
+                            ),
+                            Text(
+                              subtitle,
+                              style: AppTheme.outfit(
+                                context: context,
+                                fontSize: 14,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                : ThemedContainer(
+                  type: ContainerType.glass,
+                  padding: const EdgeInsets.all(AppDesignTokens.space20),
+                  radius: AppDesignTokens.radiusLG,
+                  child: Row(
+                    children: [
+                      ThemedContainer(
+                        type: ContainerType.simple,
+                        padding: const EdgeInsets.all(12),
+                        radius: 40,
+                        color: AppTheme.accentPink.withValues(alpha: 0.05),
+                        child: Icon(icon, color: AppTheme.accentPink, size: 24),
+                      ),
+                      const SizedBox(width: AppDesignTokens.space20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: AppTheme.outfit(
+                                context: context,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            Text(
+                              subtitle,
+                              style: AppTheme.outfit(
+                                context: context,
+                                fontSize: 14,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ) : ThemedContainer(
-          type: ContainerType.glass,
-          padding: const EdgeInsets.all(AppDesignTokens.space20),
-          radius: AppDesignTokens.radiusLG,
-          child: Row(
-            children: [
-              ThemedContainer(
-                type: ContainerType.simple,
-                padding: const EdgeInsets.all(12),
-                radius: 40,
-                color: AppTheme.accentPink.withValues(alpha: 0.05),
-                child: Icon(icon, color: AppTheme.accentPink, size: 24),
-              ),
-              const SizedBox(width: AppDesignTokens.space20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: AppTheme.outfit(context: context, fontSize: 18, fontWeight: FontWeight.w800)),
-                    Text(subtitle, style: AppTheme.outfit(context: context, fontSize: 14, color: AppTheme.textSecondary)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -478,11 +573,16 @@ class _DatePage extends StatelessWidget {
           ).animate().fadeIn(),
           const SizedBox(height: 8),
           Text(
-            selectedGoal == 'pregnant' ? "How far along are you?" : "When did your last period start?",
+            selectedGoal == 'pregnant'
+                ? "How far along are you?"
+                : "When did your last period start?",
             style: AppTheme.outfit(color: AppTheme.textSecondary),
           ),
           const SizedBox(height: 40),
-          if (selectedGoal == 'pregnant') _pregnancyInput(context) else _cycleInput(context),
+          if (selectedGoal == 'pregnant')
+            _pregnancyInput(context)
+          else
+            _cycleInput(context),
         ],
       ),
     );
@@ -493,16 +593,37 @@ class _DatePage extends StatelessWidget {
       children: [
         Row(
           children: [
-            _toggleItem(context, 'weeks', 'Weeks', pregnancyInputMode == 'weeks'),
+            _toggleItem(
+              context,
+              'weeks',
+              'Weeks',
+              pregnancyInputMode == 'weeks',
+            ),
             const SizedBox(width: 12),
-            _toggleItem(context, 'date', 'LMP Date', pregnancyInputMode == 'date'),
+            _toggleItem(
+              context,
+              'date',
+              'LMP Date',
+              pregnancyInputMode == 'date',
+            ),
           ],
         ),
         const SizedBox(height: 32),
         if (pregnancyInputMode == 'weeks')
-          _setupInput(context, "I AM PREGNANT (WEEKS)", weeksController, "e.g. 8", isNumeric: true)
+          _setupInput(
+            context,
+            "I AM PREGNANT (WEEKS)",
+            weeksController,
+            "e.g. 8",
+            isNumeric: true,
+          )
         else
-          _dateSelectionField(context, conceptionDate, onConceptionDateChanged, 'Select LMP date'),
+          _dateSelectionField(
+            context,
+            conceptionDate,
+            onConceptionDateChanged,
+            'Select LMP date',
+          ),
       ],
     );
   }
@@ -511,9 +632,21 @@ class _DatePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _dateSelectionField(context, lastPeriodStart, onDateChanged, 'Select period start date'),
+        _dateSelectionField(
+          context,
+          lastPeriodStart,
+          onDateChanged,
+          'Select period start date',
+        ),
         const SizedBox(height: 32),
-        Text("TIME OF DAY (OPTIONAL)", style: AppTheme.outfit(fontSize: 12, fontWeight: FontWeight.w800, color: AppTheme.textSecondary)),
+        Text(
+          "TIME OF DAY (OPTIONAL)",
+          style: AppTheme.outfit(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: AppTheme.textSecondary,
+          ),
+        ),
         const SizedBox(height: 16),
         Row(
           children: [
@@ -526,7 +659,12 @@ class _DatePage extends StatelessWidget {
     );
   }
 
-  Widget _dateSelectionField(BuildContext context, DateTime? selectedDate, Function(DateTime) onDatePicked, String hint) {
+  Widget _dateSelectionField(
+    BuildContext context,
+    DateTime? selectedDate,
+    Function(DateTime) onDatePicked,
+    String hint,
+  ) {
     return GestureDetector(
       onTap: () async {
         final d = await showDatePicker(
@@ -542,11 +680,21 @@ class _DatePage extends StatelessWidget {
         padding: const EdgeInsets.all(AppDesignTokens.space20),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_rounded, color: AppTheme.accentPink, size: 24),
+            const Icon(
+              Icons.calendar_today_rounded,
+              color: AppTheme.accentPink,
+              size: 24,
+            ),
             const SizedBox(width: AppDesignTokens.space16),
             Text(
-              selectedDate == null ? hint : DateFormat('MMMM dd, yyyy').format(selectedDate),
-              style: AppTheme.outfit(context: context, fontSize: 18, color: selectedDate == null ? AppTheme.textSecondary : null),
+              selectedDate == null
+                  ? hint
+                  : DateFormat('MMMM dd, yyyy').format(selectedDate),
+              style: AppTheme.outfit(
+                context: context,
+                fontSize: 18,
+                color: selectedDate == null ? AppTheme.textSecondary : null,
+              ),
             ),
           ],
         ),
@@ -554,7 +702,12 @@ class _DatePage extends StatelessWidget {
     );
   }
 
-  Widget _toggleItem(BuildContext context, String mode, String label, bool active) {
+  Widget _toggleItem(
+    BuildContext context,
+    String mode,
+    String label,
+    bool active,
+  ) {
     return Expanded(
       child: GestureDetector(
         onTap: () => onInputModeChanged(mode),
@@ -565,12 +718,18 @@ class _DatePage extends StatelessWidget {
             type: ContainerType.simple,
             padding: const EdgeInsets.symmetric(vertical: 14),
             radius: 16,
-            color: active ? AppTheme.accentPink : AppTheme.accentPink.withValues(alpha: 0.05),
+            color:
+                active
+                    ? AppTheme.accentPink
+                    : AppTheme.accentPink.withValues(alpha: 0.05),
             child: Center(
               child: Text(
-                label, 
-                style: AppTheme.outfit(fontWeight: FontWeight.w700, color: active ? Colors.white : AppTheme.textSecondary)
-              )
+                label,
+                style: AppTheme.outfit(
+                  fontWeight: FontWeight.w700,
+                  color: active ? Colors.white : AppTheme.textSecondary,
+                ),
+              ),
             ),
           ),
         ),
@@ -578,7 +737,12 @@ class _DatePage extends StatelessWidget {
     );
   }
 
-  Widget _ampmToggle(BuildContext context, bool value, String label, String time) {
+  Widget _ampmToggle(
+    BuildContext context,
+    bool value,
+    String label,
+    String time,
+  ) {
     final active = isAM == value;
     return Expanded(
       child: GestureDetector(
@@ -587,12 +751,30 @@ class _DatePage extends StatelessWidget {
           type: ContainerType.simple,
           padding: const EdgeInsets.all(16),
           radius: 20,
-          color: active ? AppTheme.accentPink.withValues(alpha: 0.1) : AppTheme.accentPink.withValues(alpha: 0.03),
-          border: Border.all(color: active ? AppTheme.accentPink : Colors.transparent, width: 2),
+          color:
+              active
+                  ? AppTheme.accentPink.withValues(alpha: 0.1)
+                  : AppTheme.accentPink.withValues(alpha: 0.03),
+          border: Border.all(
+            color: active ? AppTheme.accentPink : Colors.transparent,
+            width: 2,
+          ),
           child: Column(
             children: [
-              Text(label, style: AppTheme.outfit(fontWeight: FontWeight.w800, color: active ? AppTheme.accentPink : null)),
-              Text(time, style: AppTheme.outfit(fontSize: 12, color: AppTheme.textSecondary)),
+              Text(
+                label,
+                style: AppTheme.outfit(
+                  fontWeight: FontWeight.w800,
+                  color: active ? AppTheme.accentPink : null,
+                ),
+              ),
+              Text(
+                time,
+                style: AppTheme.outfit(
+                  fontSize: 12,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
             ],
           ),
         ),
@@ -600,11 +782,24 @@ class _DatePage extends StatelessWidget {
     );
   }
 
-  Widget _setupInput(BuildContext context, String label, TextEditingController controller, String hint, {bool isNumeric = false}) {
+  Widget _setupInput(
+    BuildContext context,
+    String label,
+    TextEditingController controller,
+    String hint, {
+    bool isNumeric = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTheme.outfit(fontSize: 12, fontWeight: FontWeight.w800, color: AppTheme.textSecondary)),
+        Text(
+          label,
+          style: AppTheme.outfit(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: AppTheme.textSecondary,
+          ),
+        ),
         const SizedBox(height: 12),
         NeumorphicCard(
           borderRadius: 20,
@@ -613,7 +808,14 @@ class _DatePage extends StatelessWidget {
             controller: controller,
             keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
             style: AppTheme.outfit(context: context, fontSize: 18),
-            decoration: InputDecoration(border: InputBorder.none, hintText: hint, hintStyle: AppTheme.outfit(context: context, color: AppTheme.textSecondary.withValues(alpha: 0.5))),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: hint,
+              hintStyle: AppTheme.outfit(
+                context: context,
+                color: AppTheme.textSecondary.withValues(alpha: 0.5),
+              ),
+            ),
           ),
         ),
       ],
@@ -656,16 +858,31 @@ class _PersonalizationPage extends StatelessWidget {
             style: AppTheme.outfit(color: AppTheme.textSecondary),
           ),
           const SizedBox(height: 40),
-          _setupInput(context, "AVERAGE CYCLE LENGTH (DAYS)", avgCycleController, "Default is 28", isNumeric: true),
+          _setupInput(
+            context,
+            "AVERAGE CYCLE LENGTH (DAYS)",
+            avgCycleController,
+            "Default is 28",
+            isNumeric: true,
+          ),
           const SizedBox(height: 24),
-          _setupInput(context, "AVERAGE PERIOD DURATION (DAYS)", durationController, "Default is 5", isNumeric: true),
+          _setupInput(
+            context,
+            "AVERAGE PERIOD DURATION (DAYS)",
+            durationController,
+            "Default is 5",
+            isNumeric: true,
+          ),
           const SizedBox(height: 32),
           Center(
             child: TextButton(
               onPressed: onSkip,
               child: Text(
                 "I'm not sure, skip for now",
-                style: AppTheme.outfit(color: AppTheme.accentPink, fontWeight: FontWeight.w700),
+                style: AppTheme.outfit(
+                  color: AppTheme.accentPink,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
@@ -674,11 +891,24 @@ class _PersonalizationPage extends StatelessWidget {
     );
   }
 
-  Widget _setupInput(BuildContext context, String label, TextEditingController controller, String hint, {bool isNumeric = false}) {
+  Widget _setupInput(
+    BuildContext context,
+    String label,
+    TextEditingController controller,
+    String hint, {
+    bool isNumeric = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTheme.outfit(fontSize: 12, fontWeight: FontWeight.w800, color: AppTheme.textSecondary)),
+        Text(
+          label,
+          style: AppTheme.outfit(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            color: AppTheme.textSecondary,
+          ),
+        ),
         const SizedBox(height: 12),
         NeumorphicCard(
           borderRadius: 20,
@@ -687,7 +917,14 @@ class _PersonalizationPage extends StatelessWidget {
             controller: controller,
             keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
             style: AppTheme.outfit(context: context, fontSize: 18),
-            decoration: InputDecoration(border: InputBorder.none, hintText: hint, hintStyle: AppTheme.outfit(context: context, color: AppTheme.textSecondary.withValues(alpha: 0.5))),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: hint,
+              hintStyle: AppTheme.outfit(
+                context: context,
+                color: AppTheme.textSecondary.withValues(alpha: 0.5),
+              ),
+            ),
           ),
         ),
       ],
@@ -723,10 +960,13 @@ class _ProgressBar extends StatelessWidget {
 
 String _getStepName(int page) {
   switch (page) {
-    case 0: return 'Goal';
-    case 1: return 'Date';
-    case 2: return 'Personalization';
-    default: return '';
+    case 0:
+      return 'Goal';
+    case 1:
+      return 'Date';
+    case 2:
+      return 'Personalization';
+    default:
+      return '';
   }
 }
-

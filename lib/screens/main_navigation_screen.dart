@@ -37,10 +37,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     super.initState();
     _screens = [
       HomeScreen(onMenuPressed: () => _scaffoldKey.currentState?.openDrawer()),
-      CalendarScreen(onMenuPressed: () => _scaffoldKey.currentState?.openDrawer()),
-      InsightsScreen(onMenuPressed: () => _scaffoldKey.currentState?.openDrawer()),
-      WellnessRemindersScreen(onMenuPressed: () => _scaffoldKey.currentState?.openDrawer()),
-      ProfileScreen(onMenuPressed: () => _scaffoldKey.currentState?.openDrawer()),
+      CalendarScreen(
+        onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
+      ),
+      InsightsScreen(
+        onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
+      ),
+      WellnessRemindersScreen(
+        onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
+      ),
+      ProfileScreen(
+        onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
+      ),
     ];
   }
 
@@ -103,61 +111,88 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          AppResponsive.pad(context),
-          0,
-          AppResponsive.pad(context),
-          bottomPadding + AppDesignTokens.space12,
-        ),
-        child: Container(
-          height: 72,
-          decoration: BoxDecoration(
-            color: isDark 
-                ? AppTheme.darkSurface.withValues(alpha: 0.9) 
-                : Colors.white.withValues(alpha: 0.85),
-            borderRadius: BorderRadius.circular(36),
-            border: Border.all(
-              color: isDark 
-                  ? Colors.white12 
-                  : AppTheme.accentPink.withValues(alpha: 0.1),
-              width: 1.5,
+          bottom: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              AppResponsive.pad(context),
+              0,
+              AppResponsive.pad(context),
+              bottomPadding + AppDesignTokens.space12,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+            child: Container(
+              height: 72,
+              decoration: BoxDecoration(
+                color:
+                    isDark
+                        ? AppTheme.darkSurface.withValues(alpha: 0.9)
+                        : Colors.white.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(36),
+                border: Border.all(
+                  color:
+                      isDark
+                          ? Colors.white12
+                          : AppTheme.accentPink.withValues(alpha: 0.1),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(36),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(child: _bottomNavItem(0, Icons.home_rounded, 'Dashboard')),
-                    Expanded(child: _bottomNavItem(1, Icons.calendar_month_rounded, 'Calendar')),
-                    Expanded(child: _bottomNavItem(2, Icons.bar_chart_rounded, 'Insights')),
-                    Expanded(child: _bottomNavItem(3, Icons.notifications_rounded, 'Focus')),
-                    Expanded(child: _bottomNavItem(4, Icons.person_rounded, 'You')),
-                  ],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(36),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: _bottomNavItem(
+                            0,
+                            Icons.home_rounded,
+                            'Dashboard',
+                          ),
+                        ),
+                        Expanded(
+                          child: _bottomNavItem(
+                            1,
+                            Icons.calendar_month_rounded,
+                            'Calendar',
+                          ),
+                        ),
+                        Expanded(
+                          child: _bottomNavItem(
+                            2,
+                            Icons.bar_chart_rounded,
+                            'Insights',
+                          ),
+                        ),
+                        Expanded(
+                          child: _bottomNavItem(
+                            3,
+                            Icons.notifications_rounded,
+                            'Focus',
+                          ),
+                        ),
+                        Expanded(
+                          child: _bottomNavItem(4, Icons.person_rounded, 'You'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    ).animate().fadeIn(duration: 500.ms).slideY(
-          begin: 0.5,
-          duration: 600.ms,
-          curve: Curves.easeOutCubic,
-        );
+        )
+        .animate()
+        .fadeIn(duration: 500.ms)
+        .slideY(begin: 0.5, duration: 600.ms, curve: Curves.easeOutCubic);
   }
 
   Widget _logButton() {
@@ -200,7 +235,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
           ),
         ),
-      ).animate().scale(delay: 400.ms, duration: 400.ms, curve: Curves.easeOutBack),
+      ).animate().scale(
+        delay: 400.ms,
+        duration: 400.ms,
+        curve: Curves.easeOutBack,
+      ),
     );
   }
 
@@ -209,65 +248,70 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppTheme.textSecondary.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(32),
               ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              'Quick Add',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 24),
-            _buildAddOption(
-              context,
-              icon: Icons.calendar_today_rounded,
-              title: 'Log Period',
-              subtitle: 'Update your cycle status',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LogPeriodScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 12),
-            _buildAddOption(
-              context,
-              icon: Icons.spa_rounded,
-              title: 'Add Wellness Goal',
-              subtitle: 'Meditation, yoga, sleep and more',
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const WellnessRemindersScreen(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.textSecondary.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                );
-              },
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Quick Add',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                _buildAddOption(
+                  context,
+                  icon: Icons.calendar_today_rounded,
+                  title: 'Log Period',
+                  subtitle: 'Update your cycle status',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LogPeriodScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildAddOption(
+                  context,
+                  icon: Icons.spa_rounded,
+                  title: 'Add Wellness Goal',
+                  subtitle: 'Meditation, yoga, sleep and more',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WellnessRemindersScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+              ],
             ),
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -349,9 +393,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               curve: Curves.easeOut,
               child: Icon(
                 icon,
-                color: isSelected
-                    ? AppTheme.accentPink
-                    : (isDark ? AppTheme.darkOnSurface.withValues(alpha: 0.4) : AppTheme.textSecondary.withValues(alpha: 0.6)),
+                color:
+                    isSelected
+                        ? AppTheme.accentPink
+                        : (isDark
+                            ? AppTheme.darkOnSurface.withValues(alpha: 0.4)
+                            : AppTheme.textSecondary.withValues(alpha: 0.6)),
                 size: isSelected ? 26 : 24,
               ),
             ),
@@ -371,7 +418,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 style: GoogleFonts.inter(
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
-                  color: isDark ? AppTheme.darkOnSurface.withValues(alpha: 0.3) : AppTheme.textSecondary.withValues(alpha: 0.5),
+                  color:
+                      isDark
+                          ? AppTheme.darkOnSurface.withValues(alpha: 0.3)
+                          : AppTheme.textSecondary.withValues(alpha: 0.5),
                 ),
                 maxLines: 1,
               ),

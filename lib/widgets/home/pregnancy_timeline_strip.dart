@@ -26,7 +26,7 @@ class _PregnancyTimelineStripState extends State<PregnancyTimelineStrip> {
     super.initState();
     _selectedWeek = widget.currentWeek;
     _scrollController = ScrollController();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToWeek(_selectedWeek);
     });
@@ -34,7 +34,8 @@ class _PregnancyTimelineStripState extends State<PregnancyTimelineStrip> {
 
   void _scrollToWeek(int week) {
     if (_scrollController.hasClients) {
-      final target = (week - 1) * 70.0 - (MediaQuery.of(context).size.width / 2) + 35;
+      final target =
+          (week - 1) * 70.0 - (MediaQuery.of(context).size.width / 2) + 35;
       _scrollController.animateTo(
         target.clamp(0.0, _scrollController.position.maxScrollExtent),
         duration: const Duration(milliseconds: 500),
@@ -61,7 +62,9 @@ class _PregnancyTimelineStripState extends State<PregnancyTimelineStrip> {
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ),
@@ -78,7 +81,7 @@ class _PregnancyTimelineStripState extends State<PregnancyTimelineStrip> {
               final isSelected = week == _selectedWeek;
               final isCurrent = week == widget.currentWeek;
               final weekData = getPregnancyWeekData(week);
-              
+
               Color weekColor;
               if (week <= 12) {
                 weekColor = AppTheme.primaryPink700;
@@ -99,14 +102,20 @@ class _PregnancyTimelineStripState extends State<PregnancyTimelineStrip> {
                   width: 70,
                   margin: const EdgeInsets.only(right: 12),
                   decoration: BoxDecoration(
-                    color: isSelected 
-                        ? weekColor.withValues(alpha: 0.15)
-                        : (isCurrent ? weekColor.withValues(alpha: 0.05) : Colors.transparent),
+                    color:
+                        isSelected
+                            ? weekColor.withValues(alpha: 0.15)
+                            : (isCurrent
+                                ? weekColor.withValues(alpha: 0.05)
+                                : Colors.transparent),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: isSelected 
-                          ? weekColor 
-                          : (isCurrent ? weekColor.withValues(alpha: 0.3) : Colors.transparent),
+                      color:
+                          isSelected
+                              ? weekColor
+                              : (isCurrent
+                                  ? weekColor.withValues(alpha: 0.3)
+                                  : Colors.transparent),
                       width: 2,
                     ),
                   ),
@@ -118,7 +127,8 @@ class _PregnancyTimelineStripState extends State<PregnancyTimelineStrip> {
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: isSelected ? weekColor : AppTheme.textSecondary,
+                          color:
+                              isSelected ? weekColor : AppTheme.textSecondary,
                         ),
                       ),
                       Text(
@@ -126,7 +136,10 @@ class _PregnancyTimelineStripState extends State<PregnancyTimelineStrip> {
                         style: GoogleFonts.poppins(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
-                          color: isSelected ? weekColor : Theme.of(context).colorScheme.onSurface,
+                          color:
+                              isSelected
+                                  ? weekColor
+                                  : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       Text(

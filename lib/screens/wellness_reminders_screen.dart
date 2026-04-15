@@ -12,7 +12,11 @@ import '../widgets/shared_app_bar.dart';
 class WellnessRemindersScreen extends StatefulWidget {
   final String heroTag;
   final VoidCallback? onMenuPressed;
-  const WellnessRemindersScreen({super.key, this.heroTag = 'wellness_goals', this.onMenuPressed});
+  const WellnessRemindersScreen({
+    super.key,
+    this.heroTag = 'wellness_goals',
+    this.onMenuPressed,
+  });
 
   @override
   State<WellnessRemindersScreen> createState() =>
@@ -39,22 +43,30 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
           tag: widget.heroTag,
           child: Material(
             color: Colors.transparent,
-            child: reminders.isEmpty
-                ? Padding(
-                    padding: EdgeInsets.only(top: kToolbarHeight + topPadding + 40),
-                    child: _buildEmptyState(context, storage),
-                  )
-                : ListView.builder(
-                    padding: EdgeInsets.fromLTRB(24, kToolbarHeight + topPadding + 24, 24, 120),
-                    itemCount: reminders.length,
-                    itemBuilder: (context, index) {
-                      final reminder = reminders[index];
-                      return _buildReminderCard(context, storage, reminder)
-                          .animate()
-                          .fadeIn(delay: (index * 100).ms)
-                          .slideX(begin: 0.1);
-                    },
-                  ),
+            child:
+                reminders.isEmpty
+                    ? Padding(
+                      padding: EdgeInsets.only(
+                        top: kToolbarHeight + topPadding + 40,
+                      ),
+                      child: _buildEmptyState(context, storage),
+                    )
+                    : ListView.builder(
+                      padding: EdgeInsets.fromLTRB(
+                        24,
+                        kToolbarHeight + topPadding + 24,
+                        24,
+                        120,
+                      ),
+                      itemCount: reminders.length,
+                      itemBuilder: (context, index) {
+                        final reminder = reminders[index];
+                        return _buildReminderCard(context, storage, reminder)
+                            .animate()
+                            .fadeIn(delay: (index * 100).ms)
+                            .slideX(begin: 0.1);
+                      },
+                    ),
           ),
         ),
       ),
@@ -163,13 +175,15 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
             IconButton(
               icon: Icon(
                 Icons.delete_outline_rounded,
-                color: Theme.of(context).colorScheme.error.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.error.withValues(alpha: 0.7),
               ),
               onPressed: () {
                 storage.deleteAppointment(reminder);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Goal removed')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('Goal removed')));
               },
             ),
           ],
@@ -182,7 +196,7 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
     DateTime selectedDate = DateTime.now();
     String selectedTitle = '';
     WellnessCategory selectedCategory = WellnessCategory.mindfulness;
-    
+
     final List<Map<String, dynamic>> categories = [
       {'cat': WellnessCategory.mindfulness, 'label': 'Mindfulness'},
       {'cat': WellnessCategory.movement, 'label': 'Movement'},
@@ -236,14 +250,20 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
                         onChanged: (val) => selectedTitle = val,
                         decoration: InputDecoration(
                           hintText: 'e.g. Morning Meditation',
-                          hintStyle: TextStyle(color: context.secondaryText.withValues(alpha: 0.4)),
+                          hintStyle: TextStyle(
+                            color: context.secondaryText.withValues(alpha: 0.4),
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(color: AppTheme.accentPink.withValues(alpha: 0.2)),
+                            borderSide: BorderSide(
+                              color: AppTheme.accentPink.withValues(alpha: 0.2),
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(color: AppTheme.accentPink.withValues(alpha: 0.1)),
+                            borderSide: BorderSide(
+                              color: AppTheme.accentPink.withValues(alpha: 0.1),
+                            ),
                           ),
                         ),
                         style: GoogleFonts.inter(fontWeight: FontWeight.w600),
@@ -266,7 +286,10 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
                               final label = item['label'] as String;
                               final isSelected = selectedCategory == cat;
                               return GestureDetector(
-                                onTap: () => setSheetState(() => selectedCategory = cat),
+                                onTap:
+                                    () => setSheetState(
+                                      () => selectedCategory = cat,
+                                    ),
                                 child: AnimatedContainer(
                                   duration: 200.ms,
                                   padding: const EdgeInsets.symmetric(
@@ -277,7 +300,9 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
                                     color:
                                         isSelected
                                             ? AppTheme.accentPink
-                                            : AppTheme.accentPink.withValues(alpha: 0.1),
+                                            : AppTheme.accentPink.withValues(
+                                              alpha: 0.1,
+                                            ),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Row(
@@ -288,7 +313,10 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
                                       Text(
                                         label,
                                         style: GoogleFonts.inter(
-                                          color: isSelected ? Colors.white : AppTheme.accentPink,
+                                          color:
+                                              isSelected
+                                                  ? Colors.white
+                                                  : AppTheme.accentPink,
                                           fontWeight:
                                               isSelected
                                                   ? FontWeight.bold
@@ -317,7 +345,9 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
                             context: context,
                             initialDate: selectedDate,
                             firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
                           );
                           if (date != null) {
                             setSheetState(() => selectedDate = date);
@@ -348,7 +378,9 @@ class _WellnessRemindersScreenState extends State<WellnessRemindersScreen> {
                           onPressed: () {
                             if (selectedTitle.trim().isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Please enter a goal title')),
+                                const SnackBar(
+                                  content: Text('Please enter a goal title'),
+                                ),
                               );
                               return;
                             }

@@ -79,9 +79,13 @@ class _RingPainter extends CustomPainter {
     for (int i = 0; i < cycleLength; i++) {
       final dayNum = i + 1;
       final isCurrent = dayNum == currentDay;
-      
+
       final segmentDate = currentCycleStart.add(Duration(days: i));
-      final phase = CycleEngine.getPhaseForDate(segmentDate, logs.cast<PeriodLog>(), cycleLength);
+      final phase = CycleEngine.getPhaseForDate(
+        segmentDate,
+        logs.cast<PeriodLog>(),
+        cycleLength,
+      );
       final color = AppTheme.getPhaseColor(phase);
 
       // Track segments for labels
@@ -94,10 +98,11 @@ class _RingPainter extends CustomPainter {
       // Special Ovulation Highlighting
       if (phase == CyclePhase.ovulation) {
         final ovColor = color;
-        final ovPaint = Paint()
-          ..color = ovColor.withValues(alpha: 0.15)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
-        
+        final ovPaint =
+            Paint()
+              ..color = ovColor.withValues(alpha: 0.15)
+              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+
         canvas.drawArc(
           Rect.fromCircle(center: center, radius: outerRadius + 6),
           startAngle,
@@ -108,14 +113,17 @@ class _RingPainter extends CustomPainter {
       }
 
       // Draw Segment
-      final paint = Paint()
-        ..color = isCurrent ? color : color.withValues(alpha: isDark ? 0.3 : 0.4)
-        ..style = PaintingStyle.fill;
+      final paint =
+          Paint()
+            ..color =
+                isCurrent ? color : color.withValues(alpha: isDark ? 0.3 : 0.4)
+            ..style = PaintingStyle.fill;
 
       if (isCurrent) {
-        final highlightPaint = Paint()
-          ..color = color.withValues(alpha: 0.3)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+        final highlightPaint =
+            Paint()
+              ..color = color.withValues(alpha: 0.3)
+              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
         canvas.drawArc(
           Rect.fromCircle(center: center, radius: outerRadius + 4),
           startAngle,
@@ -125,19 +133,20 @@ class _RingPainter extends CustomPainter {
         );
       }
 
-      final path = Path()
-        ..addArc(
-          Rect.fromCircle(center: center, radius: outerRadius),
-          startAngle,
-          actualSweep,
-        )
-        ..arcTo(
-          Rect.fromCircle(center: center, radius: innerRadius),
-          startAngle + actualSweep,
-          -actualSweep,
-          false,
-        )
-        ..close();
+      final path =
+          Path()
+            ..addArc(
+              Rect.fromCircle(center: center, radius: outerRadius),
+              startAngle,
+              actualSweep,
+            )
+            ..arcTo(
+              Rect.fromCircle(center: center, radius: innerRadius),
+              startAngle + actualSweep,
+              -actualSweep,
+              false,
+            )
+            ..close();
 
       canvas.drawPath(path, paint);
 
@@ -156,9 +165,10 @@ class _RingPainter extends CustomPainter {
             style: GoogleFonts.inter(
               fontSize: isCurrent ? 11 : 9,
               fontWeight: isCurrent ? FontWeight.w900 : FontWeight.w600,
-              color: isCurrent
-                  ? Colors.white
-                  : (isDark ? Colors.white70 : AppTheme.textSecondary),
+              color:
+                  isCurrent
+                      ? Colors.white
+                      : (isDark ? Colors.white70 : AppTheme.textSecondary),
             ),
           ),
           textDirection: TextDirection.ltr,
@@ -178,8 +188,9 @@ class _RingPainter extends CustomPainter {
       // Find the midpoint of the phase block
       // Note: This logic assumes contiguous segments, which is true for cycle phases
       final midIndex = indices[indices.length ~/ 2];
-      final labelAngle = startAngleOffset + (midIndex * sweepAngle) + (sweepAngle / 2);
-      
+      final labelAngle =
+          startAngleOffset + (midIndex * sweepAngle) + (sweepAngle / 2);
+
       final labelOffset = Offset(
         center.dx + labelRadius * math.cos(labelAngle),
         center.dy + labelRadius * math.sin(labelAngle),
@@ -204,15 +215,15 @@ class _RingPainter extends CustomPainter {
       // Save canvas state to rotate text
       canvas.save();
       canvas.translate(labelOffset.dx, labelOffset.dy);
-      
+
       // Rotate text to follow circle
       // Adjust rotation so text is readable (not upside down)
       double rotation = labelAngle + (math.pi / 2);
       if (labelAngle > 0 && labelAngle < math.pi) {
-         // Optionally flip text if it's at the bottom for better readability
-         // but for labels outside, it usually looks better facing outwards or inwards consistently
+        // Optionally flip text if it's at the bottom for better readability
+        // but for labels outside, it usually looks better facing outwards or inwards consistently
       }
-      
+
       canvas.rotate(rotation);
       textPainter.paint(
         canvas,
@@ -223,8 +234,9 @@ class _RingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _RingPainter oldDelegate) => 
-      oldDelegate.currentDay != currentDay || oldDelegate.cycleLength != cycleLength;
+  bool shouldRepaint(covariant _RingPainter oldDelegate) =>
+      oldDelegate.currentDay != currentDay ||
+      oldDelegate.cycleLength != cycleLength;
 }
 
 class _RingGlow extends StatelessWidget {
@@ -240,7 +252,9 @@ class _RingGlow extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            AppTheme.roseCoralPrimary.withValues(alpha: context.isDarkMode ? 0.15 : 0.1),
+            AppTheme.roseCoralPrimary.withValues(
+              alpha: context.isDarkMode ? 0.15 : 0.1,
+            ),
             AppTheme.roseCoralPrimary.withValues(alpha: 0.0),
           ],
           stops: const [0.4, 1.0],

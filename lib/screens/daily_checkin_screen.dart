@@ -34,24 +34,49 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
   final TextEditingController _stepsController = TextEditingController();
 
   final List<String> _standardSymptoms = [
-    'Cramps', 'Headache', 'Bloating', 'Acne', 'Backache',
-    'Tender Breasts', 'Nausea', 'Fatigue', 'Cravings',
+    'Cramps',
+    'Headache',
+    'Bloating',
+    'Acne',
+    'Backache',
+    'Tender Breasts',
+    'Nausea',
+    'Fatigue',
+    'Cravings',
   ];
 
   final List<String> _pregnancySymptoms = [
-    'Morning Sickness', 'Heartburn', 'Back Pain', 'Swollen Feet',
-    'Frequent Urination', 'Ligament Pain', 'Breast Changes',
-    'Dizziness', 'Fatigue', 'Cravings',
+    'Morning Sickness',
+    'Heartburn',
+    'Back Pain',
+    'Swollen Feet',
+    'Frequent Urination',
+    'Ligament Pain',
+    'Breast Changes',
+    'Dizziness',
+    'Fatigue',
+    'Cravings',
   ];
 
   final List<String> _allFlows = ['Light', 'Medium', 'Heavy'];
   final List<String> _allActivities = [
-    'Walking', 'Running', 'Yoga', 'Strength', 'Cycling', 'Swimming', 'Rest Day',
+    'Walking',
+    'Running',
+    'Yoga',
+    'Strength',
+    'Cycling',
+    'Swimming',
+    'Rest Day',
   ];
 
   final Map<String, String> _allMoods = {
-    'Happy': '😊', 'Energetic': '⚡', 'Tired': '😴', 'Sad': '😢',
-    'Anxious': '😰', 'Angry': '😠', 'Sensitive': '🥺',
+    'Happy': '😊',
+    'Energetic': '⚡',
+    'Tired': '😴',
+    'Sad': '😢',
+    'Anxious': '😰',
+    'Angry': '😠',
+    'Sensitive': '🥺',
   };
 
   @override
@@ -67,12 +92,18 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
 
   void _loadLog(DailyLog log) {
     setState(() {
-      _selectedMoods..clear()..addAll(log.moods ?? []);
-      _selectedSymptoms..clear()..addAll(log.symptoms ?? []);
+      _selectedMoods
+        ..clear()
+        ..addAll(log.moods ?? []);
+      _selectedSymptoms
+        ..clear()
+        ..addAll(log.symptoms ?? []);
       _waterIntake = log.waterIntake ?? 0;
       _notesController.text = log.notes ?? '';
       _selectedFlow = log.flowIntensity;
-      _selectedActivities..clear()..addAll(log.physicalActivity ?? []);
+      _selectedActivities
+        ..clear()
+        ..addAll(log.physicalActivity ?? []);
       _sleepHours = log.sleepHours ?? 7.0;
       _energyLevel = log.energyLevel;
       _stressLevel = log.stressLevel;
@@ -91,7 +122,7 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AnimatedGlowBackground(
@@ -99,7 +130,9 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
         child: Container(
           decoration: BoxDecoration(
             color: isDark ? AppTheme.darkBackground : AppTheme.frameColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDesignTokens.radiusXL)),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppDesignTokens.radiusXL),
+            ),
           ),
           padding: const EdgeInsets.only(top: AppDesignTokens.space16),
           child: Column(
@@ -112,19 +145,23 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
               Expanded(
                 child: AnimatedSwitcher(
                   duration: 400.ms,
-                  transitionBuilder: (child, anim) => FadeTransition(
-                    opacity: anim,
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0.05, 0),
-                        end: Offset.zero,
-                      ).animate(anim),
-                      child: child,
-                    ),
-                  ),
+                  transitionBuilder:
+                      (child, anim) => FadeTransition(
+                        opacity: anim,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.05, 0),
+                            end: Offset.zero,
+                          ).animate(anim),
+                          child: child,
+                        ),
+                      ),
                   child: SingleChildScrollView(
                     key: ValueKey(_currentStep),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
                     child: _getStepContent(),
                   ),
                 ),
@@ -153,7 +190,7 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
   Widget _buildHeader() {
     final titles = ['How You Feel', 'Your Body', 'Your Day'];
     final subs = ['Vibe & Energy', 'Symptoms & Cycle', 'Wellness & Notes'];
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -163,7 +200,10 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
             style: AppTheme.playfair(
               fontSize: 26,
               fontWeight: FontWeight.w900,
-              color: Theme.of(context).brightness == Brightness.dark ? AppTheme.darkOnSurface : AppTheme.textDark,
+              color:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.darkOnSurface
+                      : AppTheme.textDark,
             ),
           ),
           const SizedBox(height: 4),
@@ -192,7 +232,10 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
               duration: 300.ms,
               margin: EdgeInsets.only(right: i == 2 ? 0 : 8),
               decoration: BoxDecoration(
-                color: isActive ? AppTheme.accentPink : AppTheme.accentPink.withValues(alpha: 0.1),
+                color:
+                    isActive
+                        ? AppTheme.accentPink
+                        : AppTheme.accentPink.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
@@ -204,10 +247,14 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
 
   Widget _getStepContent() {
     switch (_currentStep) {
-      case 0: return _buildFeelsStep();
-      case 1: return _buildBodyStep();
-      case 2: return _buildDayStep();
-      default: return const SizedBox();
+      case 0:
+        return _buildFeelsStep();
+      case 1:
+        return _buildBodyStep();
+      case 2:
+        return _buildDayStep();
+      default:
+        return const SizedBox();
     }
   }
 
@@ -226,7 +273,11 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
           onTap: _pickDate,
           child: Row(
             children: [
-              const Icon(Icons.calendar_today_rounded, color: AppTheme.accentPink, size: 22),
+              const Icon(
+                Icons.calendar_today_rounded,
+                color: AppTheme.accentPink,
+                size: 22,
+              ),
               const SizedBox(width: 12),
               Text(
                 DateFormat('EEEE, MMM d, yyyy').format(_selectedDate),
@@ -252,12 +303,23 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
         Wrap(
           spacing: 12,
           runSpacing: 12,
-          children: _allMoods.entries.map((e) {
-            final isSel = _selectedMoods.contains(e.key);
-            return _pillButton(label: e.key, emoji: e.value, isSelected: isSel, onTap: () {
-              setState(() => isSel ? _selectedMoods.remove(e.key) : _selectedMoods.add(e.key));
-            });
-          }).toList(),
+          children:
+              _allMoods.entries.map((e) {
+                final isSel = _selectedMoods.contains(e.key);
+                return _pillButton(
+                  label: e.key,
+                  emoji: e.value,
+                  isSelected: isSel,
+                  onTap: () {
+                    setState(
+                      () =>
+                          isSel
+                              ? _selectedMoods.remove(e.key)
+                              : _selectedMoods.add(e.key),
+                    );
+                  },
+                );
+              }).toList(),
         ),
         const SizedBox(height: 32),
         _stepLabel('⚡', 'Energy & Stress'),
@@ -291,31 +353,43 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
         Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: symptoms.map((sym) {
-            final isSel = _selectedSymptoms.contains(sym);
-            return _pillButton(
-              label: sym,
-              isSelected: isSel,
-              onTap: () => setState(() => isSel ? _selectedSymptoms.remove(sym) : _selectedSymptoms.add(sym)),
-              activeColor: const Color(0xFFBA68C8),
-            );
-          }).toList(),
+          children:
+              symptoms.map((sym) {
+                final isSel = _selectedSymptoms.contains(sym);
+                return _pillButton(
+                  label: sym,
+                  isSelected: isSel,
+                  onTap:
+                      () => setState(
+                        () =>
+                            isSel
+                                ? _selectedSymptoms.remove(sym)
+                                : _selectedSymptoms.add(sym),
+                      ),
+                  activeColor: const Color(0xFFBA68C8),
+                );
+              }).toList(),
         ),
         if (!isPregnant) ...[
           const SizedBox(height: 32),
           _stepLabel('🩸', 'Flow Intensity'),
           const SizedBox(height: 16),
           Row(
-            children: _allFlows.map((f) => Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: _pillButton(
-                  label: f,
-                  isSelected: _selectedFlow == f,
-                  onTap: () => setState(() => _selectedFlow = f),
-                ),
-              ),
-            )).toList(),
+            children:
+                _allFlows
+                    .map(
+                      (f) => Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: _pillButton(
+                            label: f,
+                            isSelected: _selectedFlow == f,
+                            onTap: () => setState(() => _selectedFlow = f),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
           ),
         ],
         const SizedBox(height: 32),
@@ -334,15 +408,22 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
         Wrap(
           spacing: 12,
           runSpacing: 12,
-          children: _allActivities.map((act) {
-            final isSel = _selectedActivities.contains(act);
-            return _pillButton(
-              label: act,
-              isSelected: isSel,
-              onTap: () => setState(() => isSel ? _selectedActivities.remove(act) : _selectedActivities.add(act)),
-              activeColor: const Color(0xFF81C784),
-            );
-          }).toList(),
+          children:
+              _allActivities.map((act) {
+                final isSel = _selectedActivities.contains(act);
+                return _pillButton(
+                  label: act,
+                  isSelected: isSel,
+                  onTap:
+                      () => setState(
+                        () =>
+                            isSel
+                                ? _selectedActivities.remove(act)
+                                : _selectedActivities.add(act),
+                      ),
+                  activeColor: const Color(0xFF81C784),
+                );
+              }).toList(),
         ),
         const SizedBox(height: 32),
         _stepLabel('🌙', 'Sleep & Steps'),
@@ -360,8 +441,17 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark ? AppTheme.darkSurface : Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))],
+        color:
+            Theme.of(context).brightness == Brightness.dark
+                ? AppTheme.darkSurface
+                : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
@@ -422,20 +512,24 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
     final log = DailyLog(
       date: _selectedDate,
       moods: _selectedMoods.isNotEmpty ? List.from(_selectedMoods) : null,
-      symptoms: _selectedSymptoms.isNotEmpty ? List.from(_selectedSymptoms) : null,
+      symptoms:
+          _selectedSymptoms.isNotEmpty ? List.from(_selectedSymptoms) : null,
       waterIntake: _waterIntake,
       notes: _notesController.text.isNotEmpty ? _notesController.text : null,
       flowIntensity: _selectedFlow,
-      physicalActivity: _selectedActivities.isNotEmpty ? List.from(_selectedActivities) : null,
+      physicalActivity:
+          _selectedActivities.isNotEmpty
+              ? List.from(_selectedActivities)
+              : null,
       sleepHours: _sleepHours,
       energyLevel: _energyLevel,
       stressLevel: _stressLevel,
       stepsCount: _stepsCount,
     );
-    
+
     await storage.saveDailyLog(log);
     if (!mounted) return;
-    
+
     _showSaveSuccess();
     Navigator.pop(context);
   }
@@ -443,7 +537,10 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
   void _showSaveSuccess() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Log saved gracefully 🌸', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+        content: Text(
+          'Log saved gracefully 🌸',
+          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+        ),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(20),
@@ -458,12 +555,15 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
       initialDate: _selectedDate,
       firstDate: DateTime(2022),
       lastDate: DateTime.now(),
-      builder: (ctx, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: Theme.of(context).colorScheme.copyWith(primary: AppTheme.accentPink),
-        ),
-        child: child!,
-      ),
+      builder:
+          (ctx, child) => Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: Theme.of(
+                context,
+              ).colorScheme.copyWith(primary: AppTheme.accentPink),
+            ),
+            child: child!,
+          ),
     );
     if (!context.mounted) {
       return;
@@ -500,7 +600,10 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
           style: AppTheme.outfit(
             fontSize: 16,
             fontWeight: FontWeight.w800,
-            color: Theme.of(context).brightness == Brightness.dark ? AppTheme.darkOnSurface : AppTheme.textDark,
+            color:
+                Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.darkOnSurface
+                    : AppTheme.textDark,
           ),
         ),
       ],
@@ -516,7 +619,7 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = activeColor ?? AppTheme.accentPink;
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -526,11 +629,21 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
         duration: 250.ms,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? primary : (isDark ? AppTheme.darkCard : AppTheme.bgColor),
+          color:
+              isSelected
+                  ? primary
+                  : (isDark ? AppTheme.darkCard : AppTheme.bgColor),
           borderRadius: BorderRadius.circular(AppDesignTokens.radiusMD),
-          boxShadow: isSelected 
-              ? [BoxShadow(color: primary.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 4))] 
-              : AppDesignTokens.neuShadow(context),
+          boxShadow:
+              isSelected
+                  ? [
+                    BoxShadow(
+                      color: primary.withValues(alpha: 0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                  : AppDesignTokens.neuShadow(context),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -551,7 +664,12 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
     );
   }
 
-  Widget _buildLevelPicker({required String label, required int? current, required List<String> emojis, required Function(int) onTap}) {
+  Widget _buildLevelPicker({
+    required String label,
+    required int? current,
+    required List<String> emojis,
+    required Function(int) onTap,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
@@ -567,9 +685,17 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: isSel ? AppTheme.accentPink : (isDark ? Colors.white12 : Colors.white),
+                  color:
+                      isSel
+                          ? AppTheme.accentPink
+                          : (isDark ? Colors.white12 : Colors.white),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: isSel ? AppTheme.accentPink : AppTheme.accentPink.withValues(alpha: 0.05)),
+                  border: Border.all(
+                    color:
+                        isSel
+                            ? AppTheme.accentPink
+                            : AppTheme.accentPink.withValues(alpha: 0.05),
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: Text(emojis[i], style: const TextStyle(fontSize: 20)),
@@ -578,7 +704,14 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
           }),
         ),
         const SizedBox(height: 4),
-        Text(label, style: AppTheme.outfit(fontSize: 12, color: AppTheme.textSecondary, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: AppTheme.outfit(
+            fontSize: 12,
+            color: AppTheme.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -587,21 +720,35 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _circleIconButton(Icons.remove_rounded, () { if (_waterIntake > 0) setState(() => _waterIntake--); }),
+        _circleIconButton(Icons.remove_rounded, () {
+          if (_waterIntake > 0) setState(() => _waterIntake--);
+        }),
         const SizedBox(width: 32),
-        Text('$_waterIntake', style: AppTheme.playfair(fontSize: 40, fontWeight: FontWeight.w900)),
+        Text(
+          '$_waterIntake',
+          style: AppTheme.playfair(fontSize: 40, fontWeight: FontWeight.w900),
+        ),
         const SizedBox(width: 32),
-        _circleIconButton(Icons.add_rounded, () { if (_waterIntake < 20) setState(() => _waterIntake++); }),
+        _circleIconButton(Icons.add_rounded, () {
+          if (_waterIntake < 20) setState(() => _waterIntake++);
+        }),
       ],
     );
   }
 
   Widget _circleIconButton(IconData icon, VoidCallback onTap) {
     return GestureDetector(
-      onTap: () { HapticFeedback.lightImpact(); onTap(); },
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
       child: Container(
-        width: 48, height: 48,
-        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppTheme.accentPink, width: 2)),
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: AppTheme.accentPink, width: 2),
+        ),
         child: Icon(icon, color: AppTheme.accentPink),
       ),
     );
@@ -610,18 +757,36 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
   Widget _buildLifestylePickers() {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppTheme.accentPink.withValues(alpha: 0.03), borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(
+        color: AppTheme.accentPink.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(24),
+      ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${_sleepHours.toStringAsFixed(1)}h Sleep', style: AppTheme.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
-              Text(_sleepHours < 7 ? 'Needs rest' : 'Healthy sleep', style: AppTheme.outfit(fontSize: 12, color: AppTheme.textSecondary)),
+              Text(
+                '${_sleepHours.toStringAsFixed(1)}h Sleep',
+                style: AppTheme.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                _sleepHours < 7 ? 'Needs rest' : 'Healthy sleep',
+                style: AppTheme.outfit(
+                  fontSize: 12,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
             ],
           ),
           Slider(
-            value: _sleepHours, min: 2, max: 14, divisions: 12,
+            value: _sleepHours,
+            min: 2,
+            max: 14,
+            divisions: 12,
             activeColor: AppTheme.accentPink,
             onChanged: (v) => setState(() => _sleepHours = v),
           ),
@@ -631,9 +796,16 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
             keyboardType: TextInputType.number,
             onChanged: (v) => _stepsCount = int.tryParse(v) ?? 0,
             decoration: InputDecoration(
-              icon: const Icon(Icons.directions_walk_rounded, color: AppTheme.accentPink),
-              hintText: 'Steps today', border: InputBorder.none,
-              hintStyle: AppTheme.outfit(fontSize: 16, color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+              icon: const Icon(
+                Icons.directions_walk_rounded,
+                color: AppTheme.accentPink,
+              ),
+              hintText: 'Steps today',
+              border: InputBorder.none,
+              hintStyle: AppTheme.outfit(
+                fontSize: 16,
+                color: AppTheme.textSecondary.withValues(alpha: 0.5),
+              ),
             ),
           ),
         ],
@@ -647,11 +819,16 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
       maxLines: 4,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        fillColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.white,
         hintText: 'Any specific memories or pains?',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
+        ),
       ),
     );
   }
 }
-

@@ -30,7 +30,9 @@ class CycleTimeline extends StatelessWidget {
               'Cycle Timeline',
               style: GoogleFonts.inter(
                 fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.5,
               ),
@@ -62,16 +64,20 @@ class CycleTimeline extends StatelessWidget {
               children: List.generate(cycleLength, (index) {
                 final day = index + 1;
                 final isToday = day == currentDay;
-                final date = DateTime.now().add(Duration(days: day - currentDay));
+                final date = DateTime.now().add(
+                  Duration(days: day - currentDay),
+                );
                 final phase = pred.getPhaseForDay(date);
                 final color = AppTheme.phaseColor(phase.displayName);
-                
+
                 // Determine if we should show phase label (on transition or start)
                 bool showPhaseLabel = false;
                 if (index == 0) {
                   showPhaseLabel = true;
                 } else {
-                  final prevDate = DateTime.now().add(Duration(days: day - currentDay - 1));
+                  final prevDate = DateTime.now().add(
+                    Duration(days: day - currentDay - 1),
+                  );
                   final prevPhase = pred.getPhaseForDay(prevDate);
                   if (prevPhase != phase) showPhaseLabel = true;
                 }
@@ -84,62 +90,84 @@ class CycleTimeline extends StatelessWidget {
                       // Phase Name Label
                       SizedBox(
                         height: 20,
-                        child: showPhaseLabel 
-                          ? Text(
-                              phase.displayName.toUpperCase(),
-                              style: GoogleFonts.inter(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w900,
-                                color: color,
-                                letterSpacing: 1.0,
-                              ),
-                            ).animate().fadeIn().slideY(begin: 0.5)
-                          : const SizedBox.shrink(),
+                        child:
+                            showPhaseLabel
+                                ? Text(
+                                  phase.displayName.toUpperCase(),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w900,
+                                    color: color,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ).animate().fadeIn().slideY(begin: 0.5)
+                                : const SizedBox.shrink(),
                       ),
                       const SizedBox(height: 8),
                       // The Day Circle
                       Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isToday 
-                              ? color 
-                              : color.withValues(alpha: 0.15),
-                          border: Border.all(
-                            color: isToday ? Colors.white : color.withValues(alpha: 0.2),
-                            width: isToday ? 2.5 : 1.5,
+                            width: 22,
+                            height: 22,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  isToday
+                                      ? color
+                                      : color.withValues(alpha: 0.15),
+                              border: Border.all(
+                                color:
+                                    isToday
+                                        ? Colors.white
+                                        : color.withValues(alpha: 0.2),
+                                width: isToday ? 2.5 : 1.5,
+                              ),
+                              boxShadow:
+                                  phase == CyclePhase.ovulation
+                                      ? [
+                                        BoxShadow(
+                                          color: color.withValues(alpha: 0.4),
+                                          blurRadius: 8,
+                                          spreadRadius: 1,
+                                        ),
+                                      ]
+                                      : (isToday
+                                          ? [
+                                            BoxShadow(
+                                              color: color.withValues(
+                                                alpha: 0.3,
+                                              ),
+                                              blurRadius: 6,
+                                              spreadRadius: 2,
+                                            ),
+                                          ]
+                                          : null),
+                            ),
+                            child: Center(
+                              child:
+                                  phase == CyclePhase.ovulation
+                                      ? const Text(
+                                        '✨',
+                                        style: TextStyle(fontSize: 10),
+                                      )
+                                      : (isToday
+                                          ? null
+                                          : Text(
+                                            '$day',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 8,
+                                              fontWeight: FontWeight.w900,
+                                              color: color.withValues(
+                                                alpha: 0.7,
+                                              ),
+                                            ),
+                                          )),
+                            ),
+                          )
+                          .animate(target: isToday ? 1 : 0)
+                          .scale(
+                            begin: const Offset(1, 1),
+                            end: const Offset(1.15, 1.15),
                           ),
-                          boxShadow: phase == CyclePhase.ovulation 
-                            ? [
-                                BoxShadow(
-                                  color: color.withValues(alpha: 0.4),
-                                  blurRadius: 8,
-                                  spreadRadius: 1,
-                                )
-                              ]
-                            : (isToday ? [
-                                BoxShadow(
-                                  color: color.withValues(alpha: 0.3),
-                                  blurRadius: 6,
-                                  spreadRadius: 2,
-                                )
-                              ] : null),
-                        ),
-                        child: Center(
-                          child: phase == CyclePhase.ovulation 
-                            ? const Text('✨', style: TextStyle(fontSize: 10))
-                            : (isToday ? null : Text(
-                                '$day',
-                                style: GoogleFonts.inter(
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.w900,
-                                  color: color.withValues(alpha: 0.7),
-                                ),
-                              )),
-                        ),
-                      ).animate(target: isToday ? 1 : 0)
-                        .scale(begin: const Offset(1, 1), end: const Offset(1.15, 1.15)),
                     ],
                   ),
                 );

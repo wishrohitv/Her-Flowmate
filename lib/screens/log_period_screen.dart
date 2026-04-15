@@ -61,397 +61,441 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
           ),
           padding: const EdgeInsets.only(top: 16),
-        child: ThemedContainer(
-          type: ContainerType.glass,
-          radius: 40,
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 32.0,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Drag handle
-                  Center(
-                    child: Container(
-                      width: 48,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Text(
-                    'Log Your Period',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: context.onSurface,
-                    ),
-                  ).animate().fadeIn(duration: 400.ms),
-                  const SizedBox(height: 8),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        const TextSpan(text: 'Help '),
-                        const WidgetSpan(
-                          alignment: PlaceholderAlignment.middle,
-                          child: BrandName(fontSize: 15),
+          child: ThemedContainer(
+            type: ContainerType.glass,
+            radius: 40,
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 32.0,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Drag handle
+                    Center(
+                      child: Container(
+                        width: 48,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        const TextSpan(text: ' learn your cycle better.'),
-                      ],
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        color: context.secondaryText,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    textAlign: TextAlign.center,
-                  ).animate().fadeIn(delay: 100.ms),
-                  const SizedBox(height: 40),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Log Your Period',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: context.onSurface,
+                      ),
+                    ).animate().fadeIn(duration: 400.ms),
+                    const SizedBox(height: 8),
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          const TextSpan(text: 'Help '),
+                          const WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: BrandName(fontSize: 15),
+                          ),
+                          const TextSpan(text: ' learn your cycle better.'),
+                        ],
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          color: context.secondaryText,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      textAlign: TextAlign.center,
+                    ).animate().fadeIn(delay: 100.ms),
+                    const SizedBox(height: 40),
 
-                  // ── Step 1: Date ────────────────────────────────────────────
-                  _stepLabel(context, '1', 'When did it start?'),
-                  const SizedBox(height: 16),
-                  ThemedContainer(
-                    type: ContainerType.glass,
-                    radius: 24,
-                    onTap: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime.now(),
-                        builder:
-                            (ctx, child) => Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: Theme.of(
-                                  context,
-                                ).colorScheme.copyWith(
-                                  primary:
-                                      Theme.of(context).colorScheme.primary,
-                                  onPrimary: Colors.white,
-                                  surface: context.surface,
-                                  onSurface: context.onSurface,
+                    // ── Step 1: Date ────────────────────────────────────────────
+                    _stepLabel(context, '1', 'When did it start?'),
+                    const SizedBox(height: 16),
+                    ThemedContainer(
+                      type: ContainerType.glass,
+                      radius: 24,
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now(),
+                          builder:
+                              (ctx, child) => Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: Theme.of(
+                                    context,
+                                  ).colorScheme.copyWith(
+                                    primary:
+                                        Theme.of(context).colorScheme.primary,
+                                    onPrimary: Colors.white,
+                                    surface: context.surface,
+                                    onSurface: context.onSurface,
+                                  ),
                                 ),
+                                child: child!,
                               ),
-                              child: child!,
+                        );
+                        if (date != null) setState(() => _selectedDate = date);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 24,
                             ),
-                      );
-                      if (date != null) setState(() => _selectedDate = date);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
+                            const SizedBox(width: 14),
+                            Text(
+                              _selectedDate == null
+                                  ? 'Select Date'
+                                  : DateFormat(
+                                    'EEEE, MMM d, yyyy',
+                                  ).format(_selectedDate!),
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                color:
+                                    _selectedDate == null
+                                        ? context.secondaryText
+                                        : context.onSurface,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const Spacer(),
+                            if (_selectedDate != null)
+                              Icon(
+                                Icons.check_circle_rounded,
+                                color: Theme.of(context).colorScheme.primary,
+                                size: 22,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ).animate().fadeIn(delay: 200.ms),
+
+                    const SizedBox(height: 32),
+
+                    // ── Step 2: AM / PM ─────────────────────────────────────────
+                    _stepLabel(context, '2', 'Select Start Time'),
+                    const SizedBox(height: 16),
+                    ThemedContainer(
+                      type: ContainerType.glass,
+                      radius: 24,
+                      padding: const EdgeInsets.all(8),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.calendar_today_rounded,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: 24,
-                          ),
-                          const SizedBox(width: 14),
-                          Text(
-                            _selectedDate == null
-                                ? 'Select Date'
-                                : DateFormat(
-                                  'EEEE, MMM d, yyyy',
-                                ).format(_selectedDate!),
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              color:
-                                  _selectedDate == null
-                                      ? context.secondaryText
-                                      : context.onSurface,
-                              fontWeight: FontWeight.w700,
+                          Expanded(
+                            child: _amPmButton(
+                              'AM',
+                              _isAM,
+                              () => setState(() => _isAM = true),
                             ),
                           ),
-                          const Spacer(),
-                          if (_selectedDate != null)
-                            Icon(
-                              Icons.check_circle_rounded,
-                              color: Theme.of(context).colorScheme.primary,
-                              size: 22,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _amPmButton(
+                              'PM',
+                              !_isAM,
+                              () => setState(() => _isAM = false),
                             ),
+                          ),
                         ],
                       ),
-                    ),
-                  ).animate().fadeIn(delay: 200.ms),
+                    ).animate().fadeIn(delay: 300.ms),
 
-                  const SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
-                  // ── Step 2: AM / PM ─────────────────────────────────────────
-                  _stepLabel(context, '2', 'Select Start Time'),
-                  const SizedBox(height: 16),
-                  ThemedContainer(
-                    type: ContainerType.glass,
-                    radius: 24,
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _amPmButton(
-                            'AM',
-                            _isAM,
-                            () => setState(() => _isAM = true),
+                    _stepLabel(context, '3', 'How many days?'),
+                    const SizedBox(height: 16),
+                    Container(
+                      decoration: AppTheme.glassDecoration(
+                        radius: 16,
+                        opacity: 0.1,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 4,
+                      ),
+                      child: TextField(
+                        controller: _durationController,
+                        keyboardType: TextInputType.number,
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          color: context.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Number of days',
+                          hintStyle: GoogleFonts.inter(
+                            color: context.secondaryText.withValues(alpha: 0.4),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _amPmButton(
-                            'PM',
-                            !_isAM,
-                            () => setState(() => _isAM = false),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ).animate().fadeIn(delay: 300.ms),
-
-                  const SizedBox(height: 32),
-
-                  _stepLabel(context, '3', 'How many days?'),
-                  const SizedBox(height: 16),
-                  Container(
-                    decoration: AppTheme.glassDecoration(
-                      radius: 16,
-                      opacity: 0.1,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 4,
-                    ),
-                    child: TextField(
-                      controller: _durationController,
-                      keyboardType: TextInputType.number,
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        color: context.onSurface,
-                        fontWeight: FontWeight.w600,
                       ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Number of days',
-                        hintStyle: GoogleFonts.inter(
-                          color: context.secondaryText.withValues(alpha: 0.4),
-                        ),
-                      ),
-                    ),
-                  ).animate().fadeIn(delay: 350.ms),
+                    ).animate().fadeIn(delay: 350.ms),
 
-                  const SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
-                  // ── Step 4: Flow Intensity ──────────────────────────────────
-                  _stepLabel(context, '4', 'Flow Intensity'),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children:
-                        ['Light', 'Medium', 'Heavy'].map((flow) {
-                          final isSelected = _flowIntensity == flow;
-                          return Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6.0,
-                              ),
-                              child: GestureDetector(
-                                onTap:
-                                    () => setState(() => _flowIntensity = flow),
-                                child: ThemedContainer(
-                                  type: ContainerType.glass,
-                                  radius: 16,
-                                  border:
-                                      isSelected
-                                          ? Border.all(
-                                            color: AppTheme.accentPink,
-                                          )
-                                          : null,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        flow,
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13,
-                                          fontWeight:
-                                              isSelected
-                                                  ? FontWeight.w800
-                                                  : FontWeight.w700,
-                                          color:
-                                              isSelected
-                                                  ? AppTheme.accentPink
-                                                  : context.onSurface,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                  ).animate().fadeIn(delay: 400.ms),
-
-                  const SizedBox(height: 32),
-
-                  // ── Step 5: Symptoms ────────────────────────────────────────
-                  _stepLabel(context, '5', 'Symptoms'),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children:
-                        _allSymptoms.map((symptom) {
-                          final isSelected = _selectedSymptoms.contains(
-                            symptom,
-                          );
-                          return GestureDetector(
-                            onTap: () {
-                              HapticFeedback.lightImpact();
-                              setState(() {
-                                if (isSelected) {
-                                  _selectedSymptoms.remove(symptom);
-                                } else {
-                                  _selectedSymptoms.add(symptom);
-                                }
-                              });
-                            },
-                            child: ThemedContainer(
-                              type: ContainerType.glass,
-                              radius: 12,
-                              border:
-                                  isSelected
-                                      ? Border.all(color: AppTheme.accentPink)
-                                      : null,
+                    // ── Step 4: Flow Intensity ──────────────────────────────────
+                    _stepLabel(context, '4', 'Flow Intensity'),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children:
+                          ['Light', 'Medium', 'Heavy'].map((flow) {
+                            final isSelected = _flowIntensity == flow;
+                            return Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 10,
+                                  horizontal: 6.0,
                                 ),
-                                child: Text(
-                                  symptom,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color:
+                                child: GestureDetector(
+                                  onTap:
+                                      () =>
+                                          setState(() => _flowIntensity = flow),
+                                  child: ThemedContainer(
+                                    type: ContainerType.glass,
+                                    radius: 16,
+                                    border:
                                         isSelected
-                                            ? AppTheme.accentPink
-                                            : context.onSurface,
-                                    fontWeight:
-                                        isSelected
-                                            ? FontWeight.w800
-                                            : FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                  ).animate().fadeIn(delay: 500.ms),
-
-                  const SizedBox(height: 32),
-
-                  // ── Step 6: Mood ────────────────────────────────────────────
-                  _stepLabel(context, '6', 'Current Mood'),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 80,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      children:
-                          _allMoods.entries.map((entry) {
-                            final isSelected = _selectedMood == entry.key;
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 16.0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  setState(() => _selectedMood = entry.key);
-                                },
-                                child: ThemedContainer(
-                                  type: ContainerType.glass,
-                                  radius: 20,
-                                  width: 64,
-                                  border:
-                                      isSelected
-                                          ? Border.all(
-                                            color: AppTheme.accentPink,
-                                          )
-                                          : null,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        entry.value,
-                                        style: const TextStyle(fontSize: 26),
+                                            ? Border.all(
+                                              color: AppTheme.accentPink,
+                                            )
+                                            : null,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
                                       ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        entry.key,
-                                        style: GoogleFonts.inter(
-                                          fontSize: 10,
-                                          color: context.onSurface,
-                                          fontWeight: FontWeight.w700,
+                                      child: Center(
+                                        child: Text(
+                                          flow,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 13,
+                                            fontWeight:
+                                                isSelected
+                                                    ? FontWeight.w800
+                                                    : FontWeight.w700,
+                                            color:
+                                                isSelected
+                                                    ? AppTheme.accentPink
+                                                    : context.onSurface,
+                                          ),
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
                             );
                           }).toList(),
-                    ),
-                  ).animate().fadeIn(delay: 600.ms),
+                    ).animate().fadeIn(delay: 400.ms),
 
-                  const SizedBox(height: 48),
+                    const SizedBox(height: 32),
 
-                  // ── Save Button ─────────────────────────────────────────────
-                  ThemedContainer(
-                    type: ContainerType.glass,
-                    radius: 24,
-                    padding: EdgeInsets.zero,
-                    border:
-                        _selectedDate == null
-                            ? null
-                            : Border.all(
-                              color: AppTheme.accentPink.withValues(alpha: 0.4),
-                            ),
-                    onTap:
-                        _selectedDate == null
-                            ? () {}
-                            : () async {
-                              HapticFeedback.mediumImpact();
-                              if (_selectedDate!.isAfter(DateTime.now())) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Cannot log a period in the future.',
-                                    ),
-                                    backgroundColor: Colors.redAccent,
-                                    behavior: SnackBarBehavior.floating,
+                    // ── Step 5: Symptoms ────────────────────────────────────────
+                    _stepLabel(context, '5', 'Symptoms'),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children:
+                          _allSymptoms.map((symptom) {
+                            final isSelected = _selectedSymptoms.contains(
+                              symptom,
+                            );
+                            return GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                setState(() {
+                                  if (isSelected) {
+                                    _selectedSymptoms.remove(symptom);
+                                  } else {
+                                    _selectedSymptoms.add(symptom);
+                                  }
+                                });
+                              },
+                              child: ThemedContainer(
+                                type: ContainerType.glass,
+                                radius: 12,
+                                border:
+                                    isSelected
+                                        ? Border.all(color: AppTheme.accentPink)
+                                        : null,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
                                   ),
-                                );
-                                return;
-                              }
-                              final durationText =
-                                  _durationController.text.trim();
-                              if (durationText.isNotEmpty) {
-                                int? parsedDuration = int.tryParse(
-                                  durationText,
-                                );
-                                if (parsedDuration != null &&
-                                    parsedDuration > 10) {
+                                  child: Text(
+                                    symptom,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color:
+                                          isSelected
+                                              ? AppTheme.accentPink
+                                              : context.onSurface,
+                                      fontWeight:
+                                          isSelected
+                                              ? FontWeight.w800
+                                              : FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                    ).animate().fadeIn(delay: 500.ms),
+
+                    const SizedBox(height: 32),
+
+                    // ── Step 6: Mood ────────────────────────────────────────────
+                    _stepLabel(context, '6', 'Current Mood'),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 80,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        children:
+                            _allMoods.entries.map((entry) {
+                              final isSelected = _selectedMood == entry.key;
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 16.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    setState(() => _selectedMood = entry.key);
+                                  },
+                                  child: ThemedContainer(
+                                    type: ContainerType.glass,
+                                    radius: 20,
+                                    width: 64,
+                                    border:
+                                        isSelected
+                                            ? Border.all(
+                                              color: AppTheme.accentPink,
+                                            )
+                                            : null,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          entry.value,
+                                          style: const TextStyle(fontSize: 26),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          entry.key,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 10,
+                                            color: context.onSurface,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                      ),
+                    ).animate().fadeIn(delay: 600.ms),
+
+                    const SizedBox(height: 48),
+
+                    // ── Save Button ─────────────────────────────────────────────
+                    ThemedContainer(
+                      type: ContainerType.glass,
+                      radius: 24,
+                      padding: EdgeInsets.zero,
+                      border:
+                          _selectedDate == null
+                              ? null
+                              : Border.all(
+                                color: AppTheme.accentPink.withValues(
+                                  alpha: 0.4,
+                                ),
+                              ),
+                      onTap:
+                          _selectedDate == null
+                              ? () {}
+                              : () async {
+                                HapticFeedback.mediumImpact();
+                                if (_selectedDate!.isAfter(DateTime.now())) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
-                                        'Duration exceeds normal limits. Please verify.',
+                                        'Cannot log a period in the future.',
+                                      ),
+                                      backgroundColor: Colors.redAccent,
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                  return;
+                                }
+                                final durationText =
+                                    _durationController.text.trim();
+                                if (durationText.isNotEmpty) {
+                                  int? parsedDuration = int.tryParse(
+                                    durationText,
+                                  );
+                                  if (parsedDuration != null &&
+                                      parsedDuration > 10) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Duration exceeds normal limits. Please verify.',
+                                        ),
+                                        backgroundColor: Colors.orangeAccent,
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                }
+                                final dateWithTime = DateTime(
+                                  _selectedDate!.year,
+                                  _selectedDate!.month,
+                                  _selectedDate!.day,
+                                  _isAM ? 8 : 20,
+                                );
+                                final duration =
+                                    int.tryParse(durationText) ?? 5;
+                                final log = PeriodLog(
+                                  startDate: dateWithTime,
+                                  duration: duration,
+                                  flowIntensity: _flowIntensity,
+                                  symptoms: _selectedSymptoms,
+                                  mood: _selectedMood,
+                                );
+                                final storage = Provider.of<StorageService>(
+                                  context,
+                                  listen: false,
+                                );
+                                final predView = Provider.of<PredictionService>(
+                                  context,
+                                  listen: false,
+                                );
+                                final success = await storage.saveLog(log);
+
+                                if (!context.mounted) return;
+
+                                if (!success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Overlapping period log found. Please adjust dates.',
                                       ),
                                       backgroundColor: Colors.orangeAccent,
                                       behavior: SnackBarBehavior.floating,
@@ -459,116 +503,79 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
                                   );
                                   return;
                                 }
-                              }
-                              final dateWithTime = DateTime(
-                                _selectedDate!.year,
-                                _selectedDate!.month,
-                                _selectedDate!.day,
-                                _isAM ? 8 : 20,
-                              );
-                              final duration = int.tryParse(durationText) ?? 5;
-                              final log = PeriodLog(
-                                startDate: dateWithTime,
-                                duration: duration,
-                                flowIntensity: _flowIntensity,
-                                symptoms: _selectedSymptoms,
-                                mood: _selectedMood,
-                              );
-                              final storage = Provider.of<StorageService>(
-                                context,
-                                listen: false,
-                              );
-                              final predView = Provider.of<PredictionService>(
-                                context,
-                                listen: false,
-                              );
-                              final success = await storage.saveLog(log);
 
-                              if (!context.mounted) return;
+                                showPhaseDelight(
+                                  context,
+                                  predView.phaseDisplayName,
+                                );
 
-                              if (!success) {
+                                Navigator.pop(context);
+
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Overlapping period log found. Please adjust dates.',
-                                    ),
-                                    backgroundColor: Colors.orangeAccent,
+                                  SnackBar(
+                                    content: const Text('Period logged! ✨'),
                                     behavior: SnackBarBehavior.floating,
+                                    backgroundColor: AppTheme.accentPink,
+                                    duration: const Duration(seconds: 5),
+                                    action: SnackBarAction(
+                                      label: 'Undo',
+                                      textColor: Colors.white,
+                                      onPressed: () async {
+                                        await storage.deleteLogByRef(log);
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Log removed.'),
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
                                   ),
                                 );
-                                return;
-                              }
-
-                              showPhaseDelight(
-                                context,
-                                predView.phaseDisplayName,
-                              );
-
-                              Navigator.pop(context);
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('Period logged! ✨'),
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: AppTheme.accentPink,
-                                  duration: const Duration(seconds: 5),
-                                  action: SnackBarAction(
-                                    label: 'Undo',
-                                    textColor: Colors.white,
-                                    onPressed: () async {
-                                      await storage.deleteLogByRef(log);
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Log removed.'),
-                                            behavior: SnackBarBehavior.floating,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                    child: SizedBox(
-                      height: 64,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.cloud_done_rounded,
-                            color:
-                                _selectedDate == null
-                                    ? context.secondaryText
-                                    : Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Save Log',
-                            style: GoogleFonts.inter(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
+                              },
+                      child: SizedBox(
+                        height: 64,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.cloud_done_rounded,
                               color:
                                   _selectedDate == null
                                       ? context.secondaryText
                                       : Theme.of(context).colorScheme.primary,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 12),
+                            Text(
+                              'Save Log',
+                              style: GoogleFonts.inter(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color:
+                                    _selectedDate == null
+                                        ? context.secondaryText
+                                        : Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ).animate().fadeIn(delay: 700.ms),
+                    ).animate().fadeIn(delay: 700.ms),
 
-                  const SizedBox(height: 24),
-                ],
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),);
+    );
   }
 
   Widget _stepLabel(BuildContext context, String step, String label) {

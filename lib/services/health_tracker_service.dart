@@ -13,7 +13,8 @@ class HealthTrackerService extends ChangeNotifier {
 
   HealthTrackerService({this.unitTestBox});
 
-  Box<DailyLog> get _dailyBox => unitTestBox ?? Hive.box<DailyLog>(dailyBoxName);
+  Box<DailyLog> get _dailyBox =>
+      unitTestBox ?? Hive.box<DailyLog>(dailyBoxName);
 
   Future<void> init() async {
     await Hive.openBox<DailyLog>(dailyBoxName);

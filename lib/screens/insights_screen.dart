@@ -10,7 +10,6 @@ import '../widgets/themed_container.dart';
 import '../widgets/shared_app_bar.dart';
 import '../widgets/cycle_widgets.dart';
 
-
 class InsightsScreen extends StatefulWidget {
   final VoidCallback? onMenuPressed;
   const InsightsScreen({super.key, this.onMenuPressed});
@@ -20,7 +19,6 @@ class InsightsScreen extends StatefulWidget {
 }
 
 class _InsightsScreenState extends State<InsightsScreen> {
-
   @override
   Widget build(BuildContext context) {
     final pred = context.watch<PredictionService>();
@@ -46,7 +44,9 @@ class _InsightsScreenState extends State<InsightsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildFlowmateScore(pred).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1),
+              _buildFlowmateScore(
+                pred,
+              ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1),
               const SizedBox(height: 24),
 
               Text(
@@ -79,7 +79,10 @@ class _InsightsScreenState extends State<InsightsScreen> {
               ).animate().fadeIn(delay: 200.ms).slideX(begin: -0.05),
               const SizedBox(height: 32),
 
-              const _DailyInsightCard().animate().fadeIn(delay: 400.ms).scale(begin: const Offset(0.95, 0.95)),
+              const _DailyInsightCard()
+                  .animate()
+                  .fadeIn(delay: 400.ms)
+                  .scale(begin: const Offset(0.95, 0.95)),
               const SizedBox(height: 32),
 
               Text(
@@ -100,7 +103,6 @@ class _InsightsScreenState extends State<InsightsScreen> {
     );
   }
 
-
   int _getAveragePeriodLength(List<PeriodLog> logs) {
     if (logs.isEmpty) return 5;
     int total = logs.fold(0, (sum, log) => sum + log.duration);
@@ -120,8 +122,22 @@ class _InsightsScreenState extends State<InsightsScreen> {
         children: [
           Icon(icon, color: AppTheme.accentPink, size: 24),
           const SizedBox(height: 16),
-          Text(value, style: AppTheme.playfair(fontSize: 26, fontWeight: FontWeight.w900, color: context.onSurface)),
-          Text(title, style: AppTheme.outfit(fontSize: 12, color: context.secondaryText, fontWeight: FontWeight.w600)),
+          Text(
+            value,
+            style: AppTheme.playfair(
+              fontSize: 26,
+              fontWeight: FontWeight.w900,
+              color: context.onSurface,
+            ),
+          ),
+          Text(
+            title,
+            style: AppTheme.outfit(
+              fontSize: 12,
+              color: context.secondaryText,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -142,20 +158,45 @@ class _InsightsScreenState extends State<InsightsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Flowmate Score', style: AppTheme.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: context.secondaryText)),
-                Text('$score', style: AppTheme.playfair(fontSize: 48, fontWeight: FontWeight.w900, color: context.onSurface)),
+                Text(
+                  'Flowmate Score',
+                  style: AppTheme.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: context.secondaryText,
+                  ),
+                ),
+                Text(
+                  '$score',
+                  style: AppTheme.playfair(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w900,
+                    color: context.onSurface,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   'Your daily health index based on symptoms and regularity.',
-                  style: AppTheme.outfit(fontSize: 13, color: context.secondaryText),
+                  style: AppTheme.outfit(
+                    fontSize: 13,
+                    color: context.secondaryText,
+                  ),
                 ),
               ],
             ),
           ),
           Container(
-            width: 70, height: 70,
-            decoration: BoxDecoration(color: AppTheme.accentPink.withValues(alpha: 0.1), shape: BoxShape.circle),
-            child: const Icon(Icons.auto_awesome_rounded, color: AppTheme.accentPink, size: 32),
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: AppTheme.accentPink.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: AppTheme.accentPink,
+              size: 32,
+            ),
           ),
         ],
       ),
@@ -169,7 +210,6 @@ class _InsightsScreenState extends State<InsightsScreen> {
     return base;
   }
 }
-
 
 class _DailyInsightCard extends StatelessWidget {
   const _DailyInsightCard();

@@ -27,12 +27,13 @@ class WellnessGoalsCard extends StatelessWidget {
         child: NeumorphicCard(
           borderRadius: AppDesignTokens.radiusLG,
           padding: const EdgeInsets.all(AppDesignTokens.space24),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => WellnessRemindersScreen(heroTag: heroTag),
-            ),
-          ),
+          onTap:
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => WellnessRemindersScreen(heroTag: heroTag),
+                ),
+              ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -53,7 +54,9 @@ class WellnessGoalsCard extends StatelessWidget {
                           context: context,
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                           letterSpacing: 1.2,
                         ),
                       ),
@@ -62,7 +65,9 @@ class WellnessGoalsCard extends StatelessWidget {
                   Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 14,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.3),
                   ),
                 ],
               ),
@@ -94,7 +99,9 @@ class WellnessGoalsCard extends StatelessWidget {
                             style: AppTheme.outfit(
                               context: context,
                               fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -108,7 +115,9 @@ class WellnessGoalsCard extends StatelessWidget {
                   style: AppTheme.outfit(
                     context: context,
                     fontSize: 14,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
             ],
