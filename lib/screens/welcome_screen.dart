@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:provider/provider.dart';
-import '../services/storage_service.dart';
 import 'login_screen.dart';
 import '../widgets/delight_widgets.dart';
-import '../widgets/themed_container.dart';
 import '../widgets/brand_widgets.dart';
+import '../utils/app_theme.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -15,69 +13,78 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final GlobalKey<NeonButterflyState> _b1Key = GlobalKey<NeonButterflyState>();
-  final GlobalKey<NeonButterflyState> _b2Key = GlobalKey<NeonButterflyState>();
-  final GlobalKey<NeonButterflyState> _b3Key = GlobalKey<NeonButterflyState>();
   bool _isNavigating = false;
 
   void _onBeginJourney() async {
     if (_isNavigating) return;
     setState(() => _isNavigating = true);
+    
+    // Visual "Chime" Burst
+    showNeonChime(context);
+    
+    // Slight delay to enjoy the burst
+    await Future.delayed(800.ms);
 
-    _b1Key.currentState?.triggerTapAnimation();
-    _b2Key.currentState?.triggerTapAnimation();
-    _b3Key.currentState?.triggerTapAnimation();
-    showPhaseDelight(context, 'Follicular');
-
-    // Immediate navigation, no artificial 1s delay
     if (mounted) {
       await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const LoginScreen(),
+          transitionDuration: 1200.ms,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return Stack(
+              children: [
+                FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(
+                    scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+                      CurvedAnimation(parent: animation, curve: Curves.easeOutExpo),
+                    ),
+                    child: child,
+                  ),
+                ),
+                // Neon Flash Overlay
+                IgnorePointer(
+                  child: FadeTransition(
+                    opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: const Interval(0.0, 0.4, curve: Curves.easeIn),
+                      ),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context).colorScheme.primary,
+                            blurRadius: 100,
+                            spreadRadius: 50,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       );
       if (mounted) setState(() => _isNavigating = false);
     }
   }
 
-  Future<void> _resetExperience() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Reset All Data?'),
-            content: const Text(
-              'This will erase all your period logs and preferences. This cannot be undone.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('Reset'),
-              ),
-            ],
-          ),
-    );
-
-    if (confirm == true && mounted) {
-      await context.read<StorageService>().stopAndReset();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('App data has been reset')),
-        );
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       body: AnimatedGlowBackground(
+        showSparkles: true,
+        showFlowers: true,
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -88,108 +95,86 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: isSmall ? 16 : 32,
+                      horizontal: isSmall ? 20 : 32,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 48),
+                        const SizedBox(height: 40),
+                        
+                        // Logo with Breathing & Floating Effect
                         Hero(
-                              tag: 'brand_logo',
-                              child: BrandLogo(
-                                size: isSmall ? 110 : 150,
-                                imagePath: 'assets/images/feature_graphic.png',
-                                showName: true,
-                                nameFontSize: 42,
-                              ),
-                            )
-                            .animate()
-                            .fadeIn(duration: 800.ms)
-                            .scale(
-                              begin: const Offset(0.9, 0.9),
-                              curve: Curves.easeOutBack,
-                            ),
+                          tag: 'brand_logo',
+                          child: BrandLogo(
+                            size: isSmall ? 120 : 160,
+                            imagePath: 'assets/images/feature_graphic.png',
+                            showName: true,
+                            nameFontSize: isSmall ? 36 : 48,
+                          ),
+                        )
+                        .animate(onPlay: (c) => c.repeat(reverse: true))
+                        .moveY(begin: -5, end: 5, duration: 3.seconds, curve: Curves.easeInOutSine)
+                        .animate() // Entry animation
+                        .fadeIn(duration: 800.ms)
+                        .scale(begin: const Offset(0.8, 0.8), curve: Curves.easeOutBack),
+
                         const SizedBox(height: 16),
-                        Text(
-                          'Your intelligent cycle companion',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: colorScheme.onSurface.withValues(alpha: 0.7),
-                            fontWeight: FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
-                        ).animate().fadeIn(delay: 400.ms, duration: 800.ms),
-                        const SizedBox(height: 64),
-                        Semantics(
-                              label: 'Begin journey',
-                              button: true,
-                              child: ShimmerButton(
-                                onTap: _onBeginJourney,
-                                child: ThemedContainer(
-                                  type: ContainerType.neu,
-                                  radius: 24,
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: isSmall ? 56 : 72,
-                                    alignment: Alignment.center,
-                                    child:
-                                        _isNavigating
-                                            ? const CircularProgressIndicator()
-                                            : Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                NeonButterfly(
-                                                  key: _b2Key,
-                                                  size: isSmall ? 18 : 22,
-                                                  animateOnTap: true,
-                                                ),
-                                                const SizedBox(width: 12),
-                                                Text(
-                                                  'Begin Journey',
-                                                  style: theme
-                                                      .textTheme
-                                                      .titleLarge
-                                                      ?.copyWith(
-                                                        color:
-                                                            colorScheme.primary,
-                                                        fontWeight:
-                                                            FontWeight.w800,
-                                                        letterSpacing: 1.2,
-                                                      ),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                NeonButterfly(
-                                                  key: _b3Key,
-                                                  size: isSmall ? 22 : 28,
-                                                  color: colorScheme.secondary
-                                                      .withValues(alpha: 0.8),
-                                                  animateOnTap: true,
-                                                ),
-                                              ],
-                                            ),
-                                  ),
-                                ),
-                              ),
-                            )
-                            .animate()
-                            .fadeIn(delay: 600.ms)
-                            .slideY(begin: 0.3, curve: Curves.easeOut),
-                        const SizedBox(height: 32),
-                        TextButton(
-                          onPressed: _resetExperience,
+
+                        // Gradient Tagline
+                        ShaderMask(
+                          shaderCallback: (bounds) => AppTheme.brandGradient.createShader(bounds),
                           child: Text(
-                            'Reset Experience',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.4,
+                            'Your intelligent cycle companion',
+                            style: AppTheme.outfit(
+                              fontSize: isSmall ? 16 : 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ).animate().fadeIn(delay: 400.ms, duration: 800.ms).slideY(begin: 0.2, end: 0),
+
+                        const SizedBox(height: 80),
+
+                        // Premium Glass CTA
+                        Semantics(
+                          label: 'Begin journey',
+                          button: true,
+                          child: ShimmerButton(
+                            onTap: _onBeginJourney,
+                            radius: 32,
+                            child: Container(
+                              width: double.infinity,
+                              height: isSmall ? 64 : 80,
+                              decoration: AppTheme.premiumGlassDecoration(
+                                radius: 32,
+                                opacity: isDark ? 0.15 : 0.6,
                               ),
-                              fontWeight: FontWeight.w600,
+                              child: _isNavigating
+                                  ? const Center(child: CircularProgressIndicator())
+                                  : Center(
+                                      child: Text(
+                                        'BEGIN JOURNEY',
+                                        style: AppTheme.playfair(
+                                          fontSize: isSmall ? 18 : 22,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 2.0,
+                                          color: isDark ? colorScheme.primary : colorScheme.onSurface,
+                                        ),
+                                      ),
+                                    ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 48,
-                        ), // Extra bottom padding for system safe area
+                        )
+                        .animate()
+                        .fadeIn(delay: 800.ms)
+                        .slideY(begin: 0.4, end: 0, curve: Curves.easeOutCubic),
+
+                        const SizedBox(height: 40),
+
+
+                        const SizedBox(height: 48),
                       ],
                     ),
                   ),
@@ -202,3 +187,4 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 }
+

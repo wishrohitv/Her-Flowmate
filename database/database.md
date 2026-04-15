@@ -31,6 +31,7 @@
 > 1. **User-Controlled Data:** While users can log health-related data (moods, symptoms, wellness activities) for their own reference or to share with their providers, the app **does not provide clinical services**.
 > 2. **Not a Clinical Service:** The app does not facilitate or manage **professional doctor appointments, clinical consultations, or medical diagnoses**.
 > 3. **Non-Clinical Database:** Database structures are optimized for self-tracking and wellness reminders. The "Appointment" model is a personal reminder tool and not a clinical scheduling system.
+> 4. **Retention Policy:** Data is kept locally until the user logs out (which clears local data) or requests account deletion (which purges backend data). There is no automatic expiration of data.
 
 ---
 
@@ -95,7 +96,7 @@ StorageService (singleton facade)
 **Validation rules:**
 - `endDate` must not be before `startDate`
 - `duration` must be > 0
-- Overlap detection: a new log is rejected if its date range overlaps any existing log
+- Overlap detection: a new log is rejected if its date range overlaps any existing log. *Note: Adjacent periods (`endDate` + 1 == new `startDate`) are allowed – no overlap.*
 
 ---
 
@@ -122,6 +123,7 @@ StorageService (singleton facade)
 
 **Persistence Model:**  
 Daily logs are stored using their **date string (`YYYY-MM-DD`)** as the primary key. This ensures O(1) lookups without iterating through lists and atomic overwrites for same-day entries.
+> **Timezone Handling:** All dates are stored using the **local device timezone** (e.g., `DateTime.now().toLocal()`). If a user travels across timezones, the same UTC day may map to different local dates.
 
 **JSON mapping** (for API sync):
 
@@ -216,7 +218,7 @@ Daily logs are stored using their **date string (`YYYY-MM-DD`)** as the primary 
 | `appointments` | `Appointment` | 3 | `AppointmentAdapter` | `AppointmentService.init()` |
 | `user_box` | `User` | 10 | `UserAdapter` | `OnboardingService.init()` |
 
-> **typeId 2** is unused/reserved.  
+> **typeId 2** is unused/reserved for a future model.  
 > All adapters are **manually written** (no code generation) and registered in `BaseStorageService.init()`.
 
 ---
@@ -225,25 +227,25 @@ Daily logs are stored using their **date string (`YYYY-MM-DD`)** as the primary 
 
 These are all scalar flags and settings persisted via `SharedPreferences`.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| `auth_token` | `String?` | `null` | Bearer token for backend API calls |
-| `hasCompletedLogin` | `bool` | `false` | Whether user has completed the login step |
-| `hasCompletedOnboarding` | `bool` | `false` | Whether user has completed onboarding |
-| `isLoggedIn` | `bool` | `false` | Current authenticated session flag |
-| `userName` | `String?` | `null` | Fallback name when Hive user box is empty |
-| `userGoal` | `String?` | `null` | Fallback goal string |
-| `userAge` | `int?` | `null` | Fallback age |
-| `userImagePath` | `String?` | `null` | Fallback profile image path |
-| `isDarkMode` | `bool` | `false` | Theme preference |
-| `isMinimalMode` | `bool` | `false` | Minimal UI mode toggle |
-| `isHighPerformanceMode` | `bool` | `true` | Performance rendering mode |
-| `isPinLocked` | `bool` | `false` | App-lock (PIN/biometric) enabled |
-| `hasSeenInfoPopup` | `bool` | `false` | One-time info popup seen state |
-| `hydrationGoal` | `int` | `8` (from `AppConstants`) | Daily water intake target (glasses) |
-| `pregnancyWeeks` | `int?` | `null` | Manually set pregnancy week override |
-| `conceptionDate` | `String?` | `null` | ISO 8601 date string |
-| `dueDate` | `String?` | `null` | ISO 8601 date string |
+| Key | Type | Default | Example | Description |
+|-----|------|---------|---------|-------------|
+| `auth_token` | `String?` | `null` | `"eyJhbGci..."` | Bearer token for backend API calls |
+| `hasCompletedLogin` | `bool` | `false` | `true` | Whether user has completed the login step |
+| `hasCompletedOnboarding` | `bool` | `false` | `true` | Whether user has completed onboarding |
+| `isLoggedIn` | `bool` | `false` | `true` | Current authenticated session flag |
+| `userName` | `String?` | `null` | `"Jane Doe"` | Fallback name when Hive user box is empty |
+| `userGoal` | `String?` | `null` | `"track_cycle"` | Fallback goal string |
+| `userAge` | `int?` | `null` | `28` | Fallback age |
+| `userImagePath` | `String?` | `null` | `"/data/user/0/img.png"` | Fallback profile image path |
+| `isDarkMode` | `bool` | `false` | `true` | Theme preference |
+| `isMinimalMode` | `bool` | `false` | `false` | Minimal UI mode toggle |
+| `isHighPerformanceMode` | `bool` | `true` | `false` | Performance rendering mode |
+| `isPinLocked` | `bool` | `false` | `true` | App-lock (PIN/biometric) enabled |
+| `hasSeenInfoPopup` | `bool` | `false` | `true` | One-time info popup seen state |
+| `hydrationGoal` | `int` | `8` (from `AppConstants`) | `8` | Daily water intake target (glasses) |
+| `pregnancyWeeks` | `int?` | `null` | `12` | Manually set pregnancy week override |
+| `conceptionDate` | `String?` | `null` | `"2025-10-01..."` | ISO 8601 date string |
+| `dueDate` | `String?` | `null` | `"2026-07-08..."` | ISO 8601 date string |
 
 ---
 
@@ -261,7 +263,7 @@ These are all scalar flags and settings persisted via `SharedPreferences`.
 
 ### `PeriodLogService` _(ChangeNotifier)_
 - Manages `period_logs` box
-- **Caches** the sorted list in `_cachedLogs` (invalidated on any write)
+- **Performance Note:** Caches the sorted list in `_cachedLogs` (invalidated on any write) to avoid O(N) iteration overhead on every read.
 - Sorts logs descending by `startDate` (most recent first)
 - **Overlap detection** prevents duplicate/overlapping periods from being saved
 - Schedules push notifications for next predicted period after every save/delete
@@ -284,14 +286,14 @@ These are all scalar flags and settings persisted via `SharedPreferences`.
 ### `PregnancyService` _(ChangeNotifier)_
 - No Hive box — uses SharedPreferences only
 - Stores `conceptionDate`, `dueDate`, `pregnancyWeeks`
-- Due date calculated as `LMP + 280 days` (see `ARCHITECTURE.md`)
+- Due date calculated as `LMP + 280 days` (Naegele's rule). *Note: Naegele’s rule assumes a 28‑day cycle. For irregular cycles, this due date is an estimate.*
 
 ### `StorageService` _(singleton ChangeNotifier — Facade)_
 - Composes all five sub-services
 - Provides unified `init()` that initializes services in the correct order
   1. `BaseStorageService.init()` (must be first — registers Hive adapters)
   2. `onboarding`, `periodLog`, `healthTracker`, `appointment` opened in parallel
-- Exposes `syncUserWithBackend()` — orchestrates full remote sync
+- Exposes `syncUserWithBackend()` — orchestrates full remote sync. *Note: this operation is triggered manually (e.g., on login) to avoid excessive network calls.*
 - Provides `exportLogsToJson()`, `importLogsFromJson()`, `exportLogsToPdf()`
 - `clearAllData()` wipes both SharedPreferences and all Hive boxes from disk
 
@@ -314,6 +316,8 @@ These are all scalar flags and settings persisted via `SharedPreferences`.
 | `/appointments` | — | `AppointmentService` | **Not implemented** — local only |
 
 **Sync strategy:** "remote wins" — on fetch, the local Hive box is cleared and replaced with remote data. No conflict resolution or delta sync is implemented.
+> [!WARNING]
+> This "remote wins" strategy may cause **data loss** if a user logs data offline and then syncs, as the older remote version will overwrite newer local logs. A more robust sync strategy (e.g., timestamp comparison, delta sync, and an offline queue) is planned for a future update.
 
 ---
 
@@ -394,6 +398,8 @@ Pure computation on `List<PeriodLog>`. **Strictly enforces date-sorting** before
 | `ovulation` | Days around `cycleLen − 14` |
 | `luteal` | Post-ovulation until end of cycle |
 
+> **Complexity Warning:** The phase calculation (`cycleLen - 14`) assumes a 14‑day luteal phase for prediction purposes. In reality, luteal phases vary (10–16 days). Future versions may allow user-specific luteal length configuration.
+
 ### `PredictionService` (`lib/services/prediction_service.dart`)
 Wraps `CycleEngine` with `StorageService` context. Used by Riverpod `predictionServiceProvider`.
 
@@ -410,6 +416,25 @@ Wraps `CycleEngine` with `StorageService` context. Used by Riverpod `predictionS
 | `isFertileDay(date)` | `true` if ovulation phase or conception chance ≥ 10% |
 | `getHormoneLevels(cycleDay)` | Returns `Map<String, double>` |
 | `fertilityLevel` | `"High"` / `"Moderate"` / `"Low"` string |
+
+---
+
+## Error Handling Strategy
+
+1. **Local Storage:** Local Hive writes and SharedPreferences updates are immediate and synchronous. 
+2. **API Calls:** Network requests are subject to timeouts. Operations that fail due to network instability are logged and (in some service layers) retried.
+3. **Data Integrity:** Invalid JSON payloads from the backend are caught during parsing. Missing optional fields gracefully fall back to `null` or default values. User-friendly error messages are surfaced during API failures to prevent silent failures.
+
+---
+
+## Tech Debt & Roadmap
+
+The current architecture is stable but has known gaps flagged for future improvement:
+
+- **Appointment Sync:** The `/appointments` backend endpoints are not implemented. Appointments remain local-only.
+- **Offline Sync Queue:** Currently lacking an offline-first retry queue. Failed network requests are not automatically retried later.
+- **Delta Sync:** The "remote wins" strategy lacks granularity. We need differential sync (timestamp comparison) to prevent overwriting newer offline data with older remote data.
+- **Luteal Phase Configuration:** Defaulting to a 14-day luteal phase is a simplification; allowing users to define their historical luteal baseline would improve prediction accuracy.
 
 ---
 

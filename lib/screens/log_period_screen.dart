@@ -53,12 +53,14 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          color: context.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-        ),
-        padding: const EdgeInsets.only(top: 16),
+      body: AnimatedGlowBackground(
+        showFlowers: true,
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+          ),
+          padding: const EdgeInsets.only(top: 16),
         child: ThemedContainer(
           type: ContainerType.glass,
           radius: 40,
@@ -566,7 +568,7 @@ class _LogPeriodScreenState extends State<LogPeriodScreen> {
           ),
         ),
       ),
-    );
+    ),);
   }
 
   Widget _stepLabel(BuildContext context, String step, String label) {

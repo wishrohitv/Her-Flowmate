@@ -8,6 +8,8 @@ import '../models/period_log.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/themed_container.dart';
+import '../widgets/delight_widgets.dart';
+import '../widgets/common/neu_card.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final bool isEmailUser;
@@ -155,8 +157,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: AppTheme.getBackgroundDecoration(context),
+    return AnimatedGlowBackground(
+      showFlowers: true,
       child: PopScope(
         canPop: _currentPage == widget.initialPage,
         child: Scaffold(
@@ -267,7 +269,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                         Padding(
                           padding: EdgeInsets.fromLTRB(horizontalPadding, 4, horizontalPadding, 24),
-                          child: Opacity(
+                          child: AnimatedOpacity(
+                            duration: 300.ms,
                             opacity: isValid ? 1.0 : 0.5,
                             child: GestureDetector(
                               onTap: isValid ? _next : null,
@@ -371,27 +374,50 @@ class _GoalPage extends StatelessWidget {
       child: AnimatedScale(
         scale: isSelected ? 1.02 : 1.0,
         duration: 300.ms,
-        child: ThemedContainer(
-          type: isSelected ? ContainerType.elevated : ContainerType.glass,
-          padding: const EdgeInsets.all(20),
-          radius: 24,
-          border: isSelected ? Border.all(color: AppTheme.accentPink, width: 2) : null,
+        child: isSelected ? NeumorphicCard(
+          padding: const EdgeInsets.all(AppDesignTokens.space20),
+          borderRadius: AppDesignTokens.radiusLG,
           child: Row(
             children: [
               ThemedContainer(
                 type: ContainerType.simple,
                 padding: const EdgeInsets.all(12),
                 radius: 40,
-                color: isSelected ? AppTheme.accentPink : AppTheme.accentPink.withValues(alpha: 0.05),
-                child: Icon(icon, color: isSelected ? Colors.white : AppTheme.accentPink, size: 24),
+                color: AppTheme.accentPink,
+                child: Icon(icon, color: Colors.white, size: 24),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: AppDesignTokens.space20),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTheme.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: isSelected ? AppTheme.accentPink : null)),
-                    Text(subtitle, style: AppTheme.outfit(fontSize: 14, color: AppTheme.textSecondary)),
+                    Text(title, style: AppTheme.outfit(context: context, fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.accentPink)),
+                    Text(subtitle, style: AppTheme.outfit(context: context, fontSize: 14, color: AppTheme.textSecondary)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ) : ThemedContainer(
+          type: ContainerType.glass,
+          padding: const EdgeInsets.all(AppDesignTokens.space20),
+          radius: AppDesignTokens.radiusLG,
+          child: Row(
+            children: [
+              ThemedContainer(
+                type: ContainerType.simple,
+                padding: const EdgeInsets.all(12),
+                radius: 40,
+                color: AppTheme.accentPink.withValues(alpha: 0.05),
+                child: Icon(icon, color: AppTheme.accentPink, size: 24),
+              ),
+              const SizedBox(width: AppDesignTokens.space20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: AppTheme.outfit(context: context, fontSize: 18, fontWeight: FontWeight.w800)),
+                    Text(subtitle, style: AppTheme.outfit(context: context, fontSize: 14, color: AppTheme.textSecondary)),
                   ],
                 ),
               ),
@@ -511,17 +537,16 @@ class _DatePage extends StatelessWidget {
         );
         if (d != null) onDatePicked(d);
       },
-      child: ThemedContainer(
-        type: ContainerType.glass,
-        radius: 20,
-        padding: const EdgeInsets.all(20),
+      child: NeumorphicCard(
+        borderRadius: AppDesignTokens.radiusMD,
+        padding: const EdgeInsets.all(AppDesignTokens.space20),
         child: Row(
           children: [
             const Icon(Icons.calendar_today_rounded, color: AppTheme.accentPink, size: 24),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppDesignTokens.space16),
             Text(
               selectedDate == null ? hint : DateFormat('MMMM dd, yyyy').format(selectedDate),
-              style: AppTheme.outfit(fontSize: 18, color: selectedDate == null ? AppTheme.textSecondary : null),
+              style: AppTheme.outfit(context: context, fontSize: 18, color: selectedDate == null ? AppTheme.textSecondary : null),
             ),
           ],
         ),
@@ -581,15 +606,14 @@ class _DatePage extends StatelessWidget {
       children: [
         Text(label, style: AppTheme.outfit(fontSize: 12, fontWeight: FontWeight.w800, color: AppTheme.textSecondary)),
         const SizedBox(height: 12),
-        ThemedContainer(
-          type: ContainerType.glass,
-          radius: 20,
+        NeumorphicCard(
+          borderRadius: 20,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: TextField(
             controller: controller,
             keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-            style: AppTheme.outfit(fontSize: 18),
-            decoration: InputDecoration(border: InputBorder.none, hintText: hint, hintStyle: AppTheme.outfit(color: AppTheme.textSecondary.withValues(alpha: 0.5))),
+            style: AppTheme.outfit(context: context, fontSize: 18),
+            decoration: InputDecoration(border: InputBorder.none, hintText: hint, hintStyle: AppTheme.outfit(context: context, color: AppTheme.textSecondary.withValues(alpha: 0.5))),
           ),
         ),
       ],
@@ -656,15 +680,14 @@ class _PersonalizationPage extends StatelessWidget {
       children: [
         Text(label, style: AppTheme.outfit(fontSize: 12, fontWeight: FontWeight.w800, color: AppTheme.textSecondary)),
         const SizedBox(height: 12),
-        ThemedContainer(
-          type: ContainerType.glass,
-          radius: 20,
+        NeumorphicCard(
+          borderRadius: 20,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: TextField(
             controller: controller,
             keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-            style: AppTheme.outfit(fontSize: 18),
-            decoration: InputDecoration(border: InputBorder.none, hintText: hint, hintStyle: AppTheme.outfit(color: AppTheme.textSecondary.withValues(alpha: 0.5))),
+            style: AppTheme.outfit(context: context, fontSize: 18),
+            decoration: InputDecoration(border: InputBorder.none, hintText: hint, hintStyle: AppTheme.outfit(context: context, color: AppTheme.textSecondary.withValues(alpha: 0.5))),
           ),
         ),
       ],

@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/shared_drawer.dart';
+import '../widgets/delight_widgets.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -74,8 +75,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         backgroundColor: AppTheme.frameColor,
         extendBody: true, // Crucial for floating bar
         drawer: const SharedDrawer(),
-        body: Container(
-          decoration: AppTheme.getBackgroundDecoration(context),
+        body: AnimatedGlowBackground(
+          showFlowers: true,
           child: PageView(
             controller: _pageController,
             physics: const NeverScrollableScrollPhysics(),

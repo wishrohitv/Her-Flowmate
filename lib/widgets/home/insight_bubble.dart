@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../themed_container.dart';
+import '../common/neu_card.dart';
+import '../../utils/app_theme.dart';
 
 class InsightBubble extends StatelessWidget {
   final String icon;
@@ -24,19 +23,12 @@ class InsightBubble extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ThemedContainer(
-          type: ContainerType.glass,
+        NeumorphicCard(
           width: 68,
           height: 68,
-          radius: 34,
+          borderRadius: 34,
           padding: EdgeInsets.zero,
-          opacity: isExpanded ? 0.25 : 0.1,
-          borderColor:
-              isExpanded ? color.withValues(alpha: 0.5) : Colors.white24,
-          onTap: () {
-            HapticFeedback.selectionClick();
-            onTap();
-          },
+          onTap: onTap,
           child: Center(
             child: Text(
               icon,
@@ -53,15 +45,13 @@ class InsightBubble extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           label,
-          style: GoogleFonts.inter(
+          style: AppTheme.outfit(
+            context: context,
             fontSize: 10,
             fontWeight: isExpanded ? FontWeight.w900 : FontWeight.w700,
-            color:
-                isExpanded
-                    ? Theme.of(context).colorScheme.onSurface
-                    : Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+            color: isExpanded
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             letterSpacing: 0.5,
           ),
         ),

@@ -164,7 +164,7 @@ class StreakCard extends StatelessWidget {
       streakLabel = 'Legend!';
       streakColor = const Color(0xFFD481FF);
       emoji = '🏆';
-    } else if (streak >= AppConstants.streakMilestones[1]) {
+    } else if (streak >= AppConstants.streakMilestones.elementAt(1)) {
       streakLabel = 'On fire!';
       streakColor = const Color(0xFFFF9800);
       emoji = '🔥';

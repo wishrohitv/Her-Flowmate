@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import '../services/storage_service.dart';
 import '../models/daily_log.dart';
 import '../utils/app_theme.dart';
+import '../widgets/delight_widgets.dart';
+import '../widgets/common/neu_card.dart';
 
 class DailyCheckinScreen extends StatefulWidget {
   const DailyCheckinScreen({super.key});
@@ -92,41 +94,44 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
     
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppTheme.darkBackground : AppTheme.frameColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(44)),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            _buildDragHandle(),
-            const SizedBox(height: 16),
-            _buildHeader(),
-            _buildProgressBar(),
-            const SizedBox(height: 12),
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: 400.ms,
-                transitionBuilder: (child, anim) => FadeTransition(
-                  opacity: anim,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.05, 0),
-                      end: Offset.zero,
-                    ).animate(anim),
-                    child: child,
+      body: AnimatedGlowBackground(
+        showFlowers: true,
+        child: Container(
+          decoration: BoxDecoration(
+            color: isDark ? AppTheme.darkBackground : AppTheme.frameColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDesignTokens.radiusXL)),
+          ),
+          padding: const EdgeInsets.only(top: AppDesignTokens.space16),
+          child: Column(
+            children: [
+              _buildDragHandle(),
+              const SizedBox(height: 16),
+              _buildHeader(),
+              _buildProgressBar(),
+              const SizedBox(height: 12),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: 400.ms,
+                  transitionBuilder: (child, anim) => FadeTransition(
+                    opacity: anim,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0.05, 0),
+                        end: Offset.zero,
+                      ).animate(anim),
+                      child: child,
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    key: ValueKey(_currentStep),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    child: _getStepContent(),
                   ),
                 ),
-                child: SingleChildScrollView(
-                  key: ValueKey(_currentStep),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: _getStepContent(),
-                ),
               ),
-            ),
-            _buildBottomActionBar(),
-          ],
+              _buildBottomActionBar(),
+            ],
+          ),
         ),
       ),
     );
@@ -211,32 +216,34 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
     return Column(
       children: [
         _stepLabel('📅', 'Date'),
-        const SizedBox(height: 12),
-        GestureDetector(
+        const SizedBox(height: AppDesignTokens.space12),
+        NeumorphicCard(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDesignTokens.space20,
+            vertical: AppDesignTokens.space16,
+          ),
+          borderRadius: AppDesignTokens.radiusLG,
           onTap: _pickDate,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppTheme.accentPink.withValues(alpha: 0.1)),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.calendar_today_rounded, color: AppTheme.accentPink, size: 22),
-                const SizedBox(width: 12),
-                Text(
-                  DateFormat('EEEE, MMM d, yyyy').format(_selectedDate),
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? AppTheme.darkOnSurface : AppTheme.textDark,
-                  ),
+          child: Row(
+            children: [
+              const Icon(Icons.calendar_today_rounded, color: AppTheme.accentPink, size: 22),
+              const SizedBox(width: 12),
+              Text(
+                DateFormat('EEEE, MMM d, yyyy').format(_selectedDate),
+                style: AppTheme.outfit(
+                  context: context,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? AppTheme.darkOnSurface : AppTheme.textDark,
                 ),
-                const Spacer(),
-                const Icon(Icons.edit_rounded, color: AppTheme.accentPink, size: 18),
-              ],
-            ),
+              ),
+              const Spacer(),
+              Icon(
+                Icons.edit_rounded,
+                color: AppTheme.accentPink.withValues(alpha: 0.6),
+                size: 18,
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 32),
@@ -519,10 +526,11 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
         duration: 250.ms,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? primary : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? primary : AppTheme.accentPink.withValues(alpha: 0.08)),
-          boxShadow: isSelected ? [BoxShadow(color: primary.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 4))] : [],
+          color: isSelected ? primary : (isDark ? AppTheme.darkCard : AppTheme.bgColor),
+          borderRadius: BorderRadius.circular(AppDesignTokens.radiusMD),
+          boxShadow: isSelected 
+              ? [BoxShadow(color: primary.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 4))] 
+              : AppDesignTokens.neuShadow(context),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -530,9 +538,10 @@ class _DailyCheckinScreenState extends State<DailyCheckinScreen> {
             if (emoji != null) ...[Text(emoji), const SizedBox(width: 8)],
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: AppTheme.outfit(
+                context: context,
                 fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                 color: isSelected ? Colors.white : AppTheme.textSecondary,
               ),
             ),

@@ -24,15 +24,15 @@ class TimelineScreen extends StatelessWidget {
         final pred = context.read<PredictionService>();
 
         return Scaffold(
-          backgroundColor: AppTheme.frameColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            backgroundColor: AppTheme.frameColor,
+            backgroundColor: Colors.transparent,
             elevation: 0,
             leading: Semantics(
               label: 'Back',
               button: true,
               child: const Padding(
-                padding: EdgeInsets.all(4.0),
+                padding: EdgeInsets.all(AppDesignTokens.space4),
                 child: AppBackButton(),
               ),
             ),
@@ -47,40 +47,44 @@ class TimelineScreen extends StatelessWidget {
             centerTitle: true,
           ),
           body: Container(
-            decoration: const BoxDecoration(gradient: AppTheme.bgGradient),
+            decoration: AppTheme.getBackgroundDecoration(context),
             child: SafeArea(
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppDesignTokens.space24),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: AppDesignTokens.space24),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         _buildLegendItem(
+                          context,
                           'Menstrual',
                           AppTheme.phaseColors['Menstrual']!,
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: AppDesignTokens.space16),
                         _buildLegendItem(
+                          context,
                           'Follicular',
                           AppTheme.phaseColors['Follicular']!,
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: AppDesignTokens.space16),
                         _buildLegendItem(
+                          context,
                           'Ovulation',
                           AppTheme.phaseColors['Ovulation']!,
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: AppDesignTokens.space16),
                         _buildLegendItem(
+                          context,
                           'Luteal',
                           AppTheme.phaseColors['Luteal']!,
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppDesignTokens.space32),
                   Expanded(
                     child:
                         cycleLen <= 0
@@ -165,7 +169,7 @@ class TimelineScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
+  Widget _buildLegendItem(BuildContext context, String label, Color color) {
     return Semantics(
       label: '$label phase indicator',
       button: false,
@@ -176,13 +180,14 @@ class TimelineScreen extends StatelessWidget {
             height: 14,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppDesignTokens.space8),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              color: AppTheme.textSecondary,
+            style: AppTheme.outfit(
+              context: context,
+              fontSize: AppDesignTokens.labelSize,
               fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -209,20 +214,21 @@ class _TimelineRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Cycle day $day, $phaseName phase, ${isToday ? "today" : ""}',
+      label:
+          'Cycle day $day, $phaseName phase, ${isToday ? "today, marked with a star" : ""}',
       button: false,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 40,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 14.0, right: 4.0),
+            width: AppDesignTokens.space40,
+            child: Align(
+              alignment: Alignment.topRight,
               child: Text(
                 '$day',
-                textAlign: TextAlign.right,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
+                style: AppTheme.outfit(
+                  context: context,
+                  fontSize: AppDesignTokens.bodySize,
                   fontWeight: isToday ? FontWeight.w900 : FontWeight.w700,
                   color: isToday ? AppTheme.accentPink : AppTheme.textSecondary,
                 ),
@@ -235,7 +241,7 @@ class _TimelineRow extends StatelessWidget {
             excludeSemantics: true,
             child: Column(
               children: [
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDesignTokens.space16),
                 Container(
                   width: 18,
                   height: 18,
@@ -256,8 +262,8 @@ class _TimelineRow extends StatelessWidget {
                 if (!isLast)
                   Container(
                     width: 2,
-                    height: 48,
-                    color: Colors.grey.withValues(alpha: 0.3),
+                    height: AppDesignTokens.space48,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15),
                   ),
               ],
             ),
@@ -267,11 +273,11 @@ class _TimelineRow extends StatelessWidget {
 
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(bottom: AppDesignTokens.space16),
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+                  horizontal: AppDesignTokens.space16,
+                  vertical: AppDesignTokens.space12,
                 ),
                 decoration: BoxDecoration(
                   color: phaseColor.withValues(alpha: 0.08),
@@ -294,27 +300,29 @@ class _TimelineRow extends StatelessWidget {
   }
 
   Widget _rowContent(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final contrastColor =
-        HSLColor.fromColor(phaseColor).withLightness(0.4).toColor();
-    final storage = context.read<StorageService>();
+        HSLColor.fromColor(phaseColor).withLightness(isDark ? 0.8 : 0.35).toColor();
 
     return Row(
       children: [
         Text(
           isToday ? 'Today' : 'Cycle Day $day',
-          style: GoogleFonts.inter(
-            fontSize: 14,
+          style: AppTheme.outfit(
+            context: context,
+            fontSize: AppDesignTokens.bodySize,
             fontWeight: isToday ? FontWeight.w800 : FontWeight.w700,
-            color: AppTheme.textDark,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const Spacer(),
         Text(
           phaseName,
-          style: GoogleFonts.inter(
-            fontSize: 12,
+          style: AppTheme.outfit(
+            context: context,
+            fontSize: AppDesignTokens.captionSize,
             fontWeight: FontWeight.w800,
-            color: storage.isDarkMode ? phaseColor : contrastColor,
+            color: isDark ? phaseColor : contrastColor,
           ),
         ),
       ],

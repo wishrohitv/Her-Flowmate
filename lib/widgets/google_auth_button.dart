@@ -28,6 +28,7 @@ class GoogleAuthButton extends StatelessWidget {
       radius: 24,
       child: ThemedContainer(
         type: ContainerType.neu,
+        width: double.infinity,
         radius: 24,
         gradient: LinearGradient(
           colors: [
@@ -37,30 +38,35 @@ class GoogleAuthButton extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 24),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.g_mobiledata_rounded,
-                color: colorScheme.primary,
-                size: 26,
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/google_logo.png',
+              width: 24,
+              height: 24,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(
+                  Icons.login_rounded,
+                  color: colorScheme.primary,
+                  size: 24,
+                );
+              },
+            ),
+            const SizedBox(width: 16),
+            Flexible(
+              child: Text(
+                'Continue with Google',
+                style: AppTheme.outfit(
+                  context: context,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ).copyWith(letterSpacing: 0.3),
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(width: 16),
-              Flexible(
-                child: Text(
-                  'Continue with Google',
-                  style: AppTheme.outfit(
-                    context: context,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                  ).copyWith(letterSpacing: 0.3),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -5,13 +5,14 @@ import '../../services/prediction_service.dart';
 import '../../services/storage_service.dart';
 import '../../utils/app_theme.dart';
 import 'cycle_core_ring.dart';
-import 'daily_insight_card.dart';
 import 'insight_bubble.dart';
 import 'water_intake_card.dart';
 import 'wellness_stats.dart';
 import 'wellness_goals_card.dart';
-import '../themed_container.dart';
+import '../common/neu_card.dart';
 import '../../models/appointment.dart';
+import '../../widgets/cycle_widgets.dart';
+import 'body_insights_cards.dart';
 import '../../screens/wellness_reminders_screen.dart';
 
 class ModernBentoDashboard extends StatefulWidget {
@@ -34,6 +35,7 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
   bool _isWaterExpanded = false;
   bool _isSleepExpanded = false;
   bool _isStreakExpanded = false;
+  bool _isHormoneExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,22 +45,18 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
         return Column(
           children: [
             // ── 1. Cycle Core Ring (primary progress gauge) ────────────
-            RepaintBoundary(
-              child: CycleCoreRing(pred: widget.pred)
-                  .animate()
-                  .fadeIn(duration: 600.ms)
-                  .scale(begin: const Offset(0.9, 0.9)),
-            ),
+            CycleCoreRing(pred: widget.pred)
+                .animate()
+                .fadeIn(duration: 600.ms)
+                .scale(begin: const Offset(0.9, 0.9)),
             const SizedBox(height: AppDesignTokens.space24),
             _buildActiveGoalPill(context),
             const SizedBox(height: AppDesignTokens.space12),
 
-            // ── 3. Daily Phase Insight Card ─────────────────────────────
-            RepaintBoundary(
-              child: DailyInsightCard(
-                pred: widget.pred,
-              ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
-            ),
+            // ── 3. Body Status & Guidance Cards ──────────────────────────
+            BodyInsightsCards(
+              pred: widget.pred,
+            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
             const SizedBox(height: AppDesignTokens.space32),
 
             // ── 4. Expandable Quick-access Insight Bubbles ──────────────
@@ -67,14 +65,12 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
 
             // ── 5. Expanded detail panels ───────────────────────────────
             if (_isWaterExpanded)
-              RepaintBoundary(
-                child: WaterIntakeCard(
-                  storage: widget.storage,
-                  onGoalReached: () {
-                    if (mounted) widget.confettiController.play();
-                  },
-                ).animate().fadeIn().slideY(begin: -0.05),
-              ),
+            WaterIntakeCard(
+              storage: widget.storage,
+              onGoalReached: () {
+                if (mounted) widget.confettiController.play();
+              },
+            ).animate().fadeIn().slideY(begin: -0.05),
 
             if (_isSleepExpanded)
               SleepCard(
@@ -83,14 +79,17 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
               ).animate().fadeIn().slideY(begin: -0.05),
 
             if (_isStreakExpanded)
-              RepaintBoundary(
-                child: StreakCard(
-                  storage: widget.storage,
-                  onMilestoneReached: () {
-                    if (mounted) widget.confettiController.play();
-                  },
-                ).animate().fadeIn().slideY(begin: -0.05),
-              ),
+            StreakCard(
+              storage: widget.storage,
+              onMilestoneReached: () {
+                if (mounted) widget.confettiController.play();
+              },
+            ).animate().fadeIn().slideY(begin: -0.05),
+
+            if (_isHormoneExpanded)
+            HormoneGraph(
+              pred: widget.pred,
+            ).animate().fadeIn().slideY(begin: -0.05),
 
             // ── 6. Wellness Goals / upcoming reminders ──────────────────
             const SizedBox(height: AppDesignTokens.space24),
@@ -123,10 +122,9 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
         tag: 'goal_pill',
         child: Material(
           color: Colors.transparent,
-          child: ThemedContainer(
-            type: ContainerType.glass,
+          child: NeumorphicCard(
+            borderRadius: 20,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            radius: 20,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -171,6 +169,13 @@ class _ModernBentoDashboardState extends State<ModernBentoDashboard> {
         color: Colors.blueAccent,
         isExpanded: _isWaterExpanded,
         onTap: () => setState(() => _isWaterExpanded = !_isWaterExpanded),
+      ),
+      _bubble(
+        icon: '🧪',
+        label: 'Hormones',
+        color: const Color(0xFFD481FF),
+        isExpanded: _isHormoneExpanded,
+        onTap: () => setState(() => _isHormoneExpanded = !_isHormoneExpanded),
       ),
       _bubble(
         icon: '🌙',

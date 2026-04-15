@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../utils/app_theme.dart';
 import '../services/storage_service.dart';
 import '../services/google_auth_services.dart';
-import '../widgets/themed_container.dart';
 import 'legal_screen.dart';
 import 'onboarding_screen.dart';
 import 'main_navigation_screen.dart';
@@ -15,6 +15,7 @@ import '../widgets/google_auth_button.dart';
 import '../widgets/common/primary_button.dart';
 import '../widgets/common/neu_card.dart';
 import '../widgets/common/app_back_button.dart';
+import '../widgets/delight_widgets.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -40,8 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      body: Container(
-        decoration: AppTheme.getBackgroundDecoration(context),
+      body: AnimatedGlowBackground(
+        showFlowers: true,
         child: Stack(
           children: [
             SafeArea(
@@ -49,17 +50,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: (context, constraints) {
                   final bool isSmall = constraints.maxWidth < 360;
 
-                  return CustomScrollView(
+                  return SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isSmall ? 16 : 24,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isSmall ? AppDesignTokens.space16 : AppDesignTokens.space24,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Hero(
                                 tag: 'brand_logo_login',
@@ -73,36 +73,42 @@ class _LoginScreenState extends State<LoginScreen> {
                                     32,
                                   ),
                                 ),
-                              ).animate().fadeIn(duration: 500.ms).scale(),
-                              const SizedBox(height: AppTheme.spacingSm),
+                              ).animate().fadeIn(duration: 600.ms).scale(
+                                begin: const Offset(0.8, 0.8),
+                                curve: Curves.easeOutBack,
+                              ),
+                              const SizedBox(height: AppDesignTokens.space8),
                               Text(
                                 'Your Personal Health Sanctuary',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium?.copyWith(
+                                style: AppTheme.playfair(
+                                  context: context,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
                                   color: Theme.of(context).colorScheme.onSurface
-                                      .withValues(alpha: 0.7),
+                                      .withValues(alpha: 0.9),
                                 ),
                                 textAlign: TextAlign.center,
-                              ),
+                              ).animate().fadeIn(delay: 200.ms).moveY(begin: 10, end: 0),
                               const SizedBox(height: 8),
                               Text(
                                 'Sign in to sync your health data securely.',
-                                style: Theme.of(context).textTheme.bodyMedium,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                ),
                                 textAlign: TextAlign.center,
-                              ),
+                              ).animate().fadeIn(delay: 400.ms),
                               SizedBox(
                                 height:
                                     isSmall
-                                        ? AppTheme.spacingLg
-                                        : AppTheme.spacingXl,
+                                        ? AppDesignTokens.space24
+                                        : AppDesignTokens.space32,
                               ),
-                              ThemedContainer(
-                                type: ContainerType.neu,
-                                radius: 32,
-                                padding: EdgeInsets.all(isSmall ? 20 : 32),
+                              NeumorphicCard(
+                                width: double.infinity,
+                                padding: EdgeInsets.all(isSmall ? AppDesignTokens.space20 : AppDesignTokens.space32),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
                                     Semantics(
                                       label: 'Sign in with Google',
@@ -114,9 +120,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 : () =>
                                                     _handleLogin(context, true),
                                       ),
-                                    ).animate().fadeIn(delay: 400.ms),
+                                    ).animate().fadeIn(delay: 600.ms).moveY(begin: 20, end: 0),
                                     const SizedBox(
-                                      height: AppTheme.spacingMedium,
+                                      height: AppDesignTokens.space16,
                                     ),
                                     Semantics(
                                       label: 'Continue as guest',
@@ -132,63 +138,69 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 : () => _handleLogin(
                                                   context,
                                                   false,
-                                                ),
+                                                  ),
                                       ),
-                                    ).animate().fadeIn(delay: 500.ms),
+                                    ).animate().fadeIn(delay: 800.ms).moveY(begin: 20, end: 0),
                                   ],
                                 ),
-                              ),
+                              ).animate().fadeIn(delay: 500.ms).scale(begin: const Offset(0.95, 0.95)),
                               SizedBox(
                                 height:
                                     isSmall
-                                        ? AppTheme.spacingXlarge
-                                        : AppTheme.spacingHuge,
+                                        ? AppDesignTokens.space32
+                                        : AppDesignTokens.space48,
                               ),
-                              ThemedContainer(
-                                type: ContainerType.neu,
-                                radius: 20,
-                                padding: EdgeInsets.all(isSmall ? 16 : 24),
+                              NeumorphicCard(
+                                padding: EdgeInsets.all(isSmall ? AppDesignTokens.space16 : AppDesignTokens.space24),
                                 child: Column(
                                   children: [
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Icon(
-                                          Icons.lock_rounded,
-                                          size: isSmall ? 16 : 18,
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.primary,
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.verified_user_rounded,
+                                            size: isSmall ? 16 : 18,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
+                                          ),
                                         ),
-                                        const SizedBox(width: 8),
+                                        const SizedBox(width: 12),
                                         Text(
                                           'Privacy Assured',
                                           style: AppTheme.outfit(
                                             context: context,
-                                            fontSize: isSmall ? 14 : 15,
+                                            fontSize: isSmall ? 14 : 16,
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 12),
                                     Text(
-                                      'Your data is private, encrypted, and stays with you.',
+                                      'Your health data is encrypted, private, \nand never shared without your consent.',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodySmall?.copyWith(
                                         color: Theme.of(context)
                                             .colorScheme
                                             .onSurface
-                                            .withValues(alpha: 0.7),
+                                            .withValues(alpha: 0.6),
+                                        height: 1.4,
                                       ),
                                       textAlign: TextAlign.center,
                                     ),
                                   ],
                                 ),
-                              ),
+                              ).animate().fadeIn(delay: 1000.ms).moveY(begin: 20, end: 0),
                               const SizedBox(height: 32),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 24),
@@ -234,21 +246,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                    ],
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
             if (_isLoading)
               Container(
-                color: Colors.black.withValues(alpha: 0.3),
+                color: Theme.of(context).shadowColor.withValues(alpha: 0.4),
                 child: Center(
                   child: NeumorphicCard(
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const CircularProgressIndicator(),
+                        const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.roseCoralPrimary),
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'Authenticating...',
@@ -326,13 +339,9 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        return Container(
-          decoration: BoxDecoration(
-            color: isDark ? AppTheme.darkSurface : Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          padding: const EdgeInsets.all(24),
+        return NeumorphicCard(
+          margin: const EdgeInsets.all(AppDesignTokens.space16),
+          padding: const EdgeInsets.all(AppDesignTokens.space24),
           child: SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -341,42 +350,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(
                   child: Container(
                     width: 40,
-                    height: 10,
+                    height: 8,
                     decoration: BoxDecoration(
-                      color: AppTheme.textDark.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(5),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppDesignTokens.radiusXS),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppDesignTokens.space24),
                 Text(
                   'Web Sign-In',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDesignTokens.space16),
                 Text(
-                  'Google Sign-In is coming soon to the web version. \n\nFor now, please use the "Continue as Guest" option to explore the app.',
+                  'Google Sign-In is coming soon to the web version.\n\nFor now, please use the "Continue as Guest" option to explore the app.',
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text(
-                    'Got it',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
+                const SizedBox(height: AppDesignTokens.space24),
+                PrimaryButton(
+                  label: 'Got it',
+                  onTap: () => Navigator.pop(context),
                 ),
               ],
             ),
@@ -390,14 +386,11 @@ class _LoginScreenState extends State<LoginScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        return Container(
-          decoration: BoxDecoration(
-            color: isDark ? AppTheme.darkSurface : Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          padding: const EdgeInsets.all(24),
+        return NeumorphicCard(
+          margin: const EdgeInsets.all(AppDesignTokens.space16),
+          padding: const EdgeInsets.all(AppDesignTokens.space24),
           child: SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -405,64 +398,75 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Center(
                   child: Container(
-                    width: 40,
-                    height: 8,
+                    width: 48,
+                    height: 6,
                     decoration: BoxDecoration(
-                      color: AppTheme.textDark.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppDesignTokens.radiusXS),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppDesignTokens.space32),
+                Container(
+                  padding: const EdgeInsets.all(AppDesignTokens.space16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.error_outline_rounded,
+                    color: Theme.of(context).colorScheme.error,
+                    size: 48,
+                  ),
+                ),
+                const SizedBox(height: AppDesignTokens.space24),
                 Text(
-                  'Sign-in Error',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  'Authentication Error',
+                  style: AppTheme.playfair(
+                    context: context,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
                     color: Theme.of(context).colorScheme.error,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppDesignTokens.space16),
                 Text(
                   message,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    height: 1.5,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppDesignTokens.space32),
                 Row(
                   children: [
                     Expanded(
                       child: TextButton(
                         onPressed: () => Navigator.pop(context),
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 18),
                         ),
-                        child: const Text('Cancel'),
+                        child: Text(
+                          'Dismiss',
+                          style: AppTheme.outfit(
+                            context: context,
+                            fontSize: AppDesignTokens.bodyLargeSize,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: AppDesignTokens.space16),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
+                      child: PrimaryButton(
+                        label: 'Try Again',
+                        onTap: () {
                           Navigator.pop(context);
                           onRetry();
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: const Text(
-                          'Retry',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ),
                     ),
                   ],
@@ -470,7 +474,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-        );
+        ).animate().slideY(begin: 0.2, end: 0, curve: Curves.easeOutCubic).fadeIn();
       },
     );
   }
@@ -522,15 +526,18 @@ class _FooterLink extends StatelessWidget {
       label: '$label link',
       button: true,
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(AppDesignTokens.space8),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: Text(
             label,
             style: AppTheme.outfit(
               context: context,
-              fontSize: 12,
+              fontSize: AppDesignTokens.captionSize,
               fontWeight: FontWeight.w600,
             ).copyWith(
               color: Theme.of(
