@@ -76,6 +76,7 @@ To ensure a crash-free experience on Flutter Web/Chrome, the app uses a propriet
    flutter pub get
    ```
 
+
 2. **Run Locally**:
    ```bash
    flutter run -d chrome
