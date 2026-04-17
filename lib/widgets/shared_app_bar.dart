@@ -1,6 +1,8 @@
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
+import '../services/storage_service.dart';
 import '../utils/app_theme.dart';
 import 'notification_widgets.dart';
 
@@ -27,7 +29,7 @@ class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return Container(
       decoration: BoxDecoration(
-        // Richer frosted glass base
+        // Frosted glass base
         color:
             isDark
                 ? AppTheme.darkBackground.withValues(alpha: 0.75)
@@ -62,11 +64,11 @@ class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
                 bottom: false,
                 child: Container(
                   height: 76,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // ── Left: Menu / Back button ──────────────────────────
+                      // ── Left: Drawer / Back button ──────────────────────
                       Builder(
                         builder: (context) {
                           final canPop = Navigator.canPop(context);
@@ -95,18 +97,8 @@ class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Gradient brand name
-                            ShaderMask(
-                              shaderCallback:
-                                  (bounds) => AppTheme.brandGradient
-                                      .createShader(bounds),
-                              blendMode: BlendMode.srcIn,
-                              child: Text(
-                                'Her-Flowmate',
-                                textAlign: TextAlign.center,
-                                style: AppTheme.brandStyle(fontSize: 24),
-                              ),
-                            ).animate().fadeIn(duration: 400.ms),
+                            // Gradient shimmer brand name
+                            _BrandName(),
 
                             const SizedBox(height: 4),
 
@@ -137,22 +129,133 @@ class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                       ),
 
-                      // ── Right: Notification bell or custom actions ────────
+                      // ── Right: Theme toggle + Notification / custom actions ─
                       if (actions != null)
                         Row(mainAxisSize: MainAxisSize.min, children: actions!)
                       else
-                        const NotificationBell(),
+                        const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Dark / Light mode toggle
+                            _ThemeToggleButton(),
+                            SizedBox(width: 8),
+                            // Notification bell
+                            _NotifButton(),
+                          ],
+                        ),
                     ],
                   ),
                 ),
               ),
 
-              // ── Animated accent gradient line at the bottom ───────────────
+              // ── Animated accent gradient line at the bottom ────────────
               _AccentLine(),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+// ── Brand name with gradient shimmer ─────────────────────────────────────────
+class _BrandName extends StatefulWidget {
+  @override
+  State<_BrandName> createState() => _BrandNameState();
+}
+
+class _BrandNameState extends State<_BrandName>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shimmerCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _shimmerCtrl,
+      builder: (_, __) {
+        final t = _shimmerCtrl.value;
+        return ShaderMask(
+          shaderCallback:
+              (bounds) => LinearGradient(
+                begin: Alignment(-1.5 + 3 * t, 0),
+                end: Alignment(0.5 + 3 * t, 0),
+                colors: const [
+                  AppTheme.neuAccent,
+                  AppTheme.neuAccentLight,
+                  Color(0xFFFFB3D1), // shimmer highlight
+                  AppTheme.neuAccentLight,
+                  AppTheme.neuAccent,
+                ],
+                stops: const [0.0, 0.3, 0.5, 0.7, 1.0],
+              ).createShader(bounds),
+          blendMode: BlendMode.srcIn,
+          child: Text(
+            'Her-Flowmate',
+            textAlign: TextAlign.center,
+            style: AppTheme.brandStyle(fontSize: 22),
+          ),
+        );
+      },
+    ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2, end: 0);
+  }
+}
+
+// ── Theme Toggle Button ───────────────────────────────────────────────────────
+class _ThemeToggleButton extends StatelessWidget {
+  const _ThemeToggleButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+    final storage = context.read<StorageService>();
+
+    return _BarButton(
+      icon: isDark ? Icons.wb_sunny_rounded : Icons.nights_stay_rounded,
+      onTap: () async {
+        await storage.toggleDarkMode();
+      },
+      label: isDark ? 'Switch to light mode' : 'Switch to dark mode',
+      iconColor:
+          isDark
+              ? const Color(0xFFFFD166) // warm amber for sun
+              : const Color(0xFF9B6FFF), // purple for moon
+    );
+  }
+}
+
+// ── Notification Button ───────────────────────────────────────────────────────
+class _NotifButton extends StatelessWidget {
+  const _NotifButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return _BarButton(
+      icon: Icons.notifications_none_rounded,
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const NotificationPanel(),
+        );
+      },
+      label: 'Notifications',
+      badge: true,
     );
   }
 }
@@ -265,16 +368,26 @@ class _BarButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final String label;
+  final Color? iconColor;
+  final bool badge;
 
   const _BarButton({
     required this.icon,
     required this.onTap,
     required this.label,
+    this.iconColor,
+    this.badge = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final resolvedIconColor =
+        iconColor ??
+        (isDark
+            ? AppTheme.darkOnSurface.withValues(alpha: 0.85)
+            : AppTheme.neuTextPrimary.withValues(alpha: 0.8));
+
     return Semantics(
       label: label,
       button: true,
@@ -301,14 +414,25 @@ class _BarButton extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Icon(
-                icon,
-                color:
-                    isDark
-                        ? AppTheme.darkOnSurface.withValues(alpha: 0.85)
-                        : AppTheme.neuTextPrimary.withValues(alpha: 0.8),
-                size: 20,
+              padding: const EdgeInsets.all(9),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(icon, color: resolvedIconColor, size: 20),
+                  if (badge)
+                    Positioned(
+                      right: -3,
+                      top: -3,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.neuAccent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),

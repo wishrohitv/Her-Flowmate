@@ -43,9 +43,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       InsightsScreen(
         onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
       ),
-      WellnessRemindersScreen(
-        onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
-      ),
       ProfileScreen(
         onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
       ),
@@ -173,14 +170,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                           ),
                         ),
                         Expanded(
-                          child: _bottomNavItem(
-                            3,
-                            Icons.notifications_rounded,
-                            'Focus',
-                          ),
-                        ),
-                        Expanded(
-                          child: _bottomNavItem(4, Icons.person_rounded, 'You'),
+                          child: _bottomNavItem(3, Icons.person_rounded, 'You'),
                         ),
                       ],
                     ),
