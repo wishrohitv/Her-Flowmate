@@ -67,7 +67,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.only(
-                  top: kToolbarHeight + MediaQuery.of(context).padding.top + 16,
+                  top: MediaQuery.of(context).padding.top + 16,
                 ),
                 child: Selector2<
                   PredictionService,

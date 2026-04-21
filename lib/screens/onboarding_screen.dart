@@ -226,9 +226,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       ),
                                     ),
                                     const SizedBox(height: 12),
-                                    _ProgressBar(
-                                      current: _currentPage,
-                                      total: _totalPages,
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                      ),
+                                      child: _ProgressBar(
+                                        current: _currentPage,
+                                        total: _totalPages,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -932,26 +937,47 @@ class _PersonalizationPage extends StatelessWidget {
   }
 }
 
-class _ProgressBar extends StatelessWidget {
+class _ProgressBar extends StatefulWidget {
   final int current, total;
   const _ProgressBar({required this.current, required this.total});
 
   @override
+  State<_ProgressBar> createState() => _ProgressBarState();
+}
+
+class _ProgressBarState extends State<_ProgressBar> {
+  double _lastProgress = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return ThemedContainer(
-      type: ContainerType.simple,
-      height: 6,
-      width: double.infinity,
-      radius: 10,
-      color: AppTheme.accentPink.withValues(alpha: 0.1),
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: (current + 1) / total,
-        child: const ThemedContainer(
-          type: ContainerType.simple,
-          radius: 10,
-          gradient: AppTheme.brandGradient,
-          child: SizedBox.shrink(),
+    final progress = (widget.current + 1) / widget.total;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Container(
+        height: 6,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppTheme.accentPink.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: _lastProgress, end: progress),
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCubic,
+          onEnd: () => _lastProgress = progress,
+          builder: (context, value, child) {
+            return FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: value,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: AppTheme.brandGradient,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

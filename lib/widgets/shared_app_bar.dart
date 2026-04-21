@@ -205,7 +205,7 @@ class _BrandNameState extends State<_BrandName>
               ).createShader(bounds),
           blendMode: BlendMode.srcIn,
           child: Text(
-            'Her-Flowmate',
+            'HerFlowmate',
             textAlign: TextAlign.center,
             style: AppTheme.brandStyle(fontSize: 22),
           ),
