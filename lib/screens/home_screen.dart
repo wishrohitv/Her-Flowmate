@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: SharedAppBar(
-        title: 'Flowmate',
+        title: '',
         subtitle: DateFormat('EEEE, d MMMM').format(DateTime.now()),
         onMenuPressed: widget.onMenuPressed,
         actions: [_buildCurrentModeBadge(storage), const SizedBox(width: 8)],

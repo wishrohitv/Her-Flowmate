@@ -44,6 +44,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 30.0),
               _buildFlowmateScore(
                 pred,
               ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1),
